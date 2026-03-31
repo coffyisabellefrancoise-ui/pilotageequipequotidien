@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilotage Équipe</title>
+<link href="Pilotage%20%C3%89quipe_fichiers/css2.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --surface: #f8f9fb;
+  --border: #e2e6ed;
+  --text: #1a2233;
+  --text2: #6b7a99;
+  --green: #00c48c;
+  --orange: #ff8c42;
+  --red: #ff4757;
+  --blue: #3a7bd5;
+  --yellow: #ffd166;
+  --purple: #845ef7;
+  --navy: #1a2233;
+  --fo: #00b4d8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; font-size:14px; }
+
+/* ── Top nav ── */
+.nav {
+  background:var(--navy);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px; height:56px; position:sticky; top:0; z-index:100;
+}
+.nav-logo { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:2px; color:#fff; }
+.nav-logo span { color:var(--green); }
+.nav-tabs { display:flex; gap:4px; }
+.nav-tab {
+  padding:6px 16px; border-radius:6px; cursor:pointer; font-size:13px;
+  color:rgba(255,255,255,0.55); border:none; background:transparent; font-family:'Outfit',sans-serif;
+  transition:all 0.2s;
+}
+.nav-tab:hover { color:#fff; background:rgba(255,255,255,0.08); }
+.nav-tab.active { color:#fff; background:rgba(255,255,255,0.13); font-weight:600; }
+.nav-right { display:flex; align-items:center; gap:10px; }
+.alert-bell {
+  position:relative; cursor:pointer; color:rgba(255,255,255,0.7);
+  font-size:20px; padding:4px;
+}
+.alert-count {
+  position:absolute; top:-2px; right:-2px;
+  background:var(--red); color:#fff; border-radius:10px;
+  font-size:9px; font-weight:700; padding:1px 5px; min-width:16px; text-align:center;
+}
+
+/* ── Layout ── */
+.page { display:none; padding:24px 28px; max-width:1300px; margin:0 auto; animation:fadeUp 0.3s ease; }
+.page.active { display:block; }
+
+/* ── KPI bar ── */
+.kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-bottom:24px; }
+.kpi {
+  background:var(--white); border-radius:14px; padding:18px 20px;
+  border:1px solid var(--border); position:relative; overflow:hidden;
+}
+.kpi::before {
+  content:''; position:absolute; top:0; left:0; width:4px; height:100%; border-radius:4px 0 0 4px;
+}
+.kpi.green::before { background:var(--green); }
+.kpi.orange::before { background:var(--orange); }
+.kpi.red::before { background:var(--red); }
+.kpi.blue::before { background:var(--blue); }
+.kpi.purple::before { background:var(--purple); }
+.kpi-label { font-size:11px; text-transform:uppercase; letter-spacing:0.8px; color:var(--text2); margin-bottom:6px; }
+.kpi-value { font-family:'Bebas Neue',sans-serif; font-size:36px; line-height:1; }
+.kpi-sub { font-size:11px; color:var(--text2); margin-top:4px; }
+
+/* ── Section title ── */
+.section-title {
+  font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1.5px;
+  color:var(--navy); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.section-title span { font-family:'Outfit',sans-serif; font-size:12px; color:var(--text2); font-weight:400; letter-spacing:0; }
+
+/* ── Pack selector ── */
+.pack-tabs { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+.pack-tab {
+  padding:7px 18px; border-radius:20px; cursor:pointer; font-size:13px; font-weight:600;
+  border:2px solid var(--border); background:var(--white); color:var(--text2);
+  transition:all 0.2s; font-family:'Outfit',sans-serif;
+}
+.pack-tab.active-packc { border-color:var(--orange); color:var(--orange); background:#fff5ee; }
+.pack-tab.active-packs { border-color:var(--blue); color:var(--blue); background:#eef4ff; }
+.pack-tab.active-lte { border-color:var(--green); color:var(--green); background:#edfaf4; }
+.pack-tab.active-fo  { border-color:var(--fo);   color:var(--fo);   background:#e8f8fc; }
+
+/* ── Table ── */
+.table-wrap {
+  background:var(--white); border-radius:14px; border:1px solid var(--border); overflow:hidden;
+}
+.table-toolbar {
+  display:flex; align-items:center; gap:10px; padding:14px 18px;
+  border-bottom:1px solid var(--border); flex-wrap:wrap;
+}
+.search-input {
+  flex:1; min-width:180px; background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:8px 14px; font-family:'Outfit',sans-serif; font-size:13px;
+  color:var(--text); outline:none;
+}
+.search-input:focus { border-color:var(--blue); }
+.filter-sel {
+  background:var(--surface); border:1px solid var(--border); border-radius:8px;
+  padding:8px 12px; font-family:'Outfit',sans-serif; font-size:13px; color:var(--text); outline:none;
+}
+table { width:100%; border-collapse:collapse; }
+thead th {
+  background:var(--navy); color:rgba(255,255,255,0.75); font-size:11px;
+  text-transform:uppercase; letter-spacing:0.8px; padding:11px 14px; text-align:left;
+  font-weight:600; cursor:pointer; white-space:nowrap;
+}
+thead th:hover { color:#fff; }
+tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:var(--surface); }
+tbody td { padding:10px 14px; font-size:13px; }
+.franchise-badge {
+  display:inline-block; padding:2px 8px; border-radius:5px; font-size:11px; font-weight:600;
+}
+.rank-badge {
+  font-family:'Bebas Neue',sans-serif; font-size:16px;
+  padding:2px 8px; border-radius:6px; display:inline-block;
+}
+.rank-1 { background:#ffd700; color:#7a5a00; }
+.rank-2 { background:#c0c0c0; color:#444; }
+.rank-3 { background:#cd7f32; color:#fff; }
+.rank-other { background:var(--surface); color:var(--text2); }
+
+.ro-bar-wrap { display:flex; align-items:center; gap:8px; }
+.ro-bar { height:6px; background:var(--border); border-radius:3px; flex:1; min-width:60px; }
+.ro-fill { height:100%; border-radius:3px; transition:width 0.5s; }
+.ro-pct { font-weight:600; font-size:12px; min-width:38px; }
+
+.alert-row td { background:#fff5f5 !important; }
+.alert-row:hover td { background:#ffe8e8 !important; }
+.alert-icon { color:var(--red); font-size:15px; }
+
+/* ── Progress ring ── */
+.ring-wrap { display:flex; align-items:center; gap:10px; }
+.ring { transform:rotate(-90deg); }
+
+/* ── Add/edit form ── */
+.card {
+  background:var(--white); border-radius:14px; border:1px solid var(--border); padding:24px; margin-bottom:20px;
+}
+.card-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+.form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; }
+.form-group { display:flex; flex-direction:column; gap:5px; }
+.form-group label { font-size:11px; text-transform:uppercase; letter-spacing:0.7px; color:var(--text2); font-weight:600; }
+.form-group input, .form-group select {
+  background:var(--surface); border:1px solid var(--border); border-radius:8px;
+  padding:9px 13px; font-family:'Outfit',sans-serif; font-size:13px; color:var(--text); outline:none;
+}
+.form-group input:focus, .form-group select:focus { border-color:var(--blue); }
+.form-actions { display:flex; gap:10px; margin-top:18px; justify-content:flex-end; }
+.btn {
+  padding:9px 20px; border-radius:8px; border:none; cursor:pointer;
+  font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; transition:all 0.2s;
+}
+.btn-primary { background:var(--navy); color:#fff; }
+.btn-primary:hover { background:#2d3a55; transform:translateY(-1px); }
+.btn-green { background:var(--green); color:#fff; }
+.btn-green:hover { opacity:0.85; }
+.btn-outline { background:transparent; color:var(--text2); border:1px solid var(--border); }
+.btn-outline:hover { border-color:var(--navy); color:var(--navy); }
+.btn-red { background:var(--red); color:#fff; }
+.btn-sm { padding:5px 12px; font-size:12px; border-radius:6px; }
+
+/* ── Alert panel ── */
+.alert-panel {
+  position:fixed; top:56px; right:0; width:320px; background:var(--white);
+  border-left:1px solid var(--border); border-bottom:1px solid var(--border);
+  border-radius:0 0 0 14px; z-index:200; box-shadow:-4px 4px 20px rgba(0,0,0,0.08);
+  max-height:calc(100vh - 56px); overflow-y:auto; display:none;
+  animation:slideIn 0.2s ease;
+}
+.alert-panel.open { display:block; }
+.alert-panel-header {
+  padding:14px 18px; border-bottom:1px solid var(--border);
+  font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.alert-item {
+  padding:12px 18px; border-bottom:1px solid var(--border); display:flex; gap:10px; align-items:flex-start;
+}
+.alert-item:last-child { border-bottom:none; }
+.alert-dot { width:8px; height:8px; border-radius:50%; background:var(--red); flex-shrink:0; margin-top:5px; }
+.alert-item-name { font-weight:600; font-size:13px; }
+.alert-item-detail { font-size:12px; color:var(--text2); margin-top:2px; }
+
+/* ── Import ── */
+.import-zone {
+  border:2px dashed var(--border); border-radius:12px; padding:40px;
+  text-align:center; cursor:pointer; transition:all 0.2s; background:var(--surface);
+}
+.import-zone:hover, .import-zone.drag { border-color:var(--blue); background:#eef4ff; }
+.import-icon { font-size:40px; margin-bottom:10px; }
+.import-text { font-size:14px; color:var(--text2); }
+.import-text strong { color:var(--blue); }
+#fileInput { display:none; }
+
+/* ── Classement ── */
+.podium { display:flex; justify-content:center; gap:16px; margin-bottom:28px; align-items:flex-end; }
+.podium-item {
+  background:var(--white); border:1px solid var(--border); border-radius:12px;
+  padding:16px 20px; text-align:center; min-width:130px; position:relative;
+}
+.podium-item.p1 { border-color:var(--yellow); background:#fffbee; order:2; }
+.podium-item.p2 { order:1; }
+.podium-item.p3 { order:3; }
+.podium-medal { font-size:28px; margin-bottom:6px; }
+.podium-name { font-weight:600; font-size:13px; }
+.podium-score { font-family:'Bebas Neue',sans-serif; font-size:28px; margin-top:4px; }
+.podium-franchise { font-size:11px; color:var(--text2); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideIn { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:translateX(0)} }
+::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* Responsive */
+@media(max-width:600px){
+  .nav { padding:0 14px; }
+  .page { padding:16px 14px; }
+  .podium { flex-wrap:wrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-logo">PILOT<span>AGE</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="goTo('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-tab" onclick="goTo('classement',this)">🏆 Classement</button>
+    <button class="nav-tab" onclick="goTo('saisie',this)">✏️ Saisie</button>
+    <button class="nav-tab" onclick="goTo('import',this)">📥 Import</button>
+    <button class="nav-tab" onclick="goTo('sauvegarde',this)">💾 Sauvegarde</button>
+  </div>
+  <div class="nav-right">
+    <div class="alert-bell" onclick="toggleAlerts()">
+      🔔 <span class="alert-count" id="alertCount">13</span>
+    </div>
+    <div id="syncStatus" style="display:none;font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.1);color:var(--green)"></div>
+  </div>
+</nav>
+
+<!-- Alert panel -->
+<div class="alert-panel" id="alertPanel">
+  <div class="alert-panel-header">
+    🚨 Alertes <span style="font-family:Outfit;font-size:12px;color:var(--text2)" id="alertPanelCount">(13)</span>
+  </div>
+  <div id="alertList"><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">COULIBALY MAMA</div>
+          <div class="alert-item-detail">Ps Dabakala · STAGIAIRE · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">YEO SIATOU</div>
+          <div class="alert-item-detail">Ps Dabakala · STAGIAIRE · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">PINGUIN ADELE</div>
+          <div class="alert-item-detail">Ps Dabakala · STAGIAIRE · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">TOURE FRANCIS</div>
+          <div class="alert-item-detail">EO Bouaké · CC · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">STEPHANE AVOHOU</div>
+          <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">LOIC ASSIE DEFALONE</div>
+          <div class="alert-item-detail">EO Bouaké · STAGIAIRE · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">GNAMIEN TOPE JEKHIEL</div>
+          <div class="alert-item-detail">EO Bouaké · SAV · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">KOUASSI STEPHANIE</div>
+          <div class="alert-item-detail">EO Bouaké · CC · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">KONATE FATOUMATA</div>
+          <div class="alert-item-detail">EO Bouaké · CC · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">KONAN ARMAND</div>
+          <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">GLADYS</div>
+          <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">KOFFI DANIELLE</div>
+          <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
+        </div>
+      </div><div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">JEAN CLAUDE</div>
+          <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
+        </div>
+      </div></div>
+</div>
+
+<!-- ══ DASHBOARD ══════════════════════════════════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="kpi-row" id="kpiRow">
+    <div class="kpi blue"><div class="kpi-label">Agents total</div><div class="kpi-value" style="color:var(--blue)">24</div><div class="kpi-sub">dans l'équipe</div></div>
+    <div class="kpi green"><div class="kpi-label">≥ 100% Pack C</div><div class="kpi-value" style="color:var(--green)">0</div><div class="kpi-sub">objectif atteint</div></div>
+    <div class="kpi orange"><div class="kpi-label">Moyenne R/O</div><div class="kpi-value" style="color:var(--orange)">10%</div><div class="kpi-sub">Pack C</div></div>
+    <div class="kpi red"><div class="kpi-label">Alertes 0%</div><div class="kpi-value" style="color:var(--red)">13</div><div class="kpi-sub">agents sans réalisation</div></div>
+    <div class="kpi purple"><div class="kpi-label">Franchises</div><div class="kpi-value" style="color:var(--purple)">5</div><div class="kpi-sub">zones pilotées</div></div>
+  </div>
+
+  <div class="pack-tabs">
+    <button class="pack-tab active-packc" onclick="setActivePack('packc',this)">Pack C</button>
+    <button class="pack-tab" onclick="setActivePack('packs',this)">Pack S</button>
+    <button class="pack-tab" onclick="setActivePack('lte',this)">LTE</button>
+    <button class="pack-tab" onclick="setActivePack('fo',this)">🔵 Fibre (FO)</button>
+  </div>
+
+  <div class="section-title">TABLEAU DE BORD <span>cliquer sur un en-tête pour trier</span></div>
+  <div class="table-wrap">
+    <div class="table-toolbar">
+      <input class="search-input" id="dashSearch" placeholder="🔍 Rechercher un agent..." oninput="renderDashTable()">
+      <select class="filter-sel" id="dashFranchise" onchange="renderDashTable()"><option value="" selected="selected">Toutes franchises</option><option>EO Belle Ville</option><option>EO Bouaké</option><option>EO Dar Es</option><option>Eo Katiola</option><option>Ps Dabakala</option></select>
+      <select class="filter-sel" id="dashPoste" onchange="renderDashTable()">
+        <option value="" selected="selected">Tous postes</option>
+        <option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto"><table id="dashTable">
+      <thead><tr id="dashHead"><th onclick="sortDash('nom')">Agent </th><th onclick="sortDash('franchise')">Franchise </th><th onclick="sortDash('poste')">Poste </th><th onclick="sortDash('obj')">Objectif </th><th onclick="sortDash('rea')">Réalisé </th><th onclick="sortDash('ro')">R/O ↓</th><th onclick="sortDash('reste')">Reste à faire </th><th onclick="sortDash('rang')">Rang </th></tr></thead>
+      <tbody id="dashBody"><tr class="">
+      <td><strong>JACOB KOUASSI</strong></td>
+      <td><span class="franchise-badge" style="background:#845ef722;color:#845ef7">EO Dar Es</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">29%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-5</td>
+      <td><span class="rank-badge rank-1">1e</span></td>
+    </tr><tr class="">
+      <td><strong>KOUADIO JOCELYNE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">Eo Katiola</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">29%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-5</td>
+      <td><span class="rank-badge rank-2">2e</span></td>
+    </tr><tr class="">
+      <td><strong>FATOUMA FOFANA</strong></td>
+      <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">Eo Katiola</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">29%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-5</td>
+      <td><span class="rank-badge rank-3">3e</span></td>
+    </tr><tr class="">
+      <td><strong>KOMPE FOFANA</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">29%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-5</td>
+      <td><span class="rank-badge rank-other">4e</span></td>
+    </tr><tr class="">
+      <td><strong>GBANGBO ANNE GISELE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">29%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-5</td>
+      <td><span class="rank-badge rank-other">5e</span></td>
+    </tr><tr class="">
+      <td><strong>SEKONGO</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">29%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-5</td>
+      <td><span class="rank-badge rank-other">6e</span></td>
+    </tr><tr class="">
+      <td><strong>BENJAMIN YAO</strong></td>
+      <td><span class="franchise-badge" style="background:#845ef722;color:#845ef7">EO Dar Es</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">14%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">7e</span></td>
+    </tr><tr class="">
+      <td><strong>ODILON KOFFI</strong></td>
+      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">14%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">8e</span></td>
+    </tr><tr class="">
+      <td><strong>YEO KIEMA</strong></td>
+      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">14%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">9e</span></td>
+    </tr><tr class="">
+      <td><strong>ZOUNGRANA ALIMA</strong></td>
+      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+      <td>MC</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">14%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">10e</span></td>
+    </tr><tr class="">
+      <td><strong>KONE KARIDJATOU</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">14%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">11e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>COULIBALY MAMA</strong></td>
+      <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">12e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>YEO SIATOU</strong></td>
+      <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">13e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>PINGUIN ADELE</strong></td>
+      <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">14e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>TOURE FRANCIS</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">15e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>STEPHANE AVOHOU</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">16e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>LOIC ASSIE DEFALONE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">17e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>GNAMIEN TOPE JEKHIEL</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>SAV</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">18e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>KOUASSI STEPHANIE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">19e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>KONATE FATOUMATA</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-7</td>
+      <td><span class="rank-badge rank-other">20e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>KONAN ARMAND</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>6</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">21e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>GLADYS</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>6</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">22e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>KOFFI DANIELLE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>6</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">23e</span></td>
+    </tr><tr class="alert-row">
+      <td><span class="alert-icon">⚠️</span> <strong>JEAN CLAUDE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>6</td>
+      <td style="font-weight:600">0</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
+          <span class="ro-pct" style="color:var(--red)">0%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:var(--red)">-6</td>
+      <td><span class="rank-badge rank-other">24e</span></td>
+    </tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ══ CLASSEMENT ══════════════════════════════════════════ -->
+<div class="page" id="page-classement">
+  <div class="pack-tabs">
+    <button class="pack-tab active-packc" onclick="setActivePack('packc',this,true)">Pack C</button>
+    <button class="pack-tab" onclick="setActivePack('packs',this,true)">Pack S</button>
+    <button class="pack-tab" onclick="setActivePack('lte',this,true)">LTE</button>
+    <button class="pack-tab" onclick="setActivePack('fo',this,true)">🔵 Fibre (FO)</button>
+  </div>
+  <div class="podium" id="podium"><div class="podium-item p1">
+      <div class="podium-medal">🥇</div>
+      <div class="podium-name">JACOB KOUASSI</div>
+      <div class="podium-franchise">EO Dar Es</div>
+      <div class="podium-score" style="color:var(--red)">29%</div>
+    </div><div class="podium-item p2">
+      <div class="podium-medal">🥈</div>
+      <div class="podium-name">KOUADIO JOCELYNE</div>
+      <div class="podium-franchise">Eo Katiola</div>
+      <div class="podium-score" style="color:var(--red)">29%</div>
+    </div><div class="podium-item p3">
+      <div class="podium-medal">🥉</div>
+      <div class="podium-name">FATOUMA FOFANA</div>
+      <div class="podium-franchise">Eo Katiola</div>
+      <div class="podium-score" style="color:var(--red)">29%</div>
+    </div></div>
+  <div class="table-wrap">
+    <div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th>Rang</th><th>Agent</th><th>Franchise</th><th>Poste</th>
+        <th>Objectif</th><th>Réalisé</th><th>R/O</th><th>Reste</th>
+      </tr></thead>
+      <tbody id="rankBody"><tr>
+      <td><span class="rank-badge rank-1">1</span></td>
+      <td><strong>JACOB KOUASSI</strong></td>
+      <td><span class="franchise-badge" style="background:#845ef722;color:#845ef7">EO Dar Es</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td style="font-weight:700;color:var(--red)">29%</td>
+      <td style="color:var(--red);font-weight:600">-5</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-2">2</span></td>
+      <td><strong>KOUADIO JOCELYNE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">Eo Katiola</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td style="font-weight:700;color:var(--red)">29%</td>
+      <td style="color:var(--red);font-weight:600">-5</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-3">3</span></td>
+      <td><strong>FATOUMA FOFANA</strong></td>
+      <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">Eo Katiola</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td style="font-weight:700;color:var(--red)">29%</td>
+      <td style="color:var(--red);font-weight:600">-5</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">4</span></td>
+      <td><strong>KOMPE FOFANA</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td style="font-weight:700;color:var(--red)">29%</td>
+      <td style="color:var(--red);font-weight:600">-5</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">5</span></td>
+      <td><strong>GBANGBO ANNE GISELE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td style="font-weight:700;color:var(--red)">29%</td>
+      <td style="color:var(--red);font-weight:600">-5</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">6</span></td>
+      <td><strong>SEKONGO</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>7</td>
+      <td style="font-weight:600">2</td>
+      <td style="font-weight:700;color:var(--red)">29%</td>
+      <td style="color:var(--red);font-weight:600">-5</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">7</span></td>
+      <td><strong>BENJAMIN YAO</strong></td>
+      <td><span class="franchise-badge" style="background:#845ef722;color:#845ef7">EO Dar Es</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td style="font-weight:700;color:var(--red)">14%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">8</span></td>
+      <td><strong>ODILON KOFFI</strong></td>
+      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td style="font-weight:700;color:var(--red)">14%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">9</span></td>
+      <td><strong>YEO KIEMA</strong></td>
+      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td style="font-weight:700;color:var(--red)">14%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">10</span></td>
+      <td><strong>ZOUNGRANA ALIMA</strong></td>
+      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+      <td>MC</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td style="font-weight:700;color:var(--red)">14%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">11</span></td>
+      <td><strong>KONE KARIDJATOU</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">1</td>
+      <td style="font-weight:700;color:var(--red)">14%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">12</span></td>
+      <td><strong>COULIBALY MAMA</strong></td>
+      <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">13</span></td>
+      <td><strong>YEO SIATOU</strong></td>
+      <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">14</span></td>
+      <td><strong>PINGUIN ADELE</strong></td>
+      <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">15</span></td>
+      <td><strong>TOURE FRANCIS</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">16</span></td>
+      <td><strong>STEPHANE AVOHOU</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">17</span></td>
+      <td><strong>LOIC ASSIE DEFALONE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>STAGIAIRE</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">18</span></td>
+      <td><strong>GNAMIEN TOPE JEKHIEL</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>SAV</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">19</span></td>
+      <td><strong>KOUASSI STEPHANIE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">20</span></td>
+      <td><strong>KONATE FATOUMATA</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>CC</td>
+      <td>7</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-7</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">21</span></td>
+      <td><strong>KONAN ARMAND</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>6</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">22</span></td>
+      <td><strong>GLADYS</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>6</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">23</span></td>
+      <td><strong>KOFFI DANIELLE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>6</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr><tr>
+      <td><span class="rank-badge rank-other">24</span></td>
+      <td><strong>JEAN CLAUDE</strong></td>
+      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+      <td>MC</td>
+      <td>6</td>
+      <td style="font-weight:600">0</td>
+      <td style="font-weight:700;color:var(--red)">0%</td>
+      <td style="color:var(--red);font-weight:600">-6</td>
+    </tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ══ SAISIE ══════════════════════════════════════════ -->
+<div class="page" id="page-saisie">
+  <div class="card">
+    <div class="card-title">➕ Ajouter / Modifier un agent</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Franchise</label>
+        <input type="text" id="s_franchise" placeholder="ex: EO Bouaké">
+      </div>
+      <div class="form-group">
+        <label>Nom &amp; Prénoms</label>
+        <input type="text" id="s_nom" placeholder="ex: KOUASSI Jean">
+      </div>
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="text" id="s_tel" placeholder="07XXXXXXXX">
+      </div>
+      <div class="form-group">
+        <label>Poste</label>
+        <select id="s_poste">
+          <option selected="selected">CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:18px;margin-bottom:8px;font-weight:600;font-size:13px;color:var(--text2)">PACK C</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Objectif Pack C</label><input type="number" id="s_objC" min="0" placeholder="7"></div>
+      <div class="form-group"><label>Réalisé Pack C</label><input type="number" id="s_reaC" min="0" placeholder="0"></div>
+    </div>
+    <div style="margin-top:14px;margin-bottom:8px;font-weight:600;font-size:13px;color:var(--text2)">PACK S</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Objectif Pack S</label><input type="number" id="s_objS" min="0" placeholder="11"></div>
+      <div class="form-group"><label>Réalisé Pack S</label><input type="number" id="s_reaS" min="0" placeholder="0"></div>
+    </div>
+    <div style="margin-top:14px;margin-bottom:8px;font-weight:600;font-size:13px;color:var(--text2)">LTE</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Objectif LTE</label><input type="number" id="s_objL" min="0" placeholder="7"></div>
+      <div class="form-group"><label>Réalisé LTE</label><input type="number" id="s_reaL" min="0" placeholder="0"></div>
+    </div>
+    <div style="margin-top:14px;margin-bottom:8px;font-weight:600;font-size:13px;color:var(--fo)">🔵 FIBRE OPTIQUE (FO)</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Objectif FO</label><input type="number" id="s_objF" min="0" placeholder="10"></div>
+      <div class="form-group"><label>Réalisé FO</label><input type="number" id="s_reaF" min="0" placeholder="0"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="resetForm()">Réinitialiser</button>
+      <button class="btn btn-green" onclick="saveAgent()">💾 Enregistrer</button>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="section-title">AGENTS ENREGISTRÉS <span id="saisieCount">(24 agents)</span></div>
+  <div class="table-wrap">
+    <div class="table-toolbar">
+      <input class="search-input" id="saisieSearch" placeholder="🔍 Rechercher..." oninput="renderSaisieTable()">
+    </div>
+    <div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th>Franchise</th><th>Nom</th><th>Poste</th>
+        <th>R/O Pack C</th><th>R/O Pack S</th><th>R/O LTE</th><th>R/O FO 🔵</th><th>Actions</th>
+      </tr></thead>
+      <tbody id="saisieBody"><tr>
+    <td><span class="franchise-badge" style="background:#845ef722;color:#845ef7">EO Dar Es</span></td>
+    <td><strong>BENJAMIN YAO</strong><br><span style="color:var(--text2);font-size:11px">0747268228</span></td>
+    <td>STAGIAIRE</td>
+    <td style="color:var(--red);font-weight:600">14%</td>
+    <td style="color:var(--orange);font-weight:600">82%</td>
+    <td style="color:var(--green);font-weight:600">300%</td>
+    <td style="color:var(--red);font-weight:600">30%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(1)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(1)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#845ef722;color:#845ef7">EO Dar Es</span></td>
+    <td><strong>JACOB KOUASSI</strong><br><span style="color:var(--text2);font-size:11px">0778909805</span></td>
+    <td>STAGIAIRE</td>
+    <td style="color:var(--red);font-weight:600">29%</td>
+    <td style="color:var(--orange);font-weight:600">55%</td>
+    <td style="color:var(--green);font-weight:600">286%</td>
+    <td style="color:var(--orange);font-weight:600">60%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(2)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(2)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+    <td><strong>ODILON KOFFI</strong><br><span style="color:var(--text2);font-size:11px">0748705689</span></td>
+    <td>CC</td>
+    <td style="color:var(--red);font-weight:600">14%</td>
+    <td style="color:var(--red);font-weight:600">9%</td>
+    <td style="color:var(--green);font-weight:600">100%</td>
+    <td style="color:var(--red);font-weight:600">40%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(3)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(3)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+    <td><strong>YEO KIEMA</strong><br><span style="color:var(--text2);font-size:11px">0789898953</span></td>
+    <td>CC</td>
+    <td style="color:var(--red);font-weight:600">14%</td>
+    <td style="color:var(--red);font-weight:600">9%</td>
+    <td style="color:var(--green);font-weight:600">214%</td>
+    <td style="color:var(--green);font-weight:600">130%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(4)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(4)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Belle Ville</span></td>
+    <td><strong>ZOUNGRANA ALIMA</strong><br><span style="color:var(--text2);font-size:11px">0747505631</span></td>
+    <td>MC</td>
+    <td style="color:var(--red);font-weight:600">14%</td>
+    <td style="color:var(--red);font-weight:600">45%</td>
+    <td style="color:var(--orange);font-weight:600">71%</td>
+    <td style="color:var(--orange);font-weight:600">80%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(5)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(5)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+    <td><strong>COULIBALY MAMA</strong><br><span style="color:var(--text2);font-size:11px">0777464376</span></td>
+    <td>STAGIAIRE</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">36%</td>
+    <td style="color:var(--green);font-weight:600">243%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(6)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(6)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+    <td><strong>YEO SIATOU</strong><br><span style="color:var(--text2);font-size:11px">0779707771</span></td>
+    <td>STAGIAIRE</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">45%</td>
+    <td style="color:var(--green);font-weight:600">243%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(7)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(7)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Ps Dabakala</span></td>
+    <td><strong>PINGUIN ADELE</strong><br><span style="color:var(--text2);font-size:11px">0747404041</span></td>
+    <td>STAGIAIRE</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">18%</td>
+    <td style="color:var(--green);font-weight:600">243%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(8)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(8)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">Eo Katiola</span></td>
+    <td><strong>KOUADIO JOCELYNE</strong><br><span style="color:var(--text2);font-size:11px">0707175902</span></td>
+    <td>CC</td>
+    <td style="color:var(--red);font-weight:600">29%</td>
+    <td style="color:var(--green);font-weight:600">136%</td>
+    <td style="color:var(--green);font-weight:600">286%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(9)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(9)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">Eo Katiola</span></td>
+    <td><strong>FATOUMA FOFANA</strong><br><span style="color:var(--text2);font-size:11px">0747404041</span></td>
+    <td>CC</td>
+    <td style="color:var(--red);font-weight:600">29%</td>
+    <td style="color:var(--orange);font-weight:600">73%</td>
+    <td style="color:var(--green);font-weight:600">229%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(10)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(10)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>TOURE FRANCIS</strong><br><span style="color:var(--text2);font-size:11px">0708548161</span></td>
+    <td>CC</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">14%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(11)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(11)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>KOMPE FOFANA</strong><br><span style="color:var(--text2);font-size:11px">0779409986</span></td>
+    <td>CC</td>
+    <td style="color:var(--red);font-weight:600">29%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--orange);font-weight:600">57%</td>
+    <td style="color:var(--red);font-weight:600">10%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(12)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(12)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>STEPHANE AVOHOU</strong><br><span style="color:var(--text2);font-size:11px">0708144652</span></td>
+    <td>MC</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">18%</td>
+    <td style="color:var(--orange);font-weight:600">71%</td>
+    <td style="color:var(--orange);font-weight:600">60%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(13)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(13)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>GBANGBO ANNE GISELE</strong><br><span style="color:var(--text2);font-size:11px">0789906787</span></td>
+    <td>STAGIAIRE</td>
+    <td style="color:var(--red);font-weight:600">29%</td>
+    <td style="color:var(--red);font-weight:600">9%</td>
+    <td style="color:var(--green);font-weight:600">100%</td>
+    <td style="color:var(--orange);font-weight:600">50%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(14)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(14)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>LOIC ASSIE DEFALONE</strong><br><span style="color:var(--text2);font-size:11px">0747198196</span></td>
+    <td>STAGIAIRE</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">9%</td>
+    <td style="color:var(--green);font-weight:600">129%</td>
+    <td style="color:var(--orange);font-weight:600">50%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(15)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(15)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>KONE KARIDJATOU</strong><br><span style="color:var(--text2);font-size:11px">0797329538</span></td>
+    <td>STAGIAIRE</td>
+    <td style="color:var(--red);font-weight:600">14%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--green);font-weight:600">100%</td>
+    <td style="color:var(--orange);font-weight:600">90%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(16)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(16)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>SEKONGO</strong><br><span style="color:var(--text2);font-size:11px">0747031104</span></td>
+    <td>MC</td>
+    <td style="color:var(--red);font-weight:600">29%</td>
+    <td style="color:var(--red);font-weight:600">27%</td>
+    <td style="color:var(--orange);font-weight:600">57%</td>
+    <td style="color:var(--orange);font-weight:600">80%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(17)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(17)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>GNAMIEN TOPE JEKHIEL</strong><br><span style="color:var(--text2);font-size:11px">0747901081</span></td>
+    <td>SAV</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">10%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(18)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(18)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>KOUASSI STEPHANIE</strong><br><span style="color:var(--text2);font-size:11px">0709502628</span></td>
+    <td>CC</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(19)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(19)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>KONATE FATOUMATA</strong><br><span style="color:var(--text2);font-size:11px">0708759382</span></td>
+    <td>CC</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">40%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(20)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(20)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>KONAN ARMAND</strong><br><span style="color:var(--text2);font-size:11px">0777667033</span></td>
+    <td>MC</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">29%</td>
+    <td style="color:var(--red);font-weight:600">30%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(21)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(21)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>GLADYS</strong><br><span style="color:var(--text2);font-size:11px">0768799509</span></td>
+    <td>MC</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">14%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(22)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(22)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>KOFFI DANIELLE</strong><br><span style="color:var(--text2);font-size:11px">0777676962</span></td>
+    <td>MC</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">14%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(23)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(23)">🗑</button>
+    </td>
+  </tr><tr>
+    <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">EO Bouaké</span></td>
+    <td><strong>JEAN CLAUDE</strong><br><span style="color:var(--text2);font-size:11px">0707689444</span></td>
+    <td>MC</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td style="color:var(--red);font-weight:600">9%</td>
+    <td style="color:var(--red);font-weight:600">29%</td>
+    <td style="color:var(--red);font-weight:600">0%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(24)">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(24)">🗑</button>
+    </td>
+  </tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ══ IMPORT ══════════════════════════════════════════ -->
+<div class="page" id="page-import">
+  <div class="card">
+    <div class="card-title">📥 Importer un fichier Excel / CSV</div>
+    <div class="import-zone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+      <div class="import-icon">📂</div>
+      <div class="import-text">Cliquez ou glissez votre fichier ici<br><strong>.xlsx / .xls / .csv</strong></div>
+    </div>
+    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="handleFile(this.files[0])">
+    <div id="importStatus" style="margin-top:14px;font-size:13px;color:var(--text2)"></div>
+  </div>
+
+  <div class="card" style="margin-top:0">
+    <div class="card-title" style="font-size:16px;font-family:Outfit;font-weight:700">📋 Format attendu pour CSV</div>
+    <div style="background:var(--surface);border-radius:8px;padding:14px;font-size:12px;font-family:monospace;color:var(--text2);overflow-x:auto">
+      Franchise,Nom,Telephone,Poste,ObjC,ReaC,ObjS,ReaS,ObjL,ReaL,ObjF,ReaF<br>
+      EO Dar Es,BENJAMIN YAO,0747268228,STAGIAIRE,7,1,11,9,7,21,10,3<br>
+      EO Bouaké,TOURE FRANCIS,0708548161,CC,7,0,11,0,7,1,10,0
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--text2)">
+      💡 Téléchargez d'abord ce modèle, remplissez-le, puis importez-le.
+    </div>
+    <div class="form-actions" style="margin-top:12px">
+      <button class="btn btn-primary" onclick="downloadTemplate()">⬇️ Télécharger le modèle CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SAUVEGARDE ══════════════════════════════════════════ -->
+<div class="page" id="page-sauvegarde">
+
+  <!-- Sauvegarde manuelle -->
+  <div class="card">
+    <div class="card-title">💾 Sauvegarde &amp; Restauration des données</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.7">
+      Vos données sont automatiquement sauvegardées dans ce navigateur.<br>
+      Pour éviter toute perte (changement de PC, effacement du cache), exportez régulièrement un fichier de sauvegarde.
+    </div>
+    <div class="form-grid" style="max-width:600px">
+      <div class="form-group">
+        <label>Nom de la sauvegarde</label>
+        <input type="text" id="backupName" placeholder="ex: Semaine 13 - Avril 2025">
+      </div>
+    </div>
+    <div class="form-actions" style="justify-content:flex-start;margin-top:14px;gap:12px">
+      <button class="btn btn-green" onclick="exportBackup()">⬇️ Exporter la sauvegarde (.json)</button>
+      <button class="btn btn-primary" onclick="document.getElementById('restoreInput').click()">📂 Restaurer depuis un fichier</button>
+      <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="importBackup(this.files[0])">
+    </div>
+    <div id="backupStatus" style="margin-top:14px;font-size:13px"></div>
+  </div>
+
+  <!-- Historique local -->
+  <div class="card">
+    <div class="card-title" style="font-size:18px">🕒 Historique des sauvegardes automatiques</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">
+      Les 5 dernières versions sont conservées automatiquement dans ce navigateur.
+    </div>
+    <div id="historyList"></div>
+    <div style="margin-top:14px">
+      <button class="btn btn-outline btn-sm" onclick="renderHistory()">🔄 Rafraîchir</button>
+    </div>
+  </div>
+
+  <!-- État de la sauvegarde automatique -->
+  <div class="card">
+    <div class="card-title" style="font-size:18px">🔐 Statut de la persistance</div>
+    <div id="storageStatus" style="font-size:13px;line-height:2"></div>
+  </div>
+
+</div>
+
+<script src="Pilotage%20%C3%89quipe_fichiers/papaparse.min.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCcQjau_9rslKmLBYl44de3yyP6HiIJaFs",
+    authDomain: "pilotageequipe.firebaseapp.com",
+    projectId: "pilotageequipe",
+    storageBucket: "pilotageequipe.firebasestorage.app",
+    messagingSenderId: "390443109868",
+    appId: "1:390443109868:web:b22f902f8f512b3a5f1e8d",
+    measurementId: "G-3HQ3PD0XD0",
+    databaseURL: "https://pilotageequipe-default-rtdb.firebaseio.com"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const agentsRef = ref(db, 'agents');
+
+  // Surcharge save pour écrire dans Firebase
+  window.firebaseSave = function(data) {
+    set(agentsRef, data).then(() => {
+      showSyncStatus('✅ Synchronisé avec le cloud', 'var(--green)');
+    }).catch(err => {
+      showSyncStatus('⚠️ Erreur sync: ' + err.message, 'var(--red)');
+    });
+  };
+
+  // Écouter les changements en temps réel
+  onValue(agentsRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data && Array.isArray(data) && data.length > 0) {
+      window.agents = data;
+      if (typeof renderAll === 'function') renderAll();
+      showSyncStatus('🔄 Données mises à jour en temps réel', 'var(--blue)');
+    }
+  });
+
+  function showSyncStatus(msg, color) {
+    let el = document.getElementById('syncStatus');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = color;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 3000);
+  }
+</script>
+<script>
+// ── State ──────────────────────────────────────────────────────────
+// ── Persistance avancée ────────────────────────────────────────────
+const STORAGE_KEY = 'pilot_agents';
+const HISTORY_KEY = 'pilot_history';
+const MAX_HISTORY = 5;
+
+let agents = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let activePack = 'packc';
+let dashSort = { col: 'ro', dir: -1 };
+let editId = null;
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(agents));
+  autoSnapshot();
+  // Sync vers Firebase cloud
+  if (typeof window.firebaseSave === 'function') {
+    window.firebaseSave(agents);
+  }
+}
+
+function autoSnapshot() {
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const snap = {
+      ts: new Date().toISOString(),
+      label: 'Auto – ' + new Date().toLocaleString('fr-FR'),
+      count: agents.length,
+      data: JSON.stringify(agents)
+    };
+    history.unshift(snap);
+    if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch(e) {}
+}
+
+function exportBackup() {
+  const name = document.getElementById('backupName').value.trim() || 'pilotage-backup';
+  const payload = { version: 2, label: name, exportedAt: new Date().toISOString(), agents: agents };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = 'pilotage-' + date + '-' + name.replace(/\s+/g,'-').toLowerCase() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('backupStatus').innerHTML =
+    '<span style="color:var(--green)">✅ Fichier téléchargé avec <strong>' + agents.length + ' agents</strong>. Conservez-le précieusement !</span>';
+}
+
+function importBackup(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const payload = JSON.parse(e.target.result);
+      const imported = payload.agents || payload;
+      if (!Array.isArray(imported) || imported.length === 0) throw new Error('Format invalide');
+      const lbl = payload.label || file.name;
+      if (!confirm('Restaurer ' + imported.length + ' agents depuis "' + lbl + '" ?\nLes données actuelles seront remplacées.')) return;
+      agents = imported;
+      save(); renderAll(); renderHistory(); renderStorageStatus();
+      document.getElementById('backupStatus').innerHTML =
+        '<span style="color:var(--green)">✅ Restauration réussie : <strong>' + agents.length + ' agents</strong> chargés.</span>';
+    } catch(err) {
+      document.getElementById('backupStatus').innerHTML =
+        '<span style="color:var(--red)">❌ Fichier invalide. Utilisez uniquement un fichier exporté depuis cette application.</span>';
+    }
+  };
+  reader.readAsText(file);
+}
+
+function restoreSnapshot(idx) {
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const snap = history[idx];
+    if (!snap) return;
+    if (!confirm('Restaurer la version du ' + snap.label + ' (' + snap.count + ' agents) ?')) return;
+    agents = JSON.parse(snap.data);
+    save(); renderAll(); renderHistory(); renderStorageStatus();
+    alert('✅ Version restaurée avec succès !');
+  } catch(e) { alert('Erreur lors de la restauration.'); }
+}
+
+function renderHistory() {
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const el = document.getElementById('historyList');
+    if (!el) return;
+    if (history.length === 0) {
+      el.innerHTML = '<div style="color:var(--text2);font-size:13px">Aucun historique disponible.</div>';
+      return;
+    }
+    el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:var(--surface)"><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--text2)">Date</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--text2)">Agents</th><th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--text2)">Action</th></tr></thead><tbody>' +
+      history.map(function(s,i) {
+        return '<tr style="border-top:1px solid var(--border)"><td style="padding:9px 12px">' + s.label + '</td><td style="padding:9px 12px;font-weight:600">' + s.count + '</td><td style="padding:9px 12px"><button class="btn btn-outline btn-sm" onclick="restoreSnapshot(' + i + ')">↩️ Restaurer</button></td></tr>';
+      }).join('') + '</tbody></table>';
+  } catch(e) {}
+}
+
+function renderStorageStatus() {
+  const el = document.getElementById('storageStatus');
+  if (!el) return;
+  const stored = localStorage.getItem(STORAGE_KEY);
+  const size = stored ? (new Blob([stored]).size / 1024).toFixed(1) : 0;
+  const last = (function() {
+    try {
+      const h = JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
+      return h.length ? new Date(h[0].ts).toLocaleString('fr-FR') : 'Jamais';
+    } catch(e) { return 'Inconnu'; }
+  })();
+  el.innerHTML = '<div>📦 <strong>Stockage local :</strong> ' + agents.length + ' agents — ' + size + ' Ko utilisés</div><div>🕐 <strong>Dernière sauvegarde auto :</strong> ' + last + '</div><div>🌐 <strong>Navigateur :</strong> Les données persistent même après fermeture du navigateur</div><div style="margin-top:10px;padding:10px 14px;background:#fff8e1;border-radius:8px;font-size:12px;color:#7a6000;border-left:3px solid var(--yellow)">⚠️ <strong>Attention :</strong> Les données sont liées à ce navigateur et cet appareil. Si vous changez de PC ou videz le cache, exportez d\'abord une sauvegarde .json.</div>';
+}
+
+// Seed data from screenshots
+if (agents.length === 0) {
+  agents = [
+    {id:1,franchise:'EO Dar Es',nom:'BENJAMIN YAO',tel:'0747268228',poste:'STAGIAIRE',objC:7,reaC:1,objS:11,reaS:9,objL:7,reaL:21,objF:10,reaF:3},
+    {id:2,franchise:'EO Dar Es',nom:'JACOB KOUASSI',tel:'0778909805',poste:'STAGIAIRE',objC:7,reaC:2,objS:11,reaS:6,objL:7,reaL:20,objF:10,reaF:6},
+    {id:3,franchise:'EO Belle Ville',nom:'ODILON KOFFI',tel:'0748705689',poste:'CC',objC:7,reaC:1,objS:11,reaS:1,objL:7,reaL:7,objF:10,reaF:4},
+    {id:4,franchise:'EO Belle Ville',nom:'YEO KIEMA',tel:'0789898953',poste:'CC',objC:7,reaC:1,objS:11,reaS:1,objL:7,reaL:15,objF:10,reaF:13},
+    {id:5,franchise:'EO Belle Ville',nom:'ZOUNGRANA ALIMA',tel:'0747505631',poste:'MC',objC:7,reaC:1,objS:11,reaS:5,objL:7,reaL:5,objF:10,reaF:8},
+    {id:6,franchise:'Ps Dabakala',nom:'COULIBALY MAMA',tel:'0777464376',poste:'STAGIAIRE',objC:7,reaC:0,objS:11,reaS:4,objL:7,reaL:17,objF:10,reaF:0},
+    {id:7,franchise:'Ps Dabakala',nom:'YEO SIATOU',tel:'0779707771',poste:'STAGIAIRE',objC:7,reaC:0,objS:11,reaS:5,objL:7,reaL:17,objF:10,reaF:0},
+    {id:8,franchise:'Ps Dabakala',nom:'PINGUIN ADELE',tel:'0747404041',poste:'STAGIAIRE',objC:7,reaC:0,objS:11,reaS:2,objL:7,reaL:17,objF:10,reaF:0},
+    {id:9,franchise:'Eo Katiola',nom:'KOUADIO JOCELYNE',tel:'0707175902',poste:'CC',objC:7,reaC:2,objS:11,reaS:15,objL:7,reaL:20,objF:10,reaF:0},
+    {id:10,franchise:'Eo Katiola',nom:'FATOUMA FOFANA',tel:'0747404041',poste:'CC',objC:7,reaC:2,objS:11,reaS:8,objL:7,reaL:16,objF:10,reaF:0},
+    {id:11,franchise:'EO Bouaké',nom:'TOURE FRANCIS',tel:'0708548161',poste:'CC',objC:7,reaC:0,objS:11,reaS:0,objL:7,reaL:1,objF:10,reaF:0},
+    {id:12,franchise:'EO Bouaké',nom:'KOMPE FOFANA',tel:'0779409986',poste:'CC',objC:7,reaC:2,objS:11,reaS:0,objL:7,reaL:4,objF:10,reaF:1},
+    {id:13,franchise:'EO Bouaké',nom:'STEPHANE AVOHOU',tel:'0708144652',poste:'MC',objC:7,reaC:0,objS:11,reaS:2,objL:7,reaL:5,objF:10,reaF:6},
+    {id:14,franchise:'EO Bouaké',nom:'GBANGBO ANNE GISELE',tel:'0789906787',poste:'STAGIAIRE',objC:7,reaC:2,objS:11,reaS:1,objL:7,reaL:7,objF:10,reaF:5},
+    {id:15,franchise:'EO Bouaké',nom:'LOIC ASSIE DEFALONE',tel:'0747198196',poste:'STAGIAIRE',objC:7,reaC:0,objS:11,reaS:1,objL:7,reaL:9,objF:10,reaF:5},
+    {id:16,franchise:'EO Bouaké',nom:'KONE KARIDJATOU',tel:'0797329538',poste:'STAGIAIRE',objC:7,reaC:1,objS:11,reaS:0,objL:7,reaL:7,objF:10,reaF:9},
+    {id:17,franchise:'EO Bouaké',nom:'SEKONGO',tel:'0747031104',poste:'MC',objC:7,reaC:2,objS:11,reaS:3,objL:7,reaL:4,objF:10,reaF:8},
+    {id:18,franchise:'EO Bouaké',nom:'GNAMIEN TOPE JEKHIEL',tel:'0747901081',poste:'SAV',objC:7,reaC:0,objS:11,reaS:0,objL:7,reaL:0,objF:10,reaF:1},
+    {id:19,franchise:'EO Bouaké',nom:'KOUASSI STEPHANIE',tel:'0709502628',poste:'CC',objC:7,reaC:0,objS:11,reaS:0,objL:7,reaL:0,objF:10,reaF:0},
+    {id:20,franchise:'EO Bouaké',nom:'KONATE FATOUMATA',tel:'0708759382',poste:'CC',objC:7,reaC:0,objS:11,reaS:0,objL:7,reaL:0,objF:10,reaF:4},
+    {id:21,franchise:'EO Bouaké',nom:'KONAN ARMAND',tel:'0777667033',poste:'MC',objC:6,reaC:0,objS:11,reaS:0,objL:7,reaL:2,objF:10,reaF:3},
+    {id:22,franchise:'EO Bouaké',nom:'GLADYS',tel:'0768799509',poste:'MC',objC:6,reaC:0,objS:11,reaS:0,objL:7,reaL:1,objF:10,reaF:0},
+    {id:23,franchise:'EO Bouaké',nom:'KOFFI DANIELLE',tel:'0777676962',poste:'MC',objC:6,reaC:0,objS:11,reaS:0,objL:7,reaL:1,objF:10,reaF:0},
+    {id:24,franchise:'EO Bouaké',nom:'JEAN CLAUDE',tel:'0707689444',poste:'MC',objC:6,reaC:0,objS:11,reaS:1,objL:7,reaL:2,objF:10,reaF:0},
+  ];
+  save();
+}
+
+// ── Helpers ────────────────────────────────────────────────────────
+function ro(rea, obj) { return obj > 0 ? Math.round((rea/obj)*100) : 0; }
+function reste(rea, obj) { return rea - obj; }
+function getPackData(a, pack) {
+  if (pack === 'packc') return { obj:a.objC, rea:a.reaC, ro:ro(a.reaC,a.objC), reste:reste(a.reaC,a.objC) };
+  if (pack === 'packs') return { obj:a.objS, rea:a.reaS, ro:ro(a.reaS,a.objS), reste:reste(a.reaS,a.objS) };
+  if (pack === 'lte')   return { obj:a.objL, rea:a.reaL, ro:ro(a.reaL,a.objL), reste:reste(a.reaL,a.objL) };
+  return { obj:a.objF||10, rea:a.reaF||0, ro:ro(a.reaF||0,a.objF||10), reste:reste(a.reaF||0,a.objF||10) };
+}
+function roColor(r) {
+  if (r >= 100) return 'var(--green)';
+  if (r >= 50) return 'var(--orange)';
+  return 'var(--red)';
+}
+function fColor(f) {
+  const map = {'EO Dar Es':'#845ef7','EO Belle Ville':'#3a7bd5','Eo Katiola':'#ff8c42','Ps Dabakala':'#00c48c','EO Bouaké':'#ff4757'};
+  return map[f] || '#6b7a99';
+}
+function franchises() { return [...new Set(agents.map(a => a.franchise))].sort(); }
+
+// ── KPIs ───────────────────────────────────────────────────────────
+function renderKPIs() {
+  const total = agents.length;
+  const alertCount = agents.filter(a => getPackData(a, activePack).rea === 0).length;
+  const above100 = agents.filter(a => getPackData(a, activePack).ro >= 100).length;
+  const avgRo = total ? Math.round(agents.reduce((s,a) => s + getPackData(a, activePack).ro, 0) / total) : 0;
+  const packLabel = activePack === 'packc' ? 'Pack C' : activePack === 'packs' ? 'Pack S' : activePack === 'lte' ? 'LTE' : 'Fibre (FO)';
+
+  document.getElementById('kpiRow').innerHTML = `
+    <div class="kpi blue"><div class="kpi-label">Agents total</div><div class="kpi-value" style="color:var(--blue)">${total}</div><div class="kpi-sub">dans l'équipe</div></div>
+    <div class="kpi green"><div class="kpi-label">≥ 100% ${packLabel}</div><div class="kpi-value" style="color:var(--green)">${above100}</div><div class="kpi-sub">objectif atteint</div></div>
+    <div class="kpi orange"><div class="kpi-label">Moyenne R/O</div><div class="kpi-value" style="color:var(--orange)">${avgRo}%</div><div class="kpi-sub">${packLabel}</div></div>
+    <div class="kpi red"><div class="kpi-label">Alertes 0%</div><div class="kpi-value" style="color:var(--red)">${alertCount}</div><div class="kpi-sub">agents sans réalisation</div></div>
+    <div class="kpi purple"><div class="kpi-label">Franchises</div><div class="kpi-value" style="color:var(--purple)">${franchises().length}</div><div class="kpi-sub">zones pilotées</div></div>
+  `;
+
+  // Alert count
+  document.getElementById('alertCount').textContent = alertCount;
+  renderAlerts();
+}
+
+function renderAlerts() {
+  const list = agents.filter(a => getPackData(a, activePack).rea === 0);
+  document.getElementById('alertPanelCount').textContent = `(${list.length})`;
+  document.getElementById('alertList').innerHTML = list.length === 0
+    ? '<div style="padding:20px;text-align:center;color:var(--text2)">✅ Aucune alerte</div>'
+    : list.map(a => `<div class="alert-item">
+        <div class="alert-dot"></div>
+        <div>
+          <div class="alert-item-name">${a.nom}</div>
+          <div class="alert-item-detail">${a.franchise} · ${a.poste} · 0 réalisation</div>
+        </div>
+      </div>`).join('');
+}
+
+// ── Dashboard table ────────────────────────────────────────────────
+function renderDashTable() {
+  const search = document.getElementById('dashSearch').value.toLowerCase();
+  const frFilter = document.getElementById('dashFranchise').value;
+  const posteFilter = document.getElementById('dashPoste').value;
+
+  // Populate franchise filter
+  const sel = document.getElementById('dashFranchise');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Toutes franchises</option>' +
+    franchises().map(f => `<option ${f===cur?'selected':''}>${f}</option>`).join('');
+
+  let list = agents.filter(a => {
+    const pd = getPackData(a, activePack);
+    const s = (a.nom+a.franchise+a.poste).toLowerCase();
+    return s.includes(search) && (!frFilter || a.franchise===frFilter) && (!posteFilter || a.poste===posteFilter);
+  });
+
+  // Sort
+  list.sort((a, b) => {
+    const pa = getPackData(a, activePack), pb = getPackData(b, activePack);
+    if (dashSort.col === 'ro') return (pa.ro - pb.ro) * dashSort.dir;
+    if (dashSort.col === 'rea') return (pa.rea - pb.rea) * dashSort.dir;
+    if (dashSort.col === 'reste') return (pa.reste - pb.reste) * dashSort.dir;
+    if (dashSort.col === 'nom') return a.nom.localeCompare(b.nom) * dashSort.dir;
+    return 0;
+  });
+
+  // Rank based on sorted RO
+  const sorted = [...agents].sort((a,b) => getPackData(b,activePack).ro - getPackData(a,activePack).ro);
+  const rankMap = {};
+  sorted.forEach((a,i) => rankMap[a.id] = i+1);
+
+  const cols = [
+    {key:'nom',label:'Agent'},{key:'franchise',label:'Franchise'},{key:'poste',label:'Poste'},
+    {key:'obj',label:'Objectif'},{key:'rea',label:'Réalisé'},{key:'ro',label:'R/O'},
+    {key:'reste',label:'Reste à faire'},{key:'rang',label:'Rang'}
+  ];
+  document.getElementById('dashHead').innerHTML = cols.map(c =>
+    `<th onclick="sortDash('${c.key}')">${c.label} ${dashSort.col===c.key?(dashSort.dir===1?'↑':'↓'):''}</th>`
+  ).join('');
+
+  document.getElementById('dashBody').innerHTML = list.map(a => {
+    const pd = getPackData(a, activePack);
+    const rank = rankMap[a.id];
+    const isAlert = pd.rea === 0;
+    const rankCls = rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-other';
+    const barW = Math.min(pd.ro, 150);
+    return `<tr class="${isAlert?'alert-row':''}">
+      <td>${isAlert?'<span class="alert-icon">⚠️</span> ':''}<strong>${a.nom}</strong></td>
+      <td><span class="franchise-badge" style="background:${fColor(a.franchise)}22;color:${fColor(a.franchise)}">${a.franchise}</span></td>
+      <td>${a.poste}</td>
+      <td>${pd.obj}</td>
+      <td style="font-weight:600">${pd.rea}</td>
+      <td>
+        <div class="ro-bar-wrap">
+          <div class="ro-bar"><div class="ro-fill" style="width:${Math.min(barW,100)}%;background:${roColor(pd.ro)}"></div></div>
+          <span class="ro-pct" style="color:${roColor(pd.ro)}">${pd.ro}%</span>
+        </div>
+      </td>
+      <td style="font-weight:600;color:${pd.reste>=0?'var(--green)':'var(--red)'}">${pd.reste>=0?'+':''}${pd.reste}</td>
+      <td><span class="rank-badge ${rankCls}">${rank}e</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function sortDash(col) {
+  if (dashSort.col === col) dashSort.dir *= -1;
+  else { dashSort.col = col; dashSort.dir = -1; }
+  renderDashTable();
+}
+
+// ── Classement ────────────────────────────────────────────────────
+function renderClassement() {
+  const sorted = [...agents].sort((a,b) => getPackData(b,activePack).ro - getPackData(a,activePack).ro);
+  const top3 = sorted.slice(0,3);
+  const medals = ['🥇','🥈','🥉'];
+  const cls = ['p1','p2','p3'];
+  document.getElementById('podium').innerHTML = top3.map((a,i) => {
+    const pd = getPackData(a,activePack);
+    return `<div class="podium-item ${cls[i]}">
+      <div class="podium-medal">${medals[i]}</div>
+      <div class="podium-name">${a.nom}</div>
+      <div class="podium-franchise">${a.franchise}</div>
+      <div class="podium-score" style="color:${roColor(pd.ro)}">${pd.ro}%</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('rankBody').innerHTML = sorted.map((a,i) => {
+    const pd = getPackData(a,activePack);
+    const rankCls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';
+    return `<tr>
+      <td><span class="rank-badge ${rankCls}">${i+1}</span></td>
+      <td><strong>${a.nom}</strong></td>
+      <td><span class="franchise-badge" style="background:${fColor(a.franchise)}22;color:${fColor(a.franchise)}">${a.franchise}</span></td>
+      <td>${a.poste}</td>
+      <td>${pd.obj}</td>
+      <td style="font-weight:600">${pd.rea}</td>
+      <td style="font-weight:700;color:${roColor(pd.ro)}">${pd.ro}%</td>
+      <td style="color:${pd.reste>=0?'var(--green)':'var(--red)'};font-weight:600">${pd.reste>=0?'+':''}${pd.reste}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Saisie ────────────────────────────────────────────────────────
+function renderSaisieTable() {
+  const search = document.getElementById('saisieSearch').value.toLowerCase();
+  const list = agents.filter(a => (a.nom+a.franchise).toLowerCase().includes(search));
+  document.getElementById('saisieCount').textContent = `(${agents.length} agents)`;
+  document.getElementById('saisieBody').innerHTML = list.map(a => `<tr>
+    <td><span class="franchise-badge" style="background:${fColor(a.franchise)}22;color:${fColor(a.franchise)}">${a.franchise}</span></td>
+    <td><strong>${a.nom}</strong><br><span style="color:var(--text2);font-size:11px">${a.tel}</span></td>
+    <td>${a.poste}</td>
+    <td style="color:${roColor(ro(a.reaC,a.objC))};font-weight:600">${ro(a.reaC,a.objC)}%</td>
+    <td style="color:${roColor(ro(a.reaS,a.objS))};font-weight:600">${ro(a.reaS,a.objS)}%</td>
+    <td style="color:${roColor(ro(a.reaL,a.objL))};font-weight:600">${ro(a.reaL,a.objL)}%</td>
+    <td style="color:${roColor(ro(a.reaF||0,a.objF||10))};font-weight:600">${ro(a.reaF||0,a.objF||10)}%</td>
+    <td>
+      <button class="btn btn-outline btn-sm" onclick="editAgent(${a.id})">✏️</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;margin-left:4px" onclick="deleteAgent(${a.id})">🗑</button>
+    </td>
+  </tr>`).join('');
+}
+
+function editAgent(id) {
+  const a = agents.find(x => x.id === id);
+  if (!a) return;
+  editId = id;
+  document.getElementById('s_franchise').value = a.franchise;
+  document.getElementById('s_nom').value = a.nom;
+  document.getElementById('s_tel').value = a.tel;
+  document.getElementById('s_poste').value = a.poste;
+  document.getElementById('s_objC').value = a.objC;
+  document.getElementById('s_reaC').value = a.reaC;
+  document.getElementById('s_objS').value = a.objS;
+  document.getElementById('s_reaS').value = a.reaS;
+  document.getElementById('s_objL').value = a.objL;
+  document.getElementById('s_reaL').value = a.reaL;
+  document.getElementById('s_objF').value = a.objF||10;
+  document.getElementById('s_reaF').value = a.reaF||0;
+  window.scrollTo(0,0);
+}
+
+function saveAgent() {
+  const nom = document.getElementById('s_nom').value.trim();
+  if (!nom) { alert('Le nom est requis.'); return; }
+  const a = {
+    franchise: document.getElementById('s_franchise').value.trim() || 'Non défini',
+    nom, tel: document.getElementById('s_tel').value.trim(),
+    poste: document.getElementById('s_poste').value,
+    objC: +document.getElementById('s_objC').value||7,
+    reaC: +document.getElementById('s_reaC').value||0,
+    objS: +document.getElementById('s_objS').value||11,
+    reaS: +document.getElementById('s_reaS').value||0,
+    objL: +document.getElementById('s_objL').value||7,
+    reaL: +document.getElementById('s_reaL').value||0,
+    objF: +document.getElementById('s_objF').value||10,
+    reaF: +document.getElementById('s_reaF').value||0,
+  };
+  if (editId) {
+    const idx = agents.findIndex(x => x.id === editId);
+    agents[idx] = { ...agents[idx], ...a };
+    editId = null;
+  } else {
+    agents.push({ id: Date.now(), ...a });
+  }
+  save(); resetForm(); renderAll();
+}
+
+function deleteAgent(id) {
+  if (!confirm('Supprimer cet agent ?')) return;
+  agents = agents.filter(a => a.id !== id);
+  save(); renderAll();
+}
+
+function resetForm() {
+  editId = null;
+  ['s_franchise','s_nom','s_tel','s_objC','s_reaC','s_objS','s_reaS','s_objL','s_reaL','s_objF','s_reaF'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+// ── Import CSV ────────────────────────────────────────────────────
+function handleDrop(e) {
+  e.preventDefault();
+  document.querySelector('.import-zone').classList.remove('drag');
+  handleFile(e.dataTransfer.files[0]);
+}
+function handleFile(file) {
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'csv') {
+    Papa.parse(file, {
+      header: true, skipEmptyLines: true,
+      complete: (r) => importRows(r.data)
+    });
+  } else {
+    document.getElementById('importStatus').innerHTML = '⚠️ Format .xlsx non encore pris en charge ici. Utilisez le format CSV.';
+  }
+}
+function importRows(rows) {
+  let added = 0, updated = 0;
+  rows.forEach(r => {
+    if (!r.Nom) return;
+    const existing = agents.find(a => a.nom === r.Nom.trim());
+    const obj = {
+      franchise: r.Franchise||'', nom: r.Nom.trim(), tel: r.Telephone||'',
+      poste: r.Poste||'CC',
+      objC:+r.ObjC||7, reaC:+r.ReaC||0,
+      objS:+r.ObjS||11, reaS:+r.ReaS||0,
+      objL:+r.ObjL||7, reaL:+r.ReaL||0,
+      objF:+r.ObjF||10, reaF:+r.ReaF||0,
+    };
+    if (existing) { Object.assign(existing, obj); updated++; }
+    else { agents.push({ id: Date.now()+Math.random(), ...obj }); added++; }
+  });
+  save(); renderAll();
+  document.getElementById('importStatus').innerHTML =
+    `✅ Import réussi : <strong>${added}</strong> ajouté(s), <strong>${updated}</strong> mis à jour.`;
+}
+
+function downloadTemplate() {
+  const csv = 'Franchise,Nom,Telephone,Poste,ObjC,ReaC,ObjS,ReaS,ObjL,ReaL,ObjF,ReaF\nEO Exemple,NOM PRENOM,07XXXXXXXX,CC,7,0,11,0,7,0,10,0\n';
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'modele_import.csv'; a.click();
+}
+
+// ── Pack switch ────────────────────────────────────────────────────
+function setActivePack(pack, el, forClassement) {
+  activePack = pack;
+  const parent = el.closest('.pack-tabs');
+  parent.querySelectorAll('.pack-tab').forEach(t => t.className = 'pack-tab');
+  el.classList.add(`active-${pack}`);
+  renderAll();
+}
+
+// ── Navigation ────────────────────────────────────────────────────
+function goTo(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('alertPanel').classList.remove('open');
+  if (page === 'sauvegarde') { renderHistory(); renderStorageStatus(); }
+  else renderAll();
+}
+
+function toggleAlerts() {
+  document.getElementById('alertPanel').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.alert-bell') && !e.target.closest('.alert-panel'))
+    document.getElementById('alertPanel').classList.remove('open');
+});
+
+// ── Render all ────────────────────────────────────────────────────
+function renderAll() {
+  renderKPIs();
+  renderDashTable();
+  renderClassement();
+  renderSaisieTable();
+}
+
+renderAll();
+</script>
+
+
+<deepl-input-controller translate="no"></deepl-input-controller></body></html>
