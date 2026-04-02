@@ -1,2270 +1,725 @@
 <!DOCTYPE html>
-<html lang="fr"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pilotage Équipe</title>
-<link href="Pilotage%20equipe%20ok_fichiers/css2.css" rel="stylesheet">
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pilotage Équipe – Avril 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bg: #f0f2f5;
-  --white: #ffffff;
-  --surface: #f8f9fb;
-  --border: #e2e6ed;
-  --text: #1a2233;
-  --text2: #6b7a99;
-  --green: #00c48c;
-  --orange: #ff8c42;
-  --red: #ff4757;
-  --blue: #3a7bd5;
-  --yellow: #ffd166;
-  --purple: #845ef7;
-  --navy: #1a2233;
-  --fo: #00b4d8;
+:root{
+  --bg:#0f1117;--surface:#181c27;--surface2:#1e2333;--border:#2a2f45;
+  --accent:#f97316;--accent2:#3b82f6;--green:#22c55e;--red:#ef4444;
+  --yellow:#eab308;--text:#e8ecf4;--muted:#8892aa;
+  --font:'DM Sans',sans-serif;--mono:'Space Mono',monospace;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; font-size:14px; }
-
-/* ── Top nav ── */
-.nav {
-  background:var(--navy);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 28px; height:56px; position:sticky; top:0; z-index:100;
-}
-.nav-logo { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:2px; color:#fff; }
-.nav-logo span { color:var(--green); }
-.nav-tabs { display:flex; gap:4px; }
-.nav-tab {
-  padding:6px 16px; border-radius:6px; cursor:pointer; font-size:13px;
-  color:rgba(255,255,255,0.55); border:none; background:transparent; font-family:'Outfit',sans-serif;
-  transition:all 0.2s;
-}
-.nav-tab:hover { color:#fff; background:rgba(255,255,255,0.08); }
-.nav-tab.active { color:#fff; background:rgba(255,255,255,0.13); font-weight:600; }
-.nav-right { display:flex; align-items:center; gap:10px; }
-.alert-bell {
-  position:relative; cursor:pointer; color:rgba(255,255,255,0.7);
-  font-size:20px; padding:4px;
-}
-.alert-count {
-  position:absolute; top:-2px; right:-2px;
-  background:var(--red); color:#fff; border-radius:10px;
-  font-size:9px; font-weight:700; padding:1px 5px; min-width:16px; text-align:center;
-}
-
-/* ── Layout ── */
-.page { display:none; padding:24px 28px; max-width:1300px; margin:0 auto; animation:fadeUp 0.3s ease; }
-.page.active { display:block; }
-
-/* ── KPI bar ── */
-.kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; margin-bottom:24px; }
-.kpi {
-  background:var(--white); border-radius:14px; padding:18px 20px;
-  border:1px solid var(--border); position:relative; overflow:hidden;
-}
-.kpi::before {
-  content:''; position:absolute; top:0; left:0; width:4px; height:100%; border-radius:4px 0 0 4px;
-}
-.kpi.green::before { background:var(--green); }
-.kpi.orange::before { background:var(--orange); }
-.kpi.red::before { background:var(--red); }
-.kpi.blue::before { background:var(--blue); }
-.kpi.purple::before { background:var(--purple); }
-.kpi-label { font-size:11px; text-transform:uppercase; letter-spacing:0.8px; color:var(--text2); margin-bottom:6px; }
-.kpi-value { font-family:'Bebas Neue',sans-serif; font-size:36px; line-height:1; }
-.kpi-sub { font-size:11px; color:var(--text2); margin-top:4px; }
-
-/* ── Section title ── */
-.section-title {
-  font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1.5px;
-  color:var(--navy); margin-bottom:14px; display:flex; align-items:center; gap:10px;
-}
-.section-title span { font-family:'Outfit',sans-serif; font-size:12px; color:var(--text2); font-weight:400; letter-spacing:0; }
-
-/* ── Pack selector ── */
-.pack-tabs { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
-.pack-tab {
-  padding:7px 18px; border-radius:20px; cursor:pointer; font-size:13px; font-weight:600;
-  border:2px solid var(--border); background:var(--white); color:var(--text2);
-  transition:all 0.2s; font-family:'Outfit',sans-serif;
-}
-.pack-tab.active-packc { border-color:var(--orange); color:var(--orange); background:#fff5ee; }
-.pack-tab.active-packs { border-color:var(--blue); color:var(--blue); background:#eef4ff; }
-.pack-tab.active-lte { border-color:var(--green); color:var(--green); background:#edfaf4; }
-.pack-tab.active-fo  { border-color:var(--fo);   color:var(--fo);   background:#e8f8fc; }
-
-/* ── Table ── */
-.table-wrap {
-  background:var(--white); border-radius:14px; border:1px solid var(--border); overflow:hidden;
-}
-.table-toolbar {
-  display:flex; align-items:center; gap:10px; padding:14px 18px;
-  border-bottom:1px solid var(--border); flex-wrap:wrap;
-}
-.search-input {
-  flex:1; min-width:180px; background:var(--surface); border:1px solid var(--border);
-  border-radius:8px; padding:8px 14px; font-family:'Outfit',sans-serif; font-size:13px;
-  color:var(--text); outline:none;
-}
-.search-input:focus { border-color:var(--blue); }
-.filter-sel {
-  background:var(--surface); border:1px solid var(--border); border-radius:8px;
-  padding:8px 12px; font-family:'Outfit',sans-serif; font-size:13px; color:var(--text); outline:none;
-}
-table { width:100%; border-collapse:collapse; }
-thead th {
-  background:var(--navy); color:rgba(255,255,255,0.75); font-size:11px;
-  text-transform:uppercase; letter-spacing:0.8px; padding:11px 14px; text-align:left;
-  font-weight:600; cursor:pointer; white-space:nowrap;
-}
-thead th:hover { color:#fff; }
-tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
-tbody tr:last-child { border-bottom:none; }
-tbody tr:hover { background:var(--surface); }
-tbody td { padding:10px 14px; font-size:13px; }
-.franchise-badge {
-  display:inline-block; padding:2px 8px; border-radius:5px; font-size:11px; font-weight:600;
-}
-.rank-badge {
-  font-family:'Bebas Neue',sans-serif; font-size:16px;
-  padding:2px 8px; border-radius:6px; display:inline-block;
-}
-.rank-1 { background:#ffd700; color:#7a5a00; }
-.rank-2 { background:#c0c0c0; color:#444; }
-.rank-3 { background:#cd7f32; color:#fff; }
-.rank-other { background:var(--surface); color:var(--text2); }
-.ro-bar-wrap { display:flex; align-items:center; gap:8px; }
-.ro-bar { height:6px; background:var(--border); border-radius:3px; flex:1; min-width:60px; }
-.ro-fill { height:100%; border-radius:3px; transition:width 0.5s; }
-.ro-pct { font-weight:600; font-size:12px; min-width:38px; }
-.alert-row td { background:#fff5f5 !important; }
-.alert-row:hover td { background:#ffe8e8 !important; }
-.alert-icon { color:var(--red); font-size:15px; }
-
-/* ── Add/edit form ── */
-.card {
-  background:var(--white); border-radius:14px; border:1px solid var(--border); padding:24px; margin-bottom:20px;
-}
-.card-title { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
-.form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; }
-.form-group { display:flex; flex-direction:column; gap:5px; }
-.form-group label { font-size:11px; text-transform:uppercase; letter-spacing:0.7px; color:var(--text2); font-weight:600; }
-.form-group input, .form-group select {
-  background:var(--surface); border:1px solid var(--border); border-radius:8px;
-  padding:9px 13px; font-family:'Outfit',sans-serif; font-size:13px; color:var(--text); outline:none;
-}
-.form-group input:focus, .form-group select:focus { border-color:var(--blue); }
-.form-actions { display:flex; gap:10px; margin-top:18px; justify-content:flex-end; }
-.btn {
-  padding:9px 20px; border-radius:8px; border:none; cursor:pointer;
-  font-family:'Outfit',sans-serif; font-weight:600; font-size:13px; transition:all 0.2s;
-}
-.btn-primary { background:var(--navy); color:#fff; }
-.btn-primary:hover { background:#2d3a55; transform:translateY(-1px); }
-.btn-green { background:var(--green); color:#fff; }
-.btn-green:hover { opacity:0.85; }
-.btn-outline { background:transparent; color:var(--text2); border:1px solid var(--border); }
-.btn-outline:hover { border-color:var(--navy); color:var(--navy); }
-.btn-red { background:var(--red); color:#fff; }
-.btn-sm { padding:5px 12px; font-size:12px; border-radius:6px; }
-
-/* ── Alert panel ── */
-.alert-panel {
-  position:fixed; top:56px; right:0; width:320px; background:var(--white);
-  border-left:1px solid var(--border); border-bottom:1px solid var(--border);
-  border-radius:0 0 0 14px; z-index:200; box-shadow:-4px 4px 20px rgba(0,0,0,0.08);
-  max-height:calc(100vh - 56px); overflow-y:auto; display:none;
-  animation:slideIn 0.2s ease;
-}
-.alert-panel.open { display:block; }
-.alert-panel-header {
-  padding:14px 18px; border-bottom:1px solid var(--border);
-  font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px;
-  display:flex; justify-content:space-between; align-items:center;
-}
-.alert-item {
-  padding:12px 18px; border-bottom:1px solid var(--border); display:flex; gap:10px; align-items:flex-start;
-}
-.alert-item:last-child { border-bottom:none; }
-.alert-dot { width:8px; height:8px; border-radius:50%; background:var(--red); flex-shrink:0; margin-top:5px; }
-.alert-item-name { font-weight:600; font-size:13px; }
-.alert-item-detail { font-size:12px; color:var(--text2); margin-top:2px; }
-
-/* ── Import ── */
-.import-zone {
-  border:2px dashed var(--border); border-radius:12px; padding:40px;
-  text-align:center; cursor:pointer; transition:all 0.2s; background:var(--surface);
-}
-.import-zone:hover, .import-zone.drag { border-color:var(--blue); background:#eef4ff; }
-.import-icon { font-size:40px; margin-bottom:10px; }
-.import-text { font-size:14px; color:var(--text2); }
-.import-text strong { color:var(--blue); }
-#fileInput { display:none; }
-
-/* ── Classement ── */
-.podium { display:flex; justify-content:center; gap:16px; margin-bottom:28px; align-items:flex-end; }
-.podium-item {
-  background:var(--white); border:1px solid var(--border); border-radius:12px;
-  padding:16px 20px; text-align:center; min-width:130px; position:relative;
-}
-.podium-item.p1 { border-color:var(--yellow); background:#fffbee; order:2; }
-.podium-item.p2 { order:1; }
-.podium-item.p3 { order:3; }
-.podium-medal { font-size:28px; margin-bottom:6px; }
-.podium-name { font-weight:600; font-size:13px; }
-.podium-score { font-family:'Bebas Neue',sans-serif; font-size:28px; margin-top:4px; }
-.podium-franchise { font-size:11px; color:var(--text2); }
-
-/* ══════════════════════════════════════════
-   NOUVEAU — Filtre franchise pills
-══════════════════════════════════════════ */
-.franchise-filter-bar {
-  background:var(--white); border-radius:14px; border:1px solid var(--border);
-  padding:16px 20px; margin-bottom:18px;
-}
-.franchise-filter-title {
-  font-size:11px; text-transform:uppercase; letter-spacing:0.8px;
-  color:var(--text2); font-weight:600; margin-bottom:10px;
-}
-.franchise-pills { display:flex; flex-wrap:wrap; gap:8px; }
-.fpill {
-  padding:6px 16px; border-radius:20px; font-size:12px; font-weight:600;
-  border:2px solid var(--border); background:var(--surface); color:var(--text2);
-  cursor:pointer; transition:all 0.2s; font-family:'Outfit',sans-serif;
-}
-.fpill:hover { border-color:var(--navy); color:var(--navy); }
-.fpill.active { background:var(--navy); border-color:var(--navy); color:#fff; }
-
-/* Stats franchise cards */
-.franchise-stats-grid {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:12px; margin-bottom:20px;
-}
-.fstat-card {
-  background:var(--white); border:1px solid var(--border); border-radius:12px;
-  padding:14px 16px; border-left:4px solid var(--border); cursor:pointer; transition:all 0.2s;
-}
-.fstat-card:hover { box-shadow:0 2px 12px rgba(0,0,0,0.07); transform:translateY(-1px); }
-.fstat-card.active-fran { border-left-color:var(--orange); }
-.fstat-name { font-weight:700; font-size:13px; margin-bottom:6px; }
-.fstat-row { display:flex; justify-content:space-between; font-size:12px; color:var(--text2); margin-top:3px; }
-.fstat-pct { font-weight:700; }
-
-/* ══════════════════════════════════════════
-   NOUVEAU — Causes & Actions
-══════════════════════════════════════════ */
-.cause-section {
-  background:var(--white); border-radius:14px; border:1px solid var(--border);
-  overflow:hidden; margin-bottom:18px;
-}
-.cause-section-header {
-  padding:14px 20px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
-}
-.cause-section-title {
-  font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px;
-  display:flex; align-items:center; gap:8px;
-}
-.cause-grid {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:12px; padding:16px 20px;
-}
-.cause-card {
-  border:2px solid var(--border); border-radius:12px; padding:14px 16px;
-  cursor:pointer; transition:all 0.2s; position:relative; background:var(--surface);
-}
-.cause-card:hover { border-color:var(--orange); transform:translateY(-1px); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
-.cause-card.selected { border-color:var(--orange); background:#fff5ee; }
-.cause-card-head { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
-.cause-icon-box {
-  width:36px; height:36px; border-radius:8px;
-  display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
-}
-.cause-card h3 { font-size:13px; font-weight:700; }
-.cause-card p { font-size:12px; color:var(--text2); line-height:1.5; }
-.cause-tick {
-  position:absolute; top:10px; right:10px; width:18px; height:18px;
-  border-radius:50%; border:2px solid var(--border);
-  display:flex; align-items:center; justify-content:center; font-size:10px; color:transparent;
-  transition:all 0.2s;
-}
-.cause-card.selected .cause-tick { background:var(--orange); border-color:var(--orange); color:#fff; }
-
-/* Actions list */
-.actions-section {
-  background:var(--white); border-radius:14px; border:1px solid var(--border); overflow:hidden;
-}
-.actions-section-header {
-  padding:14px 20px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
-}
-.actions-section-title {
-  font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px;
-  display:flex; align-items:center; gap:8px;
-}
-.actions-list { padding:14px 20px; display:flex; flex-direction:column; gap:10px; }
-.action-item {
-  display:flex; align-items:flex-start; gap:12px; padding:12px 14px;
-  background:var(--surface); border:1px solid var(--border); border-radius:10px; transition:border-color 0.2s;
-  animation:fadeUp 0.25s ease;
-}
-.action-item:hover { border-color:var(--green); }
-.action-num {
-  width:26px; height:26px; border-radius:50%; background:var(--navy); color:#fff;
-  font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
-}
-.action-body { flex:1; }
-.action-title { font-weight:700; font-size:13px; margin-bottom:3px; }
-.action-desc { font-size:12px; color:var(--text2); line-height:1.5; }
-.action-tag { font-size:11px; font-weight:700; margin-top:5px; }
-.prio-tag {
-  display:inline-block; padding:2px 8px; border-radius:4px;
-  font-size:10px; font-weight:700; text-transform:uppercase; flex-shrink:0;
-}
-.prio-high { background:#fff0f0; color:var(--red); border:1px solid #ffd0d0; }
-.prio-med  { background:#fffbee; color:#b8860b; border:1px solid #ffe4a0; }
-.prio-low  { background:#edfaf4; color:var(--green); border:1px solid #b0f0d8; }
-
-/* Modal cause par agent */
-.modal-overlay {
-  display:none; position:fixed; inset:0; background:rgba(26,34,51,0.55);
-  backdrop-filter:blur(4px); z-index:500; align-items:center; justify-content:center; padding:20px;
-}
-.modal-overlay.open { display:flex; }
-.modal-box {
-  background:var(--white); border-radius:16px; width:100%; max-width:540px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.18); animation:fadeUp 0.25s ease;
-}
-.modal-head {
-  padding:18px 22px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; justify-content:space-between;
-}
-.modal-head h3 { font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:1px; }
-.modal-close { background:none; border:none; font-size:22px; cursor:pointer; color:var(--text2); line-height:1; }
-.modal-close:hover { color:var(--text); }
-.modal-body { padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
-.modal-foot { padding:14px 22px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
-.cause-checklist { display:flex; flex-direction:column; gap:7px; max-height:200px; overflow-y:auto; }
-.cause-chk-item {
-  display:flex; align-items:center; gap:10px; padding:8px 10px;
-  border-radius:8px; cursor:pointer; transition:background 0.15s; border:1px solid transparent;
-}
-.cause-chk-item:hover { background:var(--surface); border-color:var(--border); }
-.cause-chk-item input[type=checkbox] { accent-color:var(--orange); width:15px; height:15px; }
-.cause-chk-item span { font-size:13px; }
-
-/* Btn cause dans tableau */
-.btn-cause {
-  padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600;
-  border:1.5px solid var(--border); background:transparent; color:var(--text2);
-  cursor:pointer; transition:all 0.2s; font-family:'Outfit',sans-serif;
-}
-.btn-cause:hover { border-color:var(--orange); color:var(--orange); }
-.btn-cause.has-cause { border-color:var(--green); color:var(--green); background:#edfaf4; }
-
-/* Toast */
-.toast {
-  position:fixed; bottom:20px; right:20px; background:var(--navy); color:#fff;
-  border-radius:10px; padding:12px 18px; font-size:13px; font-weight:500;
-  display:none; z-index:999; box-shadow:0 4px 20px rgba(0,0,0,0.2);
-  animation:fadeUp 0.3s ease;
-}
-.toast.show { display:block; }
-
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-@keyframes slideIn { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:translateX(0)} }
-::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-
-@media(max-width:600px){
-  .nav { padding:0 14px; }
-  .nav-tabs { gap:2px; }
-  .nav-tab { padding:5px 10px; font-size:12px; }
-  .page { padding:16px 14px; }
-  .podium { flex-wrap:wrap; }
-  .cause-grid { grid-template-columns:1fr; }
-  .franchise-stats-grid { grid-template-columns:repeat(2,1fr); }
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:10px;height:54px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.logo{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-right:auto;white-space:nowrap}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{padding:7px 14px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+.nav-tab.active,.nav-tab:hover{background:var(--surface2);color:var(--text)}
+.nav-tab.active{color:var(--accent)}
+.badge{background:var(--red);color:#fff;border-radius:99px;padding:1px 6px;font-size:10px;font-weight:700;margin-left:3px}
+main{padding:20px;max-width:1500px;margin:0 auto}
+.section{display:none}.section.active{display:block}
+.univers-tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.utab{padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.utab:hover{color:var(--text);border-color:var(--text)}
+.utab.active{color:#fff;border-color:transparent}
+.utab.u-global.active{background:#22c55e;color:#000}
+.utab.u-fo.active{background:#3b82f6}
+.utab.u-lte.active{background:#a855f7}
+.utab.u-ps.active{background:#f97316}
+.utab.u-pc.active{background:#14b8a6}
+.utab.u-oba.active{background:#eab308;color:#000}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 13px}
+.kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
+.kpi-val{font-family:var(--mono);font-size:24px;font-weight:700;line-height:1}
+.kpi-sub{font-size:10px;color:var(--muted);margin-top:4px}
+.kpi.ok .kpi-val{color:var(--green)}.kpi.warn .kpi-val{color:var(--yellow)}.kpi.danger .kpi-val{color:var(--red)}.kpi.info .kpi-val{color:var(--accent2)}
+.franchise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px;margin-bottom:18px}
+.fc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;cursor:pointer;transition:border-color .2s}
+.fc:hover{border-color:var(--accent)}
+.fc-name{font-weight:600;font-size:13px;margin-bottom:7px}
+.fc-stats{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:3px}
+.fc-bar{height:4px;background:var(--border);border-radius:2px;margin-top:7px;overflow:hidden}
+.fc-fill{height:100%;border-radius:2px;transition:width .4s}
+.alert-bar{background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(239,68,68,.04));border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:11px 15px;margin-bottom:14px;display:flex;align-items:center;gap:9px;cursor:pointer}
+.alert-bar:hover{border-color:rgba(239,68,68,.5)}
+.alert-count{background:var(--red);color:#fff;border-radius:99px;padding:2px 8px;font-weight:700;font-size:11px;font-family:var(--mono)}
+.alert-text{flex:1;font-size:12px}
+.alerts-detail{display:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:14px}
+.alerts-detail.open{display:block}
+.alert-item{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.alert-item:last-child{border:none}
+.alert-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
+.filter-label{font-size:11px;color:var(--muted)}
+select,input[type=text]{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:12px;padding:6px 10px;outline:none;transition:border .2s}
+select:focus,input[type=text]:focus{border-color:var(--accent)}
+.search-input{width:175px}
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--surface2);padding:9px 11px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;cursor:pointer;white-space:nowrap;user-select:none;border-bottom:1px solid var(--border)}
+thead th:hover{color:var(--text)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:last-child{border:none}
+tbody tr:hover{background:var(--surface2)}
+tbody td{padding:8px 11px;vertical-align:middle}
+.agent-name{font-weight:600}
+.alert-flag{color:var(--red);margin-right:3px}
+.badge-poste{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;font-weight:500}
+.mini-bar-wrap{display:flex;align-items:center;gap:5px}
+.mini-bar{width:48px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;flex-shrink:0}
+.mini-fill{height:100%;border-radius:3px}
+.ratio-num{font-family:var(--mono);font-size:11px;min-width:32px}
+.btn-edit{background:transparent;border:1px solid var(--accent2);border-radius:5px;color:var(--accent2);padding:3px 7px;font-size:10px;cursor:pointer;font-family:var(--font);transition:all .2s;margin-right:2px}
+.btn-edit:hover{background:var(--accent2);color:#fff}
+.btn-action{background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--muted);padding:3px 7px;font-size:10px;cursor:pointer;font-family:var(--font);transition:all .2s;margin-right:2px}
+.btn-action:hover{border-color:var(--accent);color:var(--accent)}
+.btn-del{background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--muted);padding:3px 6px;font-size:10px;cursor:pointer;font-family:var(--font);transition:all .2s}
+.btn-del:hover{border-color:var(--red);color:var(--red)}
+.empty-row td{text-align:center;color:var(--muted);padding:26px}
+.u-cell{text-align:center}
+.period-banner{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 15px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.period-banner label{font-size:11px;color:var(--muted)}
+.period-banner input[type=text]{width:auto;padding:5px 9px}
+.period-save{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:6px 13px;font-size:11px;cursor:pointer;font-family:var(--font);font-weight:600}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;max-width:740px}
+.form-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+input[type=number],input[type=tel],input[type=text].form-inp,select.form-sel{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;padding:8px 10px;outline:none;transition:border .2s;width:100%}
+input[type=number]:focus,input[type=tel]:focus,input[type=text].form-inp:focus,select.form-sel:focus{border-color:var(--accent)}
+.section-sep{grid-column:1/-1;border-top:1px solid var(--border);padding-top:11px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;display:flex;align-items:center;gap:7px}
+.section-sep span{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 7px}
+.form-actions{display:flex;gap:8px;margin-top:16px}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:opacity .2s}
+.btn-primary:hover{opacity:.85}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer;font-family:var(--font);transition:all .2s}
+.btn-secondary:hover{border-color:var(--text);color:var(--text)}
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:34px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:rgba(249,115,22,.04)}
+.import-mode{display:flex;gap:7px;margin-bottom:13px}
+.mode-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--surface);cursor:pointer;text-align:center;transition:all .2s}
+.mode-btn.active{border-color:var(--accent);background:rgba(249,115,22,.08)}
+.mode-btn h4{font-size:12px;font-weight:600;margin-bottom:2px}
+.mode-btn p{font-size:10px;color:var(--muted)}
+.preview-table{max-height:260px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);margin-bottom:12px}
+.preview-row-new td{background:rgba(34,197,94,.06)}
+.preview-row-update td{background:rgba(59,130,246,.06)}
+pre{font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;overflow-x:auto;line-height:1.6;color:var(--text);margin-top:7px}
+.format-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px;margin-top:14px}
+.format-box h4{font-size:12px;font-weight:600;margin-bottom:7px;color:var(--muted)}
+.backup-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:17px;margin-bottom:13px}
+.backup-section h3{font-size:13px;font-weight:600;margin-bottom:11px}
+.status-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--green);border-radius:99px;padding:3px 11px;font-size:11px}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.history-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.history-item:last-child{border:none}
+.history-time{font-family:var(--mono);font-size:10px;color:var(--muted);min-width:125px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:18px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:610px;max-height:88vh;overflow-y:auto}
+.modal-header{padding:17px 21px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-header h3{font-size:14px;font-weight:600}
+.modal-close{background:none;border:none;color:var(--muted);font-size:19px;cursor:pointer;transition:color .2s}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:17px 21px}
+.cause-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px}
+.cause-chip{border:1px solid var(--border);border-radius:8px;padding:8px 9px;cursor:pointer;transition:all .2s;font-size:11px;display:flex;align-items:center;gap:6px}
+.cause-chip:hover{border-color:var(--accent)}
+.cause-chip.selected{border-color:var(--accent);background:rgba(249,115,22,.1)}
+.action-list{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.action-chip{border:1px solid var(--border);border-radius:8px;padding:7px 9px;cursor:pointer;transition:all .2s;font-size:11px;display:flex;align-items:center;gap:6px}
+.action-chip:hover{border-color:var(--accent2)}
+.action-chip.selected{border-color:var(--accent2);background:rgba(59,130,246,.1)}
+.priority-badge{margin-left:auto;font-size:9px;padding:2px 5px;border-radius:99px;font-weight:600}
+.p-urgent{background:rgba(239,68,68,.15);color:var(--red)}.p-important{background:rgba(234,179,8,.15);color:var(--yellow)}.p-normal{background:rgba(34,197,94,.15);color:var(--green)}
+textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:12px;padding:8px 10px;outline:none;resize:vertical;min-height:70px;transition:border .2s}
+textarea:focus{border-color:var(--accent)}
+.stitle{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+.confirm-modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:330px;text-align:center}
+.confirm-modal h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.confirm-modal p{color:var(--muted);font-size:12px;margin-bottom:18px}
+.confirm-btns{display:flex;gap:7px;justify-content:center}
+.btn-danger{background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#fff;padding:10px 17px;border-radius:10px;font-size:12px;font-weight:600;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}.toast.error{background:var(--red)}
+@media(max-width:680px){.form-grid{grid-template-columns:1fr}.cause-grid{grid-template-columns:1fr}header{padding:0 10px}.kpi-grid{grid-template-columns:repeat(2,1fr)}main{padding:12px}}
 </style>
 </head>
 <body>
 
-<!-- Nav -->
-<nav class="nav">
-  <div class="nav-logo">PILOT<span>AGE</span></div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="goTo('dashboard',this)">📊 Dashboard</button>
-    <button class="nav-tab" onclick="goTo('classement',this)">🏆 Classement</button>
-    <button class="nav-tab" onclick="goTo('saisie',this)">✏️ Saisie</button>
-    <button class="nav-tab" onclick="goTo('import',this)">📥 Import</button>
-    <button class="nav-tab" onclick="goTo('sauvegarde',this)">💾 Sauvegarde</button>
-  </div>
-  <div class="nav-right">
-    <div class="alert-bell" onclick="toggleAlerts()">
-      🔔 <span class="alert-count" id="alertCount">13</span>
-    </div>
-    <div id="syncStatus" style="display:none;font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,0.1);color:var(--green)"></div>
-  </div>
-</nav>
+<header>
+  <div class="logo">📊 PILOTAGE ÉQUIPE</div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
+    <button class="nav-tab" onclick="showSection('saisie')">✏️ Saisie <span class="badge" id="badgeAlerts" style="display:none"></span></button>
+    <button class="nav-tab" onclick="showSection('import')">📥 Import CSV</button>
+    <button class="nav-tab" onclick="showSection('sauvegarde')">💾 Sauvegarde</button>
+  </nav>
+</header>
 
-<!-- Alert panel -->
-<div class="alert-panel" id="alertPanel">
-  <div class="alert-panel-header">
-    🚨 Alertes <span style="font-family:Outfit;font-size:12px;color:var(--text2)" id="alertPanelCount">(13)</span>
-    <button onclick="toggleAlerts()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--text2)">×</button>
-  </div>
-  <div id="alertList">
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">COULIBALY MAMA</div>
-        <div class="alert-item-detail">Ps Dabakala · STAGIAIRE · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">YEO SIATOU</div>
-        <div class="alert-item-detail">Ps Dabakala · STAGIAIRE · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">PINGUIN ADELE</div>
-        <div class="alert-item-detail">Ps Dabakala · STAGIAIRE · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">TOURE FRANCIS</div>
-        <div class="alert-item-detail">EO Bouaké · CC · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">STEPHANE AVOHOU</div>
-        <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">LOIC ASSIE DEFALONE</div>
-        <div class="alert-item-detail">EO Bouaké · STAGIAIRE · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">GNAMIEN TOPE JEKHIEL</div>
-        <div class="alert-item-detail">EO Bouaké · SAV · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">KOUASSI STEPHANIE</div>
-        <div class="alert-item-detail">EO Bouaké · CC · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">KONATE FATOUMATA</div>
-        <div class="alert-item-detail">EO Bouaké · CC · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">KONAN ARMAND</div>
-        <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">GLADYS</div>
-        <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">KOFFI DANIELLE</div>
-        <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
-      </div>
-    </div>
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">JEAN CLAUDE</div>
-        <div class="alert-item-detail">EO Bouaké · MC · 0 réalisation</div>
-      </div>
-    </div></div>
-</div>
+<main>
 
-<!-- ══ DASHBOARD ══════════════════════════════════════════ -->
-<div class="page active" id="page-dashboard">
-
-  <!-- KPIs -->
-  <div class="kpi-row" id="kpiRow">
-    <div class="kpi blue"><div class="kpi-label">Agents total</div><div class="kpi-value" id="kpiTotal" style="color:var(--blue)">24</div><div class="kpi-sub">dans l'équipe</div></div>
-    <div class="kpi green"><div class="kpi-label">≥ 100% Pack C</div><div class="kpi-value" id="kpiOK" style="color:var(--green)">0</div><div class="kpi-sub">objectif atteint</div></div>
-    <div class="kpi orange"><div class="kpi-label">Moyenne R/O</div><div class="kpi-value" id="kpiMoy" style="color:var(--orange)">10%</div><div class="kpi-sub">Pack C</div></div>
-    <div class="kpi red"><div class="kpi-label">Alertes 0%</div><div class="kpi-value" id="kpiAlert" style="color:var(--red)">13</div><div class="kpi-sub">agents sans réalisation</div></div>
-    <div class="kpi purple"><div class="kpi-label">Franchises</div><div class="kpi-value" id="kpiFranchises" style="color:var(--purple)">5</div><div class="kpi-sub">zones pilotées</div></div>
+<!-- DASHBOARD -->
+<div class="section active" id="section-dashboard">
+  <div class="period-banner">
+    <span>📅</span><label>Période :</label>
+    <input type="text" id="periodLabel" placeholder="ex: Avril 2026" style="min-width:180px"/>
+    <button class="period-save" onclick="savePeriod()">Enregistrer</button>
+    <span id="periodDisplay" style="color:var(--accent);font-size:12px;font-weight:600"></span>
   </div>
 
-  <!-- ═══ NOUVEAU : Filtre par franchise ═══ -->
-  <div class="franchise-filter-bar">
-    <div class="franchise-filter-title">🏢 Filtre par franchise</div>
-    <div class="franchise-pills" id="franchisePills"><div class="fpill active">Toutes</div><div class="fpill" data-franchise="EO Belle Ville" style="--fc: #ff8c42;">EO Belle Ville</div><div class="fpill" data-franchise="EO Bouaké" style="--fc: #3a7bd5;">EO Bouaké</div><div class="fpill" data-franchise="EO Dar Es" style="--fc: #845ef7;">EO Dar Es</div><div class="fpill" data-franchise="Eo Katiola" style="--fc: #00c48c;">Eo Katiola</div><div class="fpill" data-franchise="Ps Dabakala" style="--fc: #ff4757;">Ps Dabakala</div></div>
+  <div class="univers-tabs">
+    <button class="utab u-global active" onclick="setUnivers('global',this)">🌐 Vue globale</button>
+    <button class="utab u-fo" onclick="setUnivers('fo',this)">🔵 FTTH (FO)</button>
+    <button class="utab u-lte" onclick="setUnivers('lte',this)">📶 LTE</button>
+    <button class="utab u-ps" onclick="setUnivers('ps',this)">📦 Pack Simple</button>
+    <button class="utab u-pc" onclick="setUnivers('pc',this)">💳 Pack à Crédit</button>
+    <button class="utab u-oba" onclick="setUnivers('oba',this)">⭐ OBA</button>
   </div>
 
-  <!-- Stats par franchise -->
-  <div class="franchise-stats-grid" id="franchiseStatsGrid"><div class="fstat-card" data-franchise="EO Belle Ville" style="border-left-color: rgb(255, 140, 66);">
-      <div class="fstat-name">EO Belle Ville</div>
-      <div class="fstat-row"><span>3 agents</span><span class="fstat-pct" style="color:var(--orange)">14% moy.</span></div>
-      <div class="fstat-row"><span>⚠️ 0 alertes</span><span style="color:var(--text2);font-size:11px">🏆 ODILON</span></div>
-    </div><div class="fstat-card" data-franchise="EO Bouaké" style="border-left-color: rgb(58, 123, 213);">
-      <div class="fstat-name">EO Bouaké</div>
-      <div class="fstat-row"><span>14 agents</span><span class="fstat-pct" style="color:var(--orange)">7% moy.</span></div>
-      <div class="fstat-row"><span>⚠️ 10 alertes</span><span style="color:var(--text2);font-size:11px">🏆 KOMPE</span></div>
-    </div><div class="fstat-card" data-franchise="EO Dar Es" style="border-left-color: rgb(132, 94, 247);">
-      <div class="fstat-name">EO Dar Es</div>
-      <div class="fstat-row"><span>2 agents</span><span class="fstat-pct" style="color:var(--orange)">22% moy.</span></div>
-      <div class="fstat-row"><span>⚠️ 0 alertes</span><span style="color:var(--text2);font-size:11px">🏆 JACOB</span></div>
-    </div><div class="fstat-card" data-franchise="Eo Katiola" style="border-left-color: rgb(0, 196, 140);">
-      <div class="fstat-name">Eo Katiola</div>
-      <div class="fstat-row"><span>2 agents</span><span class="fstat-pct" style="color:var(--orange)">29% moy.</span></div>
-      <div class="fstat-row"><span>⚠️ 0 alertes</span><span style="color:var(--text2);font-size:11px">🏆 KOUADIO</span></div>
-    </div><div class="fstat-card" data-franchise="Ps Dabakala" style="border-left-color: rgb(255, 71, 87);">
-      <div class="fstat-name">Ps Dabakala</div>
-      <div class="fstat-row"><span>3 agents</span><span class="fstat-pct" style="color:var(--red)">0% moy.</span></div>
-      <div class="fstat-row"><span>⚠️ 3 alertes</span><span style="color:var(--text2);font-size:11px">🏆 COULIBALY</span></div>
-    </div></div>
+  <div class="kpi-grid" id="kpiGrid"></div>
 
-  <!-- Pack selector -->
-  <div class="pack-tabs">
-    <button class="pack-tab active-packc" onclick="setActivePack('packc',this)">Pack C</button>
-    <button class="pack-tab" onclick="setActivePack('packs',this)">Pack S</button>
-    <button class="pack-tab" onclick="setActivePack('lte',this)">LTE</button>
-    <button class="pack-tab" onclick="setActivePack('fo',this)">🔵 Fibre (FO)</button>
+  <div id="alertBar" style="display:none" class="alert-bar" onclick="toggleAlerts()">
+    <span class="alert-count" id="alertCount">0</span>
+    <span class="alert-text" id="alertText"></span>
+    <span id="alertChevron">▼</span>
+  </div>
+  <div class="alerts-detail" id="alertsDetail"></div>
+
+  <div class="franchise-grid" id="franchiseCards"></div>
+
+  <div class="filters">
+    <span class="filter-label">Filtrer :</span>
+    <select id="filterFranchise" onchange="renderTable()"><option value="">Toutes franchises</option></select>
+    <select id="filterPoste" onchange="renderTable()">
+      <option value="">Tous postes</option><option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option>
+    </select>
+    <select id="filterPerf" onchange="renderTable()">
+      <option value="">Toutes perf.</option>
+      <option value="0">0% seulement</option>
+      <option value="low">Faible (&lt;50%)</option>
+      <option value="mid">Moyen (50–99%)</option>
+      <option value="ok">Atteint (≥100%)</option>
+    </select>
+    <input type="text" class="search-input" id="searchAgent" placeholder="🔍 Rechercher…" oninput="renderTable()"/>
   </div>
 
-  <div class="section-title">TABLEAU DE BORD <span>cliquer sur un en-tête pour trier</span></div>
   <div class="table-wrap">
-    <div class="table-toolbar">
-      <input class="search-input" id="dashSearch" placeholder="🔍 Rechercher un agent..." oninput="renderDashTable()">
-      <select class="filter-sel" id="dashFranchise" onchange="onFranchiseSelectChange()"><option value="" selected="selected">Toutes franchises</option><option value="EO Belle Ville">EO Belle Ville</option><option value="EO Bouaké">EO Bouaké</option><option value="EO Dar Es">EO Dar Es</option><option value="Eo Katiola">Eo Katiola</option><option value="Ps Dabakala">Ps Dabakala</option></select>
-      <select class="filter-sel" id="dashPoste" onchange="renderDashTable()">
-        <option value="" selected="selected">Tous postes</option>
-        <option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option>
-      </select>
-      <select class="filter-sel" id="dashPerf" onchange="renderDashTable()">
-        <option value="" selected="selected">Toutes performances</option>
-        <option value="0">0% seulement</option>
-        <option value="low">Faible (&lt;50%)</option>
-        <option value="mid">Moyen (50-99%)</option>
-        <option value="ok">Atteint (≥100%)</option>
-      </select>
-    </div>
-    <div style="overflow-x:auto"><table id="dashTable">
-      <thead><tr>
-        <th onclick="sortDash('nom')">Agent ↕</th>
-        <th onclick="sortDash('franchise')">Franchise ↕</th>
-        <th onclick="sortDash('poste')">Poste ↕</th>
-        <th onclick="sortDash('obj')">Objectif ↕</th>
-        <th onclick="sortDash('rea')">Réalisé ↕</th>
-        <th onclick="sortDash('ro')">R/O ↓</th>
-        <th onclick="sortDash('reste')">Reste ↕</th>
-        <th onclick="sortDash('rang')">Rang ↕</th>
-        <th>Cause &amp; Action</th>
-      </tr></thead>
-      <tbody id="dashBody"><tr class="">
-      <td><strong>JACOB KOUASSI</strong></td>
-      <td><span class="franchise-badge" style="background:#845ef722;color:#845ef7">EO Dar Es</span></td>
-      <td>STAGIAIRE</td>
-      <td>7</td>
-      <td style="font-weight:600">2</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">29%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-5</td>
-      <td><span class="rank-badge rank-1">1e</span></td>
-      <td><button class="btn-cause " onclick="openModal('JACOB KOUASSI')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>KOUADIO JOCELYNE</strong></td>
-      <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Eo Katiola</span></td>
-      <td>CC</td>
-      <td>7</td>
-      <td style="font-weight:600">2</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">29%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-5</td>
-      <td><span class="rank-badge rank-2">2e</span></td>
-      <td><button class="btn-cause " onclick="openModal('KOUADIO JOCELYNE')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>FATOUMA FOFANA</strong></td>
-      <td><span class="franchise-badge" style="background:#00c48c22;color:#00c48c">Eo Katiola</span></td>
-      <td>CC</td>
-      <td>7</td>
-      <td style="font-weight:600">2</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">29%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-5</td>
-      <td><span class="rank-badge rank-3">3e</span></td>
-      <td><button class="btn-cause " onclick="openModal('FATOUMA FOFANA')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>KOMPE FOFANA</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>CC</td>
-      <td>7</td>
-      <td style="font-weight:600">2</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">29%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-5</td>
-      <td><span class="rank-badge rank-other">4e</span></td>
-      <td><button class="btn-cause " onclick="openModal('KOMPE FOFANA')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>GBANGBO ANNE GISELE</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>STAGIAIRE</td>
-      <td>7</td>
-      <td style="font-weight:600">2</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">29%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-5</td>
-      <td><span class="rank-badge rank-other">5e</span></td>
-      <td><button class="btn-cause " onclick="openModal('GBANGBO ANNE GISELE')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>SEKONGO</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>MC</td>
-      <td>7</td>
-      <td style="font-weight:600">2</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:29%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">29%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-5</td>
-      <td><span class="rank-badge rank-other">6e</span></td>
-      <td><button class="btn-cause " onclick="openModal('SEKONGO')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>BENJAMIN YAO</strong></td>
-      <td><span class="franchise-badge" style="background:#845ef722;color:#845ef7">EO Dar Es</span></td>
-      <td>STAGIAIRE</td>
-      <td>7</td>
-      <td style="font-weight:600">1</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">14%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">7e</span></td>
-      <td><button class="btn-cause " onclick="openModal('BENJAMIN YAO')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>ODILON KOFFI</strong></td>
-      <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">EO Belle Ville</span></td>
-      <td>CC</td>
-      <td>7</td>
-      <td style="font-weight:600">1</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">14%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">8e</span></td>
-      <td><button class="btn-cause " onclick="openModal('ODILON KOFFI')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>YEO KIEMA</strong></td>
-      <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">EO Belle Ville</span></td>
-      <td>CC</td>
-      <td>7</td>
-      <td style="font-weight:600">1</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">14%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">9e</span></td>
-      <td><button class="btn-cause " onclick="openModal('YEO KIEMA')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>ZOUNGRANA ALIMA</strong></td>
-      <td><span class="franchise-badge" style="background:#ff8c4222;color:#ff8c42">EO Belle Ville</span></td>
-      <td>MC</td>
-      <td>7</td>
-      <td style="font-weight:600">1</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">14%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">10e</span></td>
-      <td><button class="btn-cause " onclick="openModal('ZOUNGRANA ALIMA')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="">
-      <td><strong>KONE KARIDJATOU</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>STAGIAIRE</td>
-      <td>7</td>
-      <td style="font-weight:600">1</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:14%;background:var(--orange)"></div></div>
-          <span class="ro-pct" style="color:var(--orange)">14%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">11e</span></td>
-      <td><button class="btn-cause " onclick="openModal('KONE KARIDJATOU')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> COULIBALY MAMA</strong></td>
-      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">Ps Dabakala</span></td>
-      <td>STAGIAIRE</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">12e</span></td>
-      <td><button class="btn-cause " onclick="openModal('COULIBALY MAMA')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> YEO SIATOU</strong></td>
-      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">Ps Dabakala</span></td>
-      <td>STAGIAIRE</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">13e</span></td>
-      <td><button class="btn-cause " onclick="openModal('YEO SIATOU')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> PINGUIN ADELE</strong></td>
-      <td><span class="franchise-badge" style="background:#ff475722;color:#ff4757">Ps Dabakala</span></td>
-      <td>STAGIAIRE</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">14e</span></td>
-      <td><button class="btn-cause " onclick="openModal('PINGUIN ADELE')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> TOURE FRANCIS</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>CC</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">15e</span></td>
-      <td><button class="btn-cause " onclick="openModal('TOURE FRANCIS')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> STEPHANE AVOHOU</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>MC</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">16e</span></td>
-      <td><button class="btn-cause " onclick="openModal('STEPHANE AVOHOU')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> LOIC ASSIE DEFALONE</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>STAGIAIRE</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">17e</span></td>
-      <td><button class="btn-cause " onclick="openModal('LOIC ASSIE DEFALONE')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> GNAMIEN TOPE JEKHIEL</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>SAV</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">18e</span></td>
-      <td><button class="btn-cause " onclick="openModal('GNAMIEN TOPE JEKHIEL')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> KOUASSI STEPHANIE</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>CC</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">19e</span></td>
-      <td><button class="btn-cause " onclick="openModal('KOUASSI STEPHANIE')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> KONATE FATOUMATA</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>CC</td>
-      <td>7</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-7</td>
-      <td><span class="rank-badge rank-other">20e</span></td>
-      <td><button class="btn-cause " onclick="openModal('KONATE FATOUMATA')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> KONAN ARMAND</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>MC</td>
-      <td>6</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">21e</span></td>
-      <td><button class="btn-cause " onclick="openModal('KONAN ARMAND')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> GLADYS</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>MC</td>
-      <td>6</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">22e</span></td>
-      <td><button class="btn-cause " onclick="openModal('GLADYS')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> KOFFI DANIELLE</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>MC</td>
-      <td>6</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">23e</span></td>
-      <td><button class="btn-cause " onclick="openModal('KOFFI DANIELLE')">
-        ⚠️ Saisir
-      </button></td>
-    </tr><tr class="alert-row">
-      <td><strong><span class="alert-icon">⚠️</span> JEAN CLAUDE</strong></td>
-      <td><span class="franchise-badge" style="background:#3a7bd522;color:#3a7bd5">EO Bouaké</span></td>
-      <td>MC</td>
-      <td>6</td>
-      <td style="font-weight:600">0</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:0%;background:var(--red)"></div></div>
-          <span class="ro-pct" style="color:var(--red)">0%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:var(--red)">-6</td>
-      <td><span class="rank-badge rank-other">24e</span></td>
-      <td><button class="btn-cause " onclick="openModal('JEAN CLAUDE')">
-        ⚠️ Saisir
-      </button></td>
-    </tr></tbody>
-    </table></div>
-  </div>
-
-  <!-- ═══ NOUVEAU : Causes de baisse ═══ -->
-  <div style="margin-top:28px;">
-    <div class="section-title">ANALYSE CAUSES &amp; ACTIONS <span>cliquer sur une cause pour filtrer les actions</span></div>
-
-    <div class="cause-section">
-      <div class="cause-section-header">
-        <div class="cause-section-title">📉 Causes de baisse de performances</div>
-        <span style="font-size:12px;color:var(--text2)">Sélectionnez une ou plusieurs causes</span>
-      </div>
-      <div class="cause-grid" id="causeGrid">
-    <div class="cause-card" id="cause_c1" onclick="toggleCause('c1')">
-      <div class="cause-tick" id="tick_c1">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:#fff0f1;color:#ff4757">😴</div>
-        <h3 style="color:#ff4757">Manque de motivation</h3>
-      </div>
-      <p>Démotivation, désengagement, baisse d'implication personnelle</p>
-    </div>
-    <div class="cause-card" id="cause_c2" onclick="toggleCause('c2')">
-      <div class="cause-tick" id="tick_c2">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:#fff5ee;color:#ff8c42">📚</div>
-        <h3 style="color:#ff8c42">Maîtrise produit insuffisante</h3>
-      </div>
-      <p>Méconnaissance des offres, arguments de vente mal maîtrisés</p>
-    </div>
-    <div class="cause-card" id="cause_c3" onclick="toggleCause('c3')">
-      <div class="cause-tick" id="tick_c3">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:#fffbee;color:#ffd166">🗺️</div>
-        <h3 style="color:#ffd166">Zone / terrain difficile</h3>
-      </div>
-      <p>Secteur peu dense, forte concurrence, clientèle difficile</p>
-    </div>
-    <div class="cause-card" id="cause_c4" onclick="toggleCause('c4')">
-      <div class="cause-tick" id="tick_c4">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:#f5f0ff;color:#845ef7">📞</div>
-        <h3 style="color:#845ef7">Problème de prospection</h3>
-      </div>
-      <p>Faible nombre de contacts, mauvaise gestion du pipeline</p>
-    </div>
-    <div class="cause-card" id="cause_c5" onclick="toggleCause('c5')">
-      <div class="cause-tick" id="tick_c5">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:#eef4ff;color:#3a7bd5">🤝</div>
-        <h3 style="color:#3a7bd5">Manque d'accompagnement</h3>
-      </div>
-      <p>Absence de coaching régulier, pas de suivi individualisé</p>
-    </div>
-    <div class="cause-card" id="cause_c6" onclick="toggleCause('c6')">
-      <div class="cause-tick" id="tick_c6">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:#edfaf4;color:#00c48c">📋</div>
-        <h3 style="color:#00c48c">Objectifs mal compris</h3>
-      </div>
-      <p>Incompréhension des cibles, confusion sur les priorités produit</p>
-    </div>
-    <div class="cause-card" id="cause_c7" onclick="toggleCause('c7')">
-      <div class="cause-tick" id="tick_c7">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:#e8f8fc;color:#00b4d8">🏥</div>
-        <h3 style="color:#00b4d8">Absence / problème personnel</h3>
-      </div>
-      <p>Maladie, absence prolongée, événement familial</p>
-    </div>
-    <div class="cause-card" id="cause_c8" onclick="toggleCause('c8')">
-      <div class="cause-tick" id="tick_c8">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:#f0f2f5;color:#6b7a99">🛠️</div>
-        <h3 style="color:#6b7a99">Problème technique / outils</h3>
-      </div>
-      <p>Difficultés avec les outils de vente, système ou téléphone</p>
-    </div></div>
-    </div>
-  </div>
-
-  <!-- ═══ NOUVEAU : Actions à mener ═══ -->
-  <div class="actions-section" style="margin-bottom:28px;">
-    <div class="actions-section-header">
-      <div class="actions-section-title">🎯 Actions à mener</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <span style="font-size:12px;color:var(--text2)" id="actionsLabel">Toutes causes</span>
-        <button class="btn btn-outline btn-sm" onclick="clearCauseFilter()">✕ Réinitialiser</button>
-      </div>
-    </div>
-    <div class="actions-list" id="actionsList">
-    <div class="action-item">
-      <div class="action-num">1</div>
-      <div class="action-body">
-        <div class="action-title">😴 Entretien motivationnel individuel</div>
-        <div class="action-desc">Programmer un point individuel pour identifier les freins et redonner du sens.</div>
-        <div class="action-tag" style="color:#ff4757">Manque de motivation</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">2</div>
-      <div class="action-body">
-        <div class="action-title">📚 Session de formation produit</div>
-        <div class="action-desc">Organiser une formation sur les offres Pack C / S / LTE / FO.</div>
-        <div class="action-tag" style="color:#ff8c42">Maîtrise produit insuffisante</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">3</div>
-      <div class="action-body">
-        <div class="action-title">🗺️ Redéfinir la zone de prospection</div>
-        <div class="action-desc">Analyser et réattribuer des secteurs à fort potentiel.</div>
-        <div class="action-tag" style="color:#ffd166">Zone / terrain difficile</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">4</div>
-      <div class="action-body">
-        <div class="action-title">📞 Audit du plan de prospection</div>
-        <div class="action-desc">Revoir le rythme, les canaux et les cibles de prospection.</div>
-        <div class="action-tag" style="color:#845ef7">Problème de prospection</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">5</div>
-      <div class="action-body">
-        <div class="action-title">📞 Objectif de contacts journaliers</div>
-        <div class="action-desc">Fixer un minimum de contacts quotidiens avec suivi.</div>
-        <div class="action-tag" style="color:#845ef7">Problème de prospection</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">6</div>
-      <div class="action-body">
-        <div class="action-title">🤝 Coaching hebdomadaire 1-to-1</div>
-        <div class="action-desc">Sessions de coaching individuelles chaque semaine.</div>
-        <div class="action-tag" style="color:#3a7bd5">Manque d'accompagnement</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">7</div>
-      <div class="action-body">
-        <div class="action-title">📋 Clarification des objectifs</div>
-        <div class="action-desc">Réexpliquer les cibles, unités et priorités produit.</div>
-        <div class="action-tag" style="color:#00c48c">Objectifs mal compris</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">8</div>
-      <div class="action-body">
-        <div class="action-title">🏥 Suivi RH bienveillant</div>
-        <div class="action-desc">Prendre contact pour vérifier la situation et préparer le retour.</div>
-        <div class="action-tag" style="color:#00b4d8">Absence / problème personnel</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">9</div>
-      <div class="action-body">
-        <div class="action-title">🛠️ Diagnostic technique urgent</div>
-        <div class="action-desc">Identifier et résoudre les blocages techniques sous 24h.</div>
-        <div class="action-tag" style="color:#6b7a99">Problème technique / outils</div>
-      </div>
-      <span class="prio-tag prio-high">🔴 Urgent</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">10</div>
-      <div class="action-body">
-        <div class="action-title">😴 Incentives &amp; objectifs intermédiaires</div>
-        <div class="action-desc">Définir des paliers avec récompenses visibles (classement, prime).</div>
-        <div class="action-tag" style="color:#ff4757">Manque de motivation</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">11</div>
-      <div class="action-body">
-        <div class="action-title">😴 Plan de progression co-construit</div>
-        <div class="action-desc">Bâtir ensemble un plan d'évolution clair et motivant.</div>
-        <div class="action-tag" style="color:#ff4757">Manque de motivation</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">12</div>
-      <div class="action-body">
-        <div class="action-title">📚 Fiche mémo argumentaires</div>
-        <div class="action-desc">Distribuer des fiches synthèse par produit.</div>
-        <div class="action-tag" style="color:#ff8c42">Maîtrise produit insuffisante</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">13</div>
-      <div class="action-body">
-        <div class="action-title">🗺️ Stratégie terrain adaptée</div>
-        <div class="action-desc">Co-construire une approche commerciale ciblée par zone.</div>
-        <div class="action-tag" style="color:#ffd166">Zone / terrain difficile</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">14</div>
-      <div class="action-body">
-        <div class="action-title">🗺️ Sortie terrain commune</div>
-        <div class="action-desc">Accompagner l'agent sur le terrain pour identifier les opportunités.</div>
-        <div class="action-tag" style="color:#ffd166">Zone / terrain difficile</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">15</div>
-      <div class="action-body">
-        <div class="action-title">📞 Formation relance &amp; suivi pipeline</div>
-        <div class="action-desc">Techniques de relance et gestion du pipeline client.</div>
-        <div class="action-tag" style="color:#845ef7">Problème de prospection</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">16</div>
-      <div class="action-body">
-        <div class="action-title">🤝 Binôme avec un top performer</div>
-        <div class="action-desc">Associer l'agent à un collègue performant pour apprentissage.</div>
-        <div class="action-tag" style="color:#3a7bd5">Manque d'accompagnement</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">17</div>
-      <div class="action-body">
-        <div class="action-title">📋 Brief matinal quotidien</div>
-        <div class="action-desc">Point équipe chaque matin pour rappel des objectifs du jour.</div>
-        <div class="action-tag" style="color:#00c48c">Objectifs mal compris</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">18</div>
-      <div class="action-body">
-        <div class="action-title">🏥 Plan de rattrapage adapté</div>
-        <div class="action-desc">Ajuster temporairement les objectifs à la situation.</div>
-        <div class="action-tag" style="color:#00b4d8">Absence / problème personnel</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">19</div>
-      <div class="action-body">
-        <div class="action-title">🛠️ Formation outils internes</div>
-        <div class="action-desc">Former sur l'utilisation correcte des outils et systèmes.</div>
-        <div class="action-tag" style="color:#6b7a99">Problème technique / outils</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">20</div>
-      <div class="action-body">
-        <div class="action-title">🛠️ Escalade IT</div>
-        <div class="action-desc">Remonter les problèmes non résolus au support technique.</div>
-        <div class="action-tag" style="color:#6b7a99">Problème technique / outils</div>
-      </div>
-      <span class="prio-tag prio-med">🟡 Important</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">21</div>
-      <div class="action-body">
-        <div class="action-title">📚 Simulations de vente (roleplay)</div>
-        <div class="action-desc">Jeux de rôle pour renforcer les réflexes de vente.</div>
-        <div class="action-tag" style="color:#ff8c42">Maîtrise produit insuffisante</div>
-      </div>
-      <span class="prio-tag prio-low">🟢 Normal</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">22</div>
-      <div class="action-body">
-        <div class="action-title">🤝 Tableau de bord individuel</div>
-        <div class="action-desc">Fournir un suivi visuel quotidien de ses propres performances.</div>
-        <div class="action-tag" style="color:#3a7bd5">Manque d'accompagnement</div>
-      </div>
-      <span class="prio-tag prio-low">🟢 Normal</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">23</div>
-      <div class="action-body">
-        <div class="action-title">📋 Affichage objectifs hebdomadaires</div>
-        <div class="action-desc">Rendre les objectifs visibles dans l'espace de travail.</div>
-        <div class="action-tag" style="color:#00c48c">Objectifs mal compris</div>
-      </div>
-      <span class="prio-tag prio-low">🟢 Normal</span>
-    </div>
-    <div class="action-item">
-      <div class="action-num">24</div>
-      <div class="action-body">
-        <div class="action-title">🏥 Escalade RH si prolongé</div>
-        <div class="action-desc">Remonter au service RH si l'absence dépasse le délai normal.</div>
-        <div class="action-tag" style="color:#00b4d8">Absence / problème personnel</div>
-      </div>
-      <span class="prio-tag prio-low">🟢 Normal</span>
-    </div></div>
-  </div>
-
-</div><!-- end dashboard -->
-
-<!-- ══ CLASSEMENT ══════════════════════════════════════════ -->
-<div class="page" id="page-classement">
-  <div class="pack-tabs">
-    <button class="pack-tab active-packc" onclick="setActivePack('packc',this);renderClassement()">Pack C</button>
-    <button class="pack-tab" onclick="setActivePack('packs',this);renderClassement()">Pack S</button>
-    <button class="pack-tab" onclick="setActivePack('lte',this);renderClassement()">LTE</button>
-    <button class="pack-tab" onclick="setActivePack('fo',this);renderClassement()">🔵 Fibre (FO)</button>
-  </div>
-  <div class="podium" id="podium"></div>
-  <div class="table-wrap">
-    <div style="overflow-x:auto"><table>
-      <thead><tr>
-        <th>Rang</th><th>Agent</th><th>Franchise</th><th>Poste</th>
-        <th>Objectif</th><th>Réalisé</th><th>R/O</th><th>Reste</th>
-      </tr></thead>
-      <tbody id="classBody"></tbody>
-    </table></div>
+    <table><thead id="mainThead"></thead><tbody id="mainTbody"></tbody></table>
   </div>
 </div>
 
-<!-- ══ SAISIE ══════════════════════════════════════════ -->
-<div class="page" id="page-saisie">
-  <div class="card">
-    <div class="card-title">➕ Ajouter / Modifier un agent</div>
+<!-- SAISIE -->
+<div class="section" id="section-saisie">
+  <div class="form-card">
+    <div class="form-title"><span id="formMode">➕</span><span id="formTitle">Ajouter un agent</span></div>
     <div class="form-grid">
-      <div class="form-group">
-        <label>Franchise</label>
-        <input id="fFranchise" placeholder="Ex: EO Bouaké">
-      </div>
-      <div class="form-group">
-        <label>Nom &amp; Prénoms</label>
-        <input id="fNom" placeholder="NOM Prénom">
-      </div>
-      <div class="form-group">
-        <label>Téléphone</label>
-        <input id="fTel" placeholder="07XXXXXXXX">
-      </div>
-      <div class="form-group">
-        <label>Poste</label>
-        <select id="fPoste">
-          <option value="" selected="selected">-- Choisir --</option>
-          <option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option>
-        </select>
-      </div>
+      <div class="form-group"><label>Franchise *</label><input type="text" class="form-inp" id="f_franchise" list="franchiseList" placeholder="EO Bouaké"/><datalist id="franchiseList"></datalist></div>
+      <div class="form-group"><label>Nom & Prénoms *</label><input type="text" class="form-inp" id="f_nom" placeholder="DUPONT Jean"/></div>
+      <div class="form-group"><label>Téléphone</label><input type="tel" id="f_tel" placeholder="07 XX XX XX XX"/></div>
+      <div class="form-group"><label>Poste *</label><select class="form-sel" id="f_poste"><option value="">-- Choisir --</option><option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option></select></div>
+      <div class="section-sep"><span>🔵 FTTH (FO)</span></div>
+      <div class="form-group"><label>Objectif FO</label><input type="number" id="f_objFO" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé FO</label><input type="number" id="f_reaFO" min="0" placeholder="0"/></div>
+      <div class="section-sep"><span>📶 LTE</span></div>
+      <div class="form-group"><label>Objectif LTE</label><input type="number" id="f_objLTE" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé LTE</label><input type="number" id="f_reaLTE" min="0" placeholder="0"/></div>
+      <div class="section-sep"><span>📦 Pack Simple</span></div>
+      <div class="form-group"><label>Objectif Pack S</label><input type="number" id="f_objPS" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé Pack S</label><input type="number" id="f_reaPS" min="0" placeholder="0"/></div>
+      <div class="section-sep"><span>💳 Pack à Crédit</span></div>
+      <div class="form-group"><label>Objectif Pack C</label><input type="number" id="f_objPC" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé Pack C</label><input type="number" id="f_reaPC" min="0" placeholder="0"/></div>
+      <div class="section-sep"><span>⭐ OBA (TIK TAK)</span></div>
+      <div class="form-group"><label>Objectif OBA</label><input type="number" id="f_objOBA" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé OBA</label><input type="number" id="f_reaOBA" min="0" placeholder="0"/></div>
     </div>
-    <div style="margin-top:16px;font-weight:600;font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px;">PACK C</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Objectif Pack C</label><input type="number" id="fObjC" min="0" value="0"></div>
-      <div class="form-group"><label>Réalisé Pack C</label><input type="number" id="fReaC" min="0" value="0"></div>
-    </div>
-    <div style="margin-top:16px;font-weight:600;font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px;">PACK S</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Objectif Pack S</label><input type="number" id="fObjS" min="0" value="0"></div>
-      <div class="form-group"><label>Réalisé Pack S</label><input type="number" id="fReaS" min="0" value="0"></div>
-    </div>
-    <div style="margin-top:16px;font-weight:600;font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px;">LTE</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Objectif LTE</label><input type="number" id="fObjL" min="0" value="0"></div>
-      <div class="form-group"><label>Réalisé LTE</label><input type="number" id="fReaL" min="0" value="0"></div>
-    </div>
-    <div style="margin-top:16px;font-weight:600;font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:10px;">🔵 FIBRE OPTIQUE (FO)</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Objectif FO</label><input type="number" id="fObjF" min="0" value="0"></div>
-      <div class="form-group"><label>Réalisé FO</label><input type="number" id="fReaF" min="0" value="0"></div>
-    </div>
+    <input type="hidden" id="f_editId"/>
     <div class="form-actions">
-      <button class="btn btn-outline" onclick="resetForm()">Réinitialiser</button>
-      <button class="btn btn-green" onclick="saveAgent()">💾 Enregistrer</button>
+      <button class="btn-primary" onclick="saveAgent()">💾 Enregistrer</button>
+      <button class="btn-secondary" onclick="resetForm()">↺ Réinitialiser</button>
     </div>
   </div>
-
-  <div class="card">
-    <div class="card-title">AGENTS ENREGISTRÉS <span style="font-family:Outfit;font-size:13px;font-weight:400;color:var(--text2)" id="saisieCount"></span></div>
-    <div style="overflow-x:auto"><table>
-      <thead><tr>
-        <th>Franchise</th><th>Nom</th><th>Poste</th>
-        <th>R/O Pack C</th><th>R/O Pack S</th><th>R/O LTE</th><th>R/O FO 🔵</th><th>Actions</th>
-      </tr></thead>
-      <tbody id="saisieBody"></tbody>
-    </table></div>
-  </div>
-</div>
-
-<!-- ══ IMPORT ══════════════════════════════════════════ -->
-<div class="page" id="page-import">
-  <div class="card">
-    <div class="card-title">📥 Importer un fichier Excel / CSV</div>
-    <div class="import-zone" onclick="document.getElementById('fileInput').click()" id="importZone">
-      <div class="import-icon">📂</div>
-      <div class="import-text">Cliquez ou glissez votre fichier ici<br><strong>.xlsx / .xls / .csv</strong></div>
+  <div style="margin-top:20px">
+    <div class="filters" style="margin-bottom:9px">
+      <span class="filter-label">Agents enregistrés :</span>
+      <input type="text" class="search-input" id="searchSaisie" placeholder="🔍 Rechercher…" oninput="renderSaisieList()"/>
     </div>
-    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="handleFileImport(event)">
-    <div style="margin-top:20px;padding:16px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
-      <div style="font-weight:600;margin-bottom:8px;font-size:13px;">📋 Format attendu pour CSV</div>
-      <code style="font-size:12px;color:var(--text2);line-height:1.8;display:block;">
-        Franchise,Nom,Telephone,Poste,ObjC,ReaC,ObjS,ReaS,ObjL,ReaL,ObjF,ReaF<br>
-        EO Dar Es,BENJAMIN YAO,0747268228,STAGIAIRE,7,1,11,9,7,21,10,3<br>
-        EO Bouaké,TOURE FRANCIS,0708548161,CC,7,0,11,0,7,1,10,0
-      </code>
-    </div>
-    <div style="margin-top:14px;">
-      <button class="btn btn-outline" onclick="downloadTemplate()">⬇️ Télécharger le modèle CSV</button>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Franchise</th><th>Nom</th><th>Poste</th><th class="u-cell">🔵 FO</th><th class="u-cell">📶 LTE</th><th class="u-cell">📦 Pack S</th><th class="u-cell">💳 Pack C</th><th class="u-cell">⭐ OBA</th><th>Actions</th></tr></thead>
+        <tbody id="saisieTbody"></tbody>
+      </table>
     </div>
   </div>
 </div>
 
-<!-- ══ SAUVEGARDE ══════════════════════════════════════════ -->
-<div class="page" id="page-sauvegarde">
-  <div class="card">
-    <div class="card-title">💾 Sauvegarde &amp; Restauration des données</div>
-    <p style="color:var(--text2);font-size:13px;margin-bottom:18px;">Vos données sont automatiquement sauvegardées dans ce navigateur.<br>Pour éviter toute perte (changement de PC, effacement du cache), exportez régulièrement un fichier de sauvegarde.</p>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Nom de la sauvegarde</label>
-        <input id="saveName" placeholder="Ex: Sauvegarde_Avril_2025">
-      </div>
+<!-- IMPORT -->
+<div class="section" id="section-import">
+  <h2 style="font-size:16px;font-weight:600;margin-bottom:16px">📥 Importer un fichier CSV</h2>
+  <div class="import-mode">
+    <div class="mode-btn active" onclick="selectMode('replace',this)"><h4>🔄 Remplacer tout</h4><p>Efface tout et importe</p></div>
+    <div class="mode-btn" onclick="selectMode('update',this)"><h4>♻️ Mettre à jour</h4><p>Conserve causes & actions</p></div>
+  </div>
+  <div class="drop-zone" id="dropZone" onclick="document.getElementById('csvFile').click()">
+    <div style="font-size:34px;margin-bottom:9px">📂</div>
+    <div style="color:var(--muted);font-size:13px"><strong style="color:var(--text)">Cliquez ou glissez votre fichier CSV ici</strong></div>
+    <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleFileSelect(event)"/>
+  </div>
+  <div id="importPreview" style="display:none">
+    <div style="display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:9px">
+      <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:rgba(34,197,94,.4);margin-right:3px"></span>Nouveau</span>
+      <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:rgba(59,130,246,.4);margin-right:3px"></span>Mise à jour</span>
     </div>
-    <div class="form-actions" style="margin-top:14px;">
-      <button class="btn btn-primary" onclick="exportData()">⬇️ Exporter la sauvegarde (.json)</button>
-      <button class="btn btn-outline" onclick="document.getElementById('restoreInput').click()">📂 Restaurer depuis un fichier</button>
-      <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
+    <div class="preview-table" id="previewTable"></div>
+    <div id="importSummary" style="font-size:11px;color:var(--muted);margin-bottom:11px"></div>
+    <div style="display:flex;gap:7px">
+      <button class="btn-primary" onclick="confirmImport()">✅ Confirmer</button>
+      <button class="btn-secondary" onclick="cancelImport()">✕ Annuler</button>
     </div>
   </div>
-  <div class="card">
-    <div class="card-title">🕒 Historique des sauvegardes automatiques</div>
-    <p style="color:var(--text2);font-size:13px;margin-bottom:14px;">Les 5 dernières versions sont conservées automatiquement dans ce navigateur.</p>
-    <button class="btn btn-outline" onclick="renderAutoSaves()">🔄 Rafraîchir</button>
-    <div id="autoSaveList" style="margin-top:14px;"></div>
-    <div style="margin-top:16px;padding:12px 16px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
-      <div style="font-size:12px;color:var(--text2);" id="persistStatus">🔐 Statut de la persistance</div>
-    </div>
+  <div class="format-box">
+    <h4>📋 Format CSV attendu (5 univers)</h4>
+    <pre>Franchise,Nom,Telephone,Poste,ObjFO,ReaFO,ObjLTE,ReaLTE,ObjPS,ReaPS,ObjPC,ReaPC,ObjOBA,ReaOBA
+EO Dar Es,BENJAMIN YAO,0747268228,STAGIAIRE,10,0,7,0,12,0,9,0,8,0
+EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
+    <button class="btn-secondary" style="margin-top:9px;font-size:11px;padding:6px 13px" onclick="downloadTemplate()">⬇️ Télécharger le modèle CSV (données actuelles)</button>
   </div>
 </div>
 
-<!-- Modal Cause par agent -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3>📋 Cause &amp; Action — <span id="modalAgentName">SEKONGO</span></h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
+<!-- SAUVEGARDE -->
+<div class="section" id="section-sauvegarde">
+  <h2 style="font-size:16px;font-weight:600;margin-bottom:16px">💾 Sauvegarde & Restauration</h2>
+  <div class="backup-section">
+    <h3>📤 Exporter une sauvegarde</h3>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+      <input type="text" id="saveName" placeholder="Nom de la sauvegarde" style="width:250px"/>
+      <button class="btn-primary" onclick="exportBackup()">⬇️ Exporter (.json)</button>
+    </div>
+  </div>
+  <div class="backup-section">
+    <h3>📂 Restaurer depuis un fichier</h3>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:11px">⚠️ Écrase toutes les données actuelles.</p>
+    <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup(event)"/>
+    <button class="btn-secondary" onclick="document.getElementById('restoreFile').click()">📂 Choisir un fichier .json</button>
+  </div>
+  <div class="backup-section">
+    <h3>🕒 Sauvegardes automatiques (5 dernières)</h3>
+    <div id="autoBackupList"></div>
+    <button class="btn-secondary" style="font-size:11px;padding:6px 11px;margin-top:10px" onclick="refreshAutoBackups()">🔄 Rafraîchir</button>
+  </div>
+  <div class="backup-section">
+    <h3>🔐 Statut</h3>
+    <div class="status-pill"><span class="dot"></span> Données sauvegardées dans ce navigateur</div>
+    <p style="font-size:11px;color:var(--muted);margin-top:7px">💡 Exportez régulièrement pour éviter toute perte si vous changez d'appareil.</p>
+  </div>
+</div>
+
+</main>
+
+<!-- CAUSE/ACTION MODAL -->
+<div class="modal-overlay" id="caModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📋 Cause & Action — <span id="caAgentName"></span></h3>
+      <button class="modal-close" onclick="closeCA()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label>Causes de la baisse</label>
-        <div class="cause-checklist" id="modalCausesChk">
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="c1">
-      <span>😴 Manque de motivation</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="c2">
-      <span>📚 Maîtrise produit insuffisante</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="c3">
-      <span>🗺️ Zone / terrain difficile</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="c4">
-      <span>📞 Problème de prospection</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="c5">
-      <span>🤝 Manque d'accompagnement</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="c6">
-      <span>📋 Objectifs mal compris</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="c7">
-      <span>🏥 Absence / problème personnel</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="c8">
-      <span>🛠️ Problème technique / outils</span>
-    </label></div>
-      </div>
-      <div class="form-group">
-        <label>Actions planifiées</label>
-        <div class="cause-checklist" id="modalActionsChk">
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c1_0">
-      <span>😴 Entretien motivationnel individuel</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c1_1">
-      <span>😴 Incentives &amp; objectifs intermédiaires</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c1_2">
-      <span>😴 Plan de progression co-construit</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c2_0">
-      <span>📚 Session de formation produit</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c2_1">
-      <span>📚 Fiche mémo argumentaires</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c2_2">
-      <span>📚 Simulations de vente (roleplay)</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c3_0">
-      <span>🗺️ Redéfinir la zone de prospection</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c3_1">
-      <span>🗺️ Stratégie terrain adaptée</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c3_2">
-      <span>🗺️ Sortie terrain commune</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c4_0">
-      <span>📞 Audit du plan de prospection</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c4_1">
-      <span>📞 Objectif de contacts journaliers</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c4_2">
-      <span>📞 Formation relance &amp; suivi pipeline</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c5_0">
-      <span>🤝 Coaching hebdomadaire 1-to-1</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c5_1">
-      <span>🤝 Binôme avec un top performer</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c5_2">
-      <span>🤝 Tableau de bord individuel</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c6_0">
-      <span>📋 Clarification des objectifs</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c6_1">
-      <span>📋 Brief matinal quotidien</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c6_2">
-      <span>📋 Affichage objectifs hebdomadaires</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c7_0">
-      <span>🏥 Suivi RH bienveillant</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c7_1">
-      <span>🏥 Plan de rattrapage adapté</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c7_2">
-      <span>🏥 Escalade RH si prolongé</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c8_0">
-      <span>🛠️ Diagnostic technique urgent</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c8_1">
-      <span>🛠️ Formation outils internes</span>
-    </label>
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="c8_2">
-      <span>🛠️ Escalade IT</span>
-    </label></div>
-      </div>
-      <div class="form-group">
-        <label>Commentaire</label>
-        <textarea id="modalComment" rows="3" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);outline:none;resize:vertical;" placeholder="Contexte, observations…"></textarea>
+      <div class="stitle">Causes de la baisse</div>
+      <div class="cause-grid" id="caGrid"></div>
+      <div class="stitle">Actions planifiées</div>
+      <div class="action-list" id="actionList"></div>
+      <div class="stitle">Commentaire</div>
+      <textarea id="caComment" placeholder="Notes libres sur cet agent…"></textarea>
+      <div style="display:flex;gap:7px;margin-top:13px">
+        <button class="btn-primary" onclick="saveCA()">💾 Enregistrer</button>
+        <button class="btn-secondary" onclick="closeCA()">Annuler</button>
       </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
-      <button class="btn btn-green" onclick="saveAgentCause()">💾 Enregistrer</button>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="confirm-modal">
+    <h3>⚠️ Confirmer la suppression</h3>
+    <p id="confirmMsg"></p>
+    <div class="confirm-btns">
+      <button class="btn-danger" onclick="confirmDeleteAgent()">🗑️ Supprimer</button>
+      <button class="btn-secondary" onclick="closeConfirm()">Annuler</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script src="Pilotage%20equipe%20ok_fichiers/xlsx.full.min.js"></script>
 <script>
-// ══════════════════════════════════════════
-// DONNÉES & ÉTAT
-// ══════════════════════════════════════════
-let agents = [];
-let activePack = 'packc';
-let dashSort = { key:'ro', dir:-1 };
-let filteredFranchise = '';
-let selectedCauses = new Set();
-let currentAgentModal = null;
+let agents=[];
+let currentUnivers='global';
+let importMode='replace';
+let pendingImport=[];
+let deleteTargetId=null;
+let caTargetId=null;
+let sortKey='ratioGlobal';
+let sortDir=-1;
 
-const FRANCHISE_COLORS = [
-  '#ff8c42','#3a7bd5','#845ef7','#00c48c','#ff4757','#00b4d8','#ffd166'
-];
-
-// ── Causes ──
-const CAUSES = [
-  {id:'c1',icon:'😴',color:'#ff4757',bg:'#fff0f1', titre:'Manque de motivation', desc:'Démotivation, désengagement, baisse d\'implication personnelle'},
-  {id:'c2',icon:'📚',color:'#ff8c42',bg:'#fff5ee', titre:'Maîtrise produit insuffisante', desc:'Méconnaissance des offres, arguments de vente mal maîtrisés'},
-  {id:'c3',icon:'🗺️',color:'#ffd166',bg:'#fffbee', titre:'Zone / terrain difficile', desc:'Secteur peu dense, forte concurrence, clientèle difficile'},
-  {id:'c4',icon:'📞',color:'#845ef7',bg:'#f5f0ff', titre:'Problème de prospection', desc:'Faible nombre de contacts, mauvaise gestion du pipeline'},
-  {id:'c5',icon:'🤝',color:'#3a7bd5',bg:'#eef4ff', titre:'Manque d\'accompagnement', desc:'Absence de coaching régulier, pas de suivi individualisé'},
-  {id:'c6',icon:'📋',color:'#00c48c',bg:'#edfaf4', titre:'Objectifs mal compris', desc:'Incompréhension des cibles, confusion sur les priorités produit'},
-  {id:'c7',icon:'🏥',color:'#00b4d8',bg:'#e8f8fc', titre:'Absence / problème personnel', desc:'Maladie, absence prolongée, événement familial'},
-  {id:'c8',icon:'🛠️',color:'#6b7a99',bg:'#f0f2f5', titre:'Problème technique / outils', desc:'Difficultés avec les outils de vente, système ou téléphone'},
-];
-
-const ACTIONS = {
-  c1:[
-    {titre:'Entretien motivationnel individuel', desc:'Programmer un point individuel pour identifier les freins et redonner du sens.', prio:'high'},
-    {titre:'Incentives & objectifs intermédiaires', desc:'Définir des paliers avec récompenses visibles (classement, prime).', prio:'med'},
-    {titre:'Plan de progression co-construit', desc:'Bâtir ensemble un plan d\'évolution clair et motivant.', prio:'med'},
-  ],
-  c2:[
-    {titre:'Session de formation produit', desc:'Organiser une formation sur les offres Pack C / S / LTE / FO.', prio:'high'},
-    {titre:'Fiche mémo argumentaires', desc:'Distribuer des fiches synthèse par produit.', prio:'med'},
-    {titre:'Simulations de vente (roleplay)', desc:'Jeux de rôle pour renforcer les réflexes de vente.', prio:'low'},
-  ],
-  c3:[
-    {titre:'Redéfinir la zone de prospection', desc:'Analyser et réattribuer des secteurs à fort potentiel.', prio:'high'},
-    {titre:'Stratégie terrain adaptée', desc:'Co-construire une approche commerciale ciblée par zone.', prio:'med'},
-    {titre:'Sortie terrain commune', desc:'Accompagner l\'agent sur le terrain pour identifier les opportunités.', prio:'med'},
-  ],
-  c4:[
-    {titre:'Audit du plan de prospection', desc:'Revoir le rythme, les canaux et les cibles de prospection.', prio:'high'},
-    {titre:'Objectif de contacts journaliers', desc:'Fixer un minimum de contacts quotidiens avec suivi.', prio:'high'},
-    {titre:'Formation relance & suivi pipeline', desc:'Techniques de relance et gestion du pipeline client.', prio:'med'},
-  ],
-  c5:[
-    {titre:'Coaching hebdomadaire 1-to-1', desc:'Sessions de coaching individuelles chaque semaine.', prio:'high'},
-    {titre:'Binôme avec un top performer', desc:'Associer l\'agent à un collègue performant pour apprentissage.', prio:'med'},
-    {titre:'Tableau de bord individuel', desc:'Fournir un suivi visuel quotidien de ses propres performances.', prio:'low'},
-  ],
-  c6:[
-    {titre:'Clarification des objectifs', desc:'Réexpliquer les cibles, unités et priorités produit.', prio:'high'},
-    {titre:'Brief matinal quotidien', desc:'Point équipe chaque matin pour rappel des objectifs du jour.', prio:'med'},
-    {titre:'Affichage objectifs hebdomadaires', desc:'Rendre les objectifs visibles dans l\'espace de travail.', prio:'low'},
-  ],
-  c7:[
-    {titre:'Suivi RH bienveillant', desc:'Prendre contact pour vérifier la situation et préparer le retour.', prio:'high'},
-    {titre:'Plan de rattrapage adapté', desc:'Ajuster temporairement les objectifs à la situation.', prio:'med'},
-    {titre:'Escalade RH si prolongé', desc:'Remonter au service RH si l\'absence dépasse le délai normal.', prio:'low'},
-  ],
-  c8:[
-    {titre:'Diagnostic technique urgent', desc:'Identifier et résoudre les blocages techniques sous 24h.', prio:'high'},
-    {titre:'Formation outils internes', desc:'Former sur l\'utilisation correcte des outils et systèmes.', prio:'med'},
-    {titre:'Escalade IT', desc:'Remonter les problèmes non résolus au support technique.', prio:'med'},
-  ],
+const UCOLS=['FO','LTE','PS','PC','OBA'];
+const UINFO={
+  fo:{label:'FTTH (FO)',icon:'🔵',color:'#3b82f6',U:'FO'},
+  lte:{label:'LTE',icon:'📶',color:'#a855f7',U:'LTE'},
+  ps:{label:'Pack Simple',icon:'📦',color:'#f97316',U:'PS'},
+  pc:{label:'Pack Crédit',icon:'💳',color:'#14b8a6',U:'PC'},
+  oba:{label:'OBA',icon:'⭐',color:'#eab308',U:'OBA'},
 };
 
-// ══════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════
-function goTo(page, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  if(btn) btn.classList.add('active');
-  if(page==='classement') renderClassement();
-  if(page==='saisie') renderSaisie();
-  if(page==='sauvegarde') { renderAutoSaves(); checkPersist(); }
-  document.getElementById('alertPanel').classList.remove('open');
+const CAUSES=[
+  {id:'motivation',icon:'😴',label:'Manque de motivation',desc:'Démotivation, désengagement'},
+  {id:'produit',icon:'📚',label:'Maîtrise produit insuffisante',desc:'Offres mal connues'},
+  {id:'zone',icon:'🗺️',label:'Zone / terrain difficile',desc:'Secteur peu dense'},
+  {id:'prospection',icon:'📞',label:'Problème de prospection',desc:'Faible nombre de contacts'},
+  {id:'accompagnement',icon:'🤝',label:"Manque d'accompagnement",desc:'Pas de suivi individualisé'},
+  {id:'objectifs',icon:'📋',label:'Objectifs mal compris',desc:'Confusion sur les priorités'},
+  {id:'absence',icon:'🏥',label:'Absence / problème personnel',desc:'Maladie, événement familial'},
+  {id:'technique',icon:'🛠️',label:'Problème technique / outils',desc:'Difficultés avec les outils'},
+];
+const ACTIONS=[
+  {id:'a1',causes:['motivation'],icon:'😴',label:'Entretien motivationnel individuel',priority:'urgent'},
+  {id:'a2',causes:['produit'],icon:'📚',label:'Session de formation produit',priority:'urgent'},
+  {id:'a3',causes:['zone'],icon:'🗺️',label:'Redéfinir la zone de prospection',priority:'urgent'},
+  {id:'a4',causes:['prospection'],icon:'📞',label:'Audit du plan de prospection',priority:'urgent'},
+  {id:'a5',causes:['prospection'],icon:'📞',label:'Objectif de contacts journaliers',priority:'urgent'},
+  {id:'a6',causes:['accompagnement'],icon:'🤝',label:'Coaching hebdomadaire 1-to-1',priority:'urgent'},
+  {id:'a7',causes:['objectifs'],icon:'📋',label:'Clarification des objectifs',priority:'urgent'},
+  {id:'a8',causes:['absence'],icon:'🏥',label:'Suivi RH bienveillant',priority:'urgent'},
+  {id:'a9',causes:['technique'],icon:'🛠️',label:'Diagnostic technique urgent',priority:'urgent'},
+  {id:'a10',causes:['motivation'],icon:'😴',label:'Incentives & objectifs intermédiaires',priority:'important'},
+  {id:'a11',causes:['motivation'],icon:'😴',label:'Plan de progression co-construit',priority:'important'},
+  {id:'a12',causes:['produit'],icon:'📚',label:'Fiche mémo argumentaires',priority:'important'},
+  {id:'a13',causes:['zone'],icon:'🗺️',label:'Stratégie terrain adaptée',priority:'important'},
+  {id:'a14',causes:['zone'],icon:'🗺️',label:'Sortie terrain commune',priority:'important'},
+  {id:'a15',causes:['prospection'],icon:'📞',label:'Formation relance & suivi pipeline',priority:'important'},
+  {id:'a16',causes:['accompagnement'],icon:'🤝',label:'Binôme avec un top performer',priority:'important'},
+  {id:'a17',causes:['objectifs'],icon:'📋',label:'Brief matinal quotidien',priority:'important'},
+  {id:'a18',causes:['absence'],icon:'🏥',label:'Plan de rattrapage adapté',priority:'important'},
+  {id:'a19',causes:['technique'],icon:'🛠️',label:'Formation outils internes',priority:'important'},
+  {id:'a20',causes:['technique'],icon:'🛠️',label:'Escalade IT',priority:'important'},
+  {id:'a21',causes:['produit'],icon:'📚',label:'Simulations de vente (roleplay)',priority:'normal'},
+  {id:'a22',causes:['accompagnement'],icon:'🤝',label:'Tableau de bord individuel',priority:'normal'},
+  {id:'a23',causes:['objectifs'],icon:'📋',label:'Affichage objectifs hebdomadaires',priority:'normal'},
+  {id:'a24',causes:['absence'],icon:'🏥',label:'Escalade RH si prolongé',priority:'normal'},
+];
+
+// DEFAULT DATA — OBJECTIFS AVRIL 2026
+function getDefaultAgents(){
+  const data=[
+    {franchise:'EO Dar Es',nom:'BENJAMIN YAO',tel:'0747268228',poste:'STAGIAIRE',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Dar Es',nom:'JACOB KOUASSI',tel:'0778909805',poste:'STAGIAIRE',objFO:10,reaFO:1,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Belle Ville',nom:'ODILON KOFFI',tel:'0748705689',poste:'CC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Belle Ville',nom:'YEO KIEMA',tel:'0789898953',poste:'CC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Belle Ville',nom:'ZOUNGRANA ALIMA',tel:'0747505631',poste:'MC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'TOURE FRANCIS',tel:'0708548161',poste:'CC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'KOMPE FOFANA',tel:'0779409986',poste:'CC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'STEPHANE AVOHOU',tel:'0708144652',poste:'MC',objFO:10,reaFO:1,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:1,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'GBANGBO ANNE GISELE',tel:'0789906787',poste:'STAGIAIRE',objFO:10,reaFO:0,objLTE:7,reaLTE:1,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'LOIC ASSIE DEFALONE',tel:'0747198196',poste:'STAGIAIRE',objFO:10,reaFO:2,objLTE:7,reaLTE:0,objPS:12,reaPS:1,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'KONE KARIDJATOU',tel:'0797329538',poste:'MC',objFO:10,reaFO:2,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'SEKONGO',tel:'0747031104',poste:'MC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'GNAMIEN TOPE JEKHIEL',tel:'0747901081',poste:'SAV',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'KOUASSI STEPHANIE',tel:'0709502628',poste:'CC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:0,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'KONATE FATOUMATA',tel:'0708759382',poste:'CC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'KONAN ARMAND',tel:'0777667033',poste:'MC',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:3,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'GLADYS',tel:'0768799509',poste:'MC',objFO:10,reaFO:0,objLTE:7,reaLTE:1,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:3,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'KOFFI DANIELLE',tel:'0777676962',poste:'MC',objFO:10,reaFO:1,objLTE:7,reaLTE:1,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:3,reaOBA:0},
+    {franchise:'EO Bouaké',nom:'JEAN CLAUDE',tel:'0707689444',poste:'MC',objFO:10,reaFO:1,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:3,reaOBA:0},
+    {franchise:'Ps Dabakala',nom:'COULIBALY MAMA',tel:'0777464376',poste:'STAGIAIRE',objFO:0,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:0,reaPC:0,objOBA:0,reaOBA:0},
+    {franchise:'Ps Dabakala',nom:'YEO SIATOU',tel:'0779707771',poste:'STAGIAIRE',objFO:0,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:0,reaPC:0,objOBA:0,reaOBA:0},
+    {franchise:'Ps Dabakala',nom:'PINGUIN ADELE',tel:'0747404041',poste:'STAGIAIRE',objFO:0,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:0,reaPC:0,objOBA:0,reaOBA:0},
+    {franchise:'Eo Katiola',nom:'KOUADIO JOCELYNE',tel:'0707175902',poste:'CC',objFO:0,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+    {franchise:'Eo Katiola',nom:'FATOUMA FOFANA',tel:'0747404041',poste:'CC',objFO:0,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
+  ];
+  return data.map(a=>({id:uid(),causes:[],actions:[],comment:'',...a}));
 }
 
-// ══════════════════════════════════════════
-// PACK
-// ══════════════════════════════════════════
-function setActivePack(pack, btn) {
-  activePack = pack;
-  document.querySelectorAll('.pack-tab').forEach(t => {
-    t.className = 'pack-tab';
-  });
-  if(btn) btn.classList.add('active-'+pack);
-  renderDashTable();
-}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
-function getPackKey(a) {
-  if(activePack==='packc') return {obj:a.objC, rea:a.reaC};
-  if(activePack==='packs') return {obj:a.objS, rea:a.reaS};
-  if(activePack==='lte')   return {obj:a.objL, rea:a.reaL};
-  return {obj:a.objF, rea:a.reaF};
-}
-
-function getRO(a) {
-  const {obj,rea} = getPackKey(a);
-  return obj > 0 ? Math.round(rea/obj*100) : 0;
-}
-
-function roColor(ro) {
-  if(ro===0) return 'var(--red)';
-  if(ro<50) return 'var(--orange)';
-  if(ro<100) return 'var(--yellow)';
-  return 'var(--green)';
-}
-
-// ══════════════════════════════════════════
-// FRANCHISE PILLS & STATS
-// ══════════════════════════════════════════
-function buildFranchisePills() {
-  const franchises = [...new Set(agents.map(a=>a.franchise))].sort();
-
-  // Populate select
-  const sel = document.getElementById('dashFranchise');
-  sel.innerHTML = '<option value="">Toutes franchises</option>';
-  franchises.forEach(f => { const o = document.createElement('option'); o.value=f; o.textContent=f; sel.appendChild(o); });
-
-  // Pills
-  const pills = document.getElementById('franchisePills');
-  pills.innerHTML = '';
-  const allPill = document.createElement('div');
-  allPill.className = 'fpill active';
-  allPill.textContent = 'Toutes';
-  allPill.onclick = () => setFranchiseFilter('');
-  pills.appendChild(allPill);
-
-  franchises.forEach((f,i) => {
-    const p = document.createElement('div');
-    p.className = 'fpill';
-    p.textContent = f;
-    p.dataset.franchise = f;
-    p.style.setProperty('--fc', FRANCHISE_COLORS[i % FRANCHISE_COLORS.length]);
-    p.onclick = () => setFranchiseFilter(f);
-    pills.appendChild(p);
-  });
-
-  buildFranchiseStats(franchises);
-}
-
-function setFranchiseFilter(franchise) {
-  filteredFranchise = franchise;
-  document.getElementById('dashFranchise').value = franchise;
-  document.querySelectorAll('.fpill').forEach(p => {
-    if(franchise==='') p.classList.toggle('active', !p.dataset.franchise);
-    else p.classList.toggle('active', p.dataset.franchise===franchise);
-  });
-  document.querySelectorAll('.fstat-card').forEach(c => {
-    c.classList.toggle('active-fran', c.dataset.franchise===franchise && franchise!=='');
-  });
-  renderDashTable();
-}
-
-function onFranchiseSelectChange() {
-  setFranchiseFilter(document.getElementById('dashFranchise').value);
-}
-
-function buildFranchiseStats(franchises) {
-  const grid = document.getElementById('franchiseStatsGrid');
-  grid.innerHTML = '';
-  franchises.forEach((f,i) => {
-    const fa = agents.filter(a=>a.franchise===f);
-    const avg = fa.length ? Math.round(fa.reduce((s,a)=>s+getRO(a),0)/fa.length) : 0;
-    const alerts = fa.filter(a=>getRO(a)===0).length;
-    const top = fa.slice().sort((a,b)=>getRO(b)-getRO(a))[0];
-    const color = avg>=100?'var(--green)':avg>=50?'var(--yellow)':avg>0?'var(--orange)':'var(--red)';
-    const card = document.createElement('div');
-    card.className = 'fstat-card';
-    card.dataset.franchise = f;
-    card.style.borderLeftColor = FRANCHISE_COLORS[i%FRANCHISE_COLORS.length];
-    card.innerHTML = `
-      <div class="fstat-name">${f}</div>
-      <div class="fstat-row"><span>${fa.length} agents</span><span class="fstat-pct" style="color:${color}">${avg}% moy.</span></div>
-      <div class="fstat-row"><span>⚠️ ${alerts} alertes</span><span style="color:var(--text2);font-size:11px">${top?'🏆 '+top.nom.split(' ')[0]:''}</span></div>
-    `;
-    card.onclick = () => setFranchiseFilter(f===filteredFranchise?'':f);
-    grid.appendChild(card);
-  });
-}
-
-// ══════════════════════════════════════════
-// DASHBOARD TABLE
-// ══════════════════════════════════════════
-function renderDashTable() {
-  let data = agents.slice();
-  const search = document.getElementById('dashSearch').value.toLowerCase();
-  const poste  = document.getElementById('dashPoste').value;
-  const perf   = document.getElementById('dashPerf').value;
-
-  if(filteredFranchise) data = data.filter(a=>a.franchise===filteredFranchise);
-  if(search) data = data.filter(a=>a.nom.toLowerCase().includes(search)||(a.franchise||'').toLowerCase().includes(search));
-  if(poste) data = data.filter(a=>a.poste===poste);
-  if(perf==='0') data = data.filter(a=>getRO(a)===0);
-  else if(perf==='low') data = data.filter(a=>getRO(a)>0&&getRO(a)<50);
-  else if(perf==='mid') data = data.filter(a=>getRO(a)>=50&&getRO(a)<100);
-  else if(perf==='ok')  data = data.filter(a=>getRO(a)>=100);
-
-  // sort
-  data.sort((a,b)=>{
-    let va,vb;
-    if(dashSort.key==='ro') { va=getRO(a); vb=getRO(b); }
-    else if(dashSort.key==='obj') { va=getPackKey(a).obj; vb=getPackKey(b).obj; }
-    else if(dashSort.key==='rea') { va=getPackKey(a).rea; vb=getPackKey(b).rea; }
-    else if(dashSort.key==='reste') { va=getPackKey(a).rea-getPackKey(a).obj; vb=getPackKey(b).rea-getPackKey(b).obj; }
-    else if(dashSort.key==='rang') { va=getRO(a); vb=getRO(b); }
-    else { va=(a[dashSort.key]||'').toString().toLowerCase(); vb=(b[dashSort.key]||'').toString().toLowerCase(); }
-    return (va<vb?-1:va>vb?1:0)*dashSort.dir;
-  });
-
-  // KPIs
-  const total = agents.length;
-  const allRO = agents.map(a=>getRO(a));
-  document.getElementById('kpiTotal').textContent = total;
-  document.getElementById('kpiOK').textContent = allRO.filter(r=>r>=100).length;
-  document.getElementById('kpiMoy').textContent = total ? Math.round(allRO.reduce((s,r)=>s+r,0)/total)+'%' : '0%';
-  document.getElementById('kpiAlert').textContent = allRO.filter(r=>r===0).length;
-  document.getElementById('kpiFranchises').textContent = [...new Set(agents.map(a=>a.franchise))].length;
-
-  // Alerts
-  const alertAgents = agents.filter(a=>getRO(a)===0);
-  document.getElementById('alertCount').textContent = alertAgents.length;
-  document.getElementById('alertPanelCount').textContent = '('+alertAgents.length+')';
-  document.getElementById('alertList').innerHTML = alertAgents.map(a=>`
-    <div class="alert-item">
-      <div class="alert-dot"></div>
-      <div>
-        <div class="alert-item-name">${a.nom}</div>
-        <div class="alert-item-detail">${a.franchise} · ${a.poste} · 0 réalisation</div>
-      </div>
-    </div>`).join('');
-
-  // Rang global
-  const sorted = agents.slice().sort((a,b)=>getRO(b)-getRO(a));
-  const rangMap = {}; sorted.forEach((a,i)=>rangMap[a.nom]=i+1);
-
-  const tbody = document.getElementById('dashBody');
-  if(!data.length) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text2)">Aucun agent trouvé</td></tr>';
-    return;
+function ratioFor(a,uKey){
+  if(uKey==='global'){
+    const vals=UCOLS.map(U=>{const o=a['obj'+U],r=a['rea'+U];return o>0?r/o:null;}).filter(v=>v!==null);
+    return vals.length?Math.round(vals.reduce((s,v)=>s+v,0)/vals.length*100):0;
   }
-
-  tbody.innerHTML = data.map(a=>{
-    const {obj,rea} = getPackKey(a);
-    const ro = getRO(a);
-    const reste = rea-obj;
-    const color = roColor(ro);
-    const rang = rangMap[a.nom]||'-';
-    const rankClass = rang===1?'rank-1':rang===2?'rank-2':rang===3?'rank-3':'rank-other';
-    const isAlert = ro===0;
-    const hasCause = a.causes && a.causes.length>0;
-    const fIdx = [...new Set(agents.map(x=>x.franchise))].sort().indexOf(a.franchise);
-    const fColor = FRANCHISE_COLORS[fIdx%FRANCHISE_COLORS.length];
-    return `<tr class="${isAlert?'alert-row':''}">
-      <td><strong>${isAlert?'<span class="alert-icon">⚠️</span> ':''}${a.nom}</strong></td>
-      <td><span class="franchise-badge" style="background:${fColor}22;color:${fColor}">${a.franchise}</span></td>
-      <td>${a.poste}</td>
-      <td>${obj}</td>
-      <td style="font-weight:600">${rea}</td>
-      <td>
-        <div class="ro-bar-wrap">
-          <div class="ro-bar"><div class="ro-fill" style="width:${Math.min(ro,100)}%;background:${color}"></div></div>
-          <span class="ro-pct" style="color:${color}">${ro}%</span>
-        </div>
-      </td>
-      <td style="font-weight:600;color:${reste<0?'var(--red)':'var(--green)'}">${reste}</td>
-      <td><span class="rank-badge ${rankClass}">${rang}e</span></td>
-      <td><button class="btn-cause ${hasCause?'has-cause':''}" onclick="openModal('${a.nom.replace(/'/g,"\\'")}')">
-        ${hasCause?'✅ Modifier':'⚠️ Saisir'}
-      </button></td>
-    </tr>`;
-  }).join('');
-
-  // Rebuild franchise stats with current pack
-  const franchises = [...new Set(agents.map(a=>a.franchise))].sort();
-  buildFranchiseStats(franchises);
+  const U=uKey.toUpperCase();
+  const o=a['obj'+U],r=a['rea'+U];
+  return o>0?Math.round(r/o*100):null;
 }
-
-function sortDash(key) {
-  if(dashSort.key===key) dashSort.dir*=-1;
-  else { dashSort.key=key; dashSort.dir=-1; }
-  renderDashTable();
+function colorR(r){return r===null?'var(--muted)':r>=100?'var(--green)':r>=50?'var(--yellow)':'var(--red)';}
+function enriched(){
+  return [...agents].sort((a,b)=>(ratioFor(b,currentUnivers)||0)-(ratioFor(a,currentUnivers)||0)).map((a,i)=>({...a,ratioGlobal:ratioFor(a,'global'),rang:i+1}));
 }
+function getFranchises(){return[...new Set(agents.map(a=>a.franchise))].sort();}
 
-// ══════════════════════════════════════════
-// CLASSEMENT
-// ══════════════════════════════════════════
-function renderClassement() {
-  const sorted = agents.slice().sort((a,b)=>getRO(b)-getRO(a));
-  const top3 = sorted.slice(0,3);
-  const medals = ['🥇','🥈','🥉'];
-  const pClasses = ['p1','p2','p3'];
-
-  document.getElementById('podium').innerHTML = top3.map((a,i)=>`
-    <div class="podium-item ${pClasses[i]}">
-      <div class="podium-medal">${medals[i]}</div>
-      <div class="podium-name">${a.nom}</div>
-      <div class="podium-franchise">${a.franchise}</div>
-      <div class="podium-score" style="color:${roColor(getRO(a))}">${getRO(a)}%</div>
-    </div>`).join('');
-
-  document.getElementById('classBody').innerHTML = sorted.map((a,i)=>{
-    const {obj,rea}=getPackKey(a); const ro=getRO(a); const reste=rea-obj;
-    const rankClass=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';
-    const fIdx=[...new Set(agents.map(x=>x.franchise))].sort().indexOf(a.franchise);
-    const fColor=FRANCHISE_COLORS[fIdx%FRANCHISE_COLORS.length];
-    return `<tr>
-      <td><span class="rank-badge ${rankClass}">${i+1}e</span></td>
-      <td><strong>${a.nom}</strong></td>
-      <td><span class="franchise-badge" style="background:${fColor}22;color:${fColor}">${a.franchise}</span></td>
-      <td>${a.poste}</td>
-      <td>${obj}</td><td style="font-weight:600">${rea}</td>
-      <td><div class="ro-bar-wrap"><div class="ro-bar"><div class="ro-fill" style="width:${Math.min(ro,100)}%;background:${roColor(ro)}"></div></div><span class="ro-pct" style="color:${roColor(ro)}">${ro}%</span></div></td>
-      <td style="font-weight:600;color:${reste<0?'var(--red)':'var(--green)'}">${reste}</td>
-    </tr>`;
-  }).join('');
+function loadData(){
+  const raw=localStorage.getItem('pil_agents');
+  agents=raw?JSON.parse(raw):getDefaultAgents();
+  const p=localStorage.getItem('pil_period')||'Avril 2026';
+  document.getElementById('periodLabel').value=p;
+  document.getElementById('periodDisplay').textContent=p?'📅 '+p:'';
+  renderAll();autoSave();
 }
-
-// ══════════════════════════════════════════
-// SAISIE
-// ══════════════════════════════════════════
-let editingIndex = -1;
-
-function saveAgent() {
-  const nom = document.getElementById('fNom').value.trim().toUpperCase();
-  const franchise = document.getElementById('fFranchise').value.trim();
-  const tel = document.getElementById('fTel').value.trim();
-  const poste = document.getElementById('fPoste').value;
-  if(!nom||!franchise||!poste){showToast('⚠️ Remplissez au moins Franchise, Nom et Poste');return;}
-  const agent = {
-    nom, franchise, tel, poste,
-    objC:+document.getElementById('fObjC').value||0, reaC:+document.getElementById('fReaC').value||0,
-    objS:+document.getElementById('fObjS').value||0, reaS:+document.getElementById('fReaS').value||0,
-    objL:+document.getElementById('fObjL').value||0, reaL:+document.getElementById('fReaL').value||0,
-    objF:+document.getElementById('fObjF').value||0, reaF:+document.getElementById('fReaF').value||0,
-    causes:[], actions:[], comment:''
-  };
-  if(editingIndex>=0){ const old=agents[editingIndex]; agent.causes=old.causes||[]; agent.actions=old.actions||[]; agent.comment=old.comment||''; agents[editingIndex]=agent; editingIndex=-1; }
-  else agents.push(agent);
-  saveToStorage(); resetForm(); renderSaisie(); renderDashTable(); buildFranchisePills();
-  showToast('✅ Agent enregistré : '+nom);
+function saveData(){localStorage.setItem('pil_agents',JSON.stringify(agents));autoSave();}
+function savePeriod(){
+  const v=document.getElementById('periodLabel').value.trim();
+  localStorage.setItem('pil_period',v);
+  document.getElementById('periodDisplay').textContent=v?'📅 '+v:'';
+  showToast('Période enregistrée');
 }
-
-function resetForm() {
-  editingIndex=-1;
-  ['fFranchise','fNom','fTel'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fPoste').value='';
-  ['fObjC','fReaC','fObjS','fReaS','fObjL','fReaL','fObjF','fReaF'].forEach(id=>document.getElementById(id).value=0);
+function autoSave(){
+  const h=JSON.parse(localStorage.getItem('pil_history')||'[]');
+  h.unshift({ts:new Date().toISOString(),data:JSON.parse(JSON.stringify(agents))});
+  if(h.length>5)h.length=5;
+  localStorage.setItem('pil_history',JSON.stringify(h));
+  renderAutoBackups();
 }
-
-function editAgent(i) {
-  const a=agents[i]; editingIndex=i; goTo('saisie');
-  document.getElementById('fFranchise').value=a.franchise||'';
-  document.getElementById('fNom').value=a.nom||'';
-  document.getElementById('fTel').value=a.tel||'';
-  document.getElementById('fPoste').value=a.poste||'';
-  document.getElementById('fObjC').value=a.objC||0; document.getElementById('fReaC').value=a.reaC||0;
-  document.getElementById('fObjS').value=a.objS||0; document.getElementById('fReaS').value=a.reaS||0;
-  document.getElementById('fObjL').value=a.objL||0; document.getElementById('fReaL').value=a.reaL||0;
-  document.getElementById('fObjF').value=a.objF||0; document.getElementById('fReaF').value=a.reaF||0;
+function renderAutoBackups(){
+  const h=JSON.parse(localStorage.getItem('pil_history')||'[]');
+  const el=document.getElementById('autoBackupList');if(!el)return;
+  el.innerHTML=h.length?h.map((s,i)=>{const d=new Date(s.ts);return`<div class="history-item"><span class="history-time">🕒 ${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span><span style="color:var(--muted);font-size:11px">${s.data.length} agents</span><button class="btn-action" onclick="restoreFromHistory(${i})" style="margin-left:auto">↩️ Restaurer</button></div>`;}).join(''):'<p style="color:var(--muted);font-size:11px">Aucune sauvegarde</p>';
 }
+function refreshAutoBackups(){renderAutoBackups();showToast('Actualisé');}
+function restoreFromHistory(i){const h=JSON.parse(localStorage.getItem('pil_history')||'[]');if(!h[i])return;agents=JSON.parse(JSON.stringify(h[i].data));saveData();renderAll();showToast('Restauré ✅');}
 
-function deleteAgent(i) {
-  if(!confirm('Supprimer '+agents[i].nom+' ?')) return;
-  agents.splice(i,1); saveToStorage(); renderSaisie(); renderDashTable(); buildFranchisePills();
-}
+function setUnivers(u,el){currentUnivers=u;document.querySelectorAll('.utab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderAll();}
 
-function renderSaisie() {
-  document.getElementById('saisieCount').textContent='('+agents.length+' agents)';
-  document.getElementById('saisieBody').innerHTML = agents.map((a,i)=>{
-    const roC=a.objC?Math.round(a.reaC/a.objC*100):0;
-    const roS=a.objS?Math.round(a.reaS/a.objS*100):0;
-    const roL=a.objL?Math.round(a.reaL/a.objL*100):0;
-    const roF=a.objF?Math.round(a.reaF/a.objF*100):0;
-    return `<tr>
-      <td>${a.franchise}</td>
-      <td><strong>${a.nom}</strong><br><span style="font-size:11px;color:var(--text2)">${a.tel||''}</span></td>
-      <td>${a.poste}</td>
-      <td style="color:${roColor(roC)};font-weight:600">${roC}%</td>
-      <td style="color:${roColor(roS)};font-weight:600">${roS}%</td>
-      <td style="color:${roColor(roL)};font-weight:600">${roL}%</td>
-      <td style="color:${roColor(roF)};font-weight:600">${roF}%</td>
-      <td>
-        <button class="btn btn-outline btn-sm" onclick="editAgent(${i})">✏️</button>
-        <button class="btn btn-red btn-sm" onclick="deleteAgent(${i})">🗑</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
+function renderAll(){renderKPI();renderAlerts();renderFranchiseCards();renderTable();renderSaisieList();updateFranchiseFilter();updateFranchiseDatalist();}
+function updateFranchiseFilter(){const sel=document.getElementById('filterFranchise');const cur=sel.value;sel.innerHTML='<option value="">Toutes franchises</option>'+getFranchises().map(f=>`<option${f===cur?' selected':''}>${f}</option>`).join('');}
+function updateFranchiseDatalist(){document.getElementById('franchiseList').innerHTML=getFranchises().map(f=>`<option value="${f}">`).join('');}
 
-// ══════════════════════════════════════════
-// CAUSES & ACTIONS
-// ══════════════════════════════════════════
-function buildCauseGrid() {
-  document.getElementById('causeGrid').innerHTML = CAUSES.map(c=>`
-    <div class="cause-card" id="cause_${c.id}" onclick="toggleCause('${c.id}')">
-      <div class="cause-tick" id="tick_${c.id}">✓</div>
-      <div class="cause-card-head">
-        <div class="cause-icon-box" style="background:${c.bg};color:${c.color}">${c.icon}</div>
-        <h3 style="color:${c.color}">${c.titre}</h3>
-      </div>
-      <p>${c.desc}</p>
-    </div>`).join('');
-  renderActions();
-}
-
-function toggleCause(id) {
-  if(selectedCauses.has(id)) selectedCauses.delete(id);
-  else selectedCauses.add(id);
-  CAUSES.forEach(c=>{
-    document.getElementById('cause_'+c.id)?.classList.toggle('selected', selectedCauses.has(c.id));
-  });
-  document.getElementById('actionsLabel').textContent =
-    selectedCauses.size===0 ? 'Toutes causes' : selectedCauses.size+' cause(s)';
-  renderActions();
-}
-
-function clearCauseFilter() {
-  selectedCauses.clear();
-  CAUSES.forEach(c=>document.getElementById('cause_'+c.id)?.classList.remove('selected'));
-  document.getElementById('actionsLabel').textContent='Toutes causes';
-  renderActions();
-}
-
-function renderActions() {
-  const ids = selectedCauses.size>0 ? [...selectedCauses] : CAUSES.map(c=>c.id);
-  const prioOrder = {high:0,med:1,low:2};
-  let all = [];
-  ids.forEach(id=>{
-    const cause = CAUSES.find(c=>c.id===id);
-    (ACTIONS[id]||[]).forEach(a=>all.push({...a, cause}));
-  });
-  all.sort((a,b)=>prioOrder[a.prio]-prioOrder[b.prio]);
-
-  const container = document.getElementById('actionsList');
-  if(!all.length){ container.innerHTML='<div style="padding:20px;color:var(--text2);text-align:center">Aucune action à afficher</div>'; return; }
-  container.innerHTML = all.map((a,i)=>`
-    <div class="action-item">
-      <div class="action-num">${i+1}</div>
-      <div class="action-body">
-        <div class="action-title">${a.cause.icon} ${a.titre}</div>
-        <div class="action-desc">${a.desc}</div>
-        <div class="action-tag" style="color:${a.cause.color}">${a.cause.titre}</div>
-      </div>
-      <span class="prio-tag prio-${a.prio}">${a.prio==='high'?'🔴 Urgent':a.prio==='med'?'🟡 Important':'🟢 Normal'}</span>
-    </div>`).join('');
-}
-
-// ══════════════════════════════════════════
-// MODAL PAR AGENT
-// ══════════════════════════════════════════
-function openModal(nom) {
-  const agent = agents.find(a=>a.nom===nom);
-  if(!agent) return;
-  currentAgentModal = agent;
-  document.getElementById('modalAgentName').textContent = nom;
-  document.getElementById('modalComment').value = agent.comment||'';
-
-  document.getElementById('modalCausesChk').innerHTML = CAUSES.map(c=>`
-    <label class="cause-chk-item">
-      <input type="checkbox" name="mc" value="${c.id}" ${(agent.causes||[]).includes(c.id)?'checked':''}>
-      <span>${c.icon} ${c.titre}</span>
-    </label>`).join('');
-
-  const allActs = CAUSES.flatMap(c=>(ACTIONS[c.id]||[]).map((a,i)=>({...a,key:c.id+'_'+i,icon:c.icon})));
-  document.getElementById('modalActionsChk').innerHTML = allActs.map(a=>`
-    <label class="cause-chk-item">
-      <input type="checkbox" name="ma" value="${a.key}" ${(agent.actions||[]).includes(a.key)?'checked':''}>
-      <span>${a.icon} ${a.titre}</span>
-    </label>`).join('');
-
-  document.getElementById('modalOverlay').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-  currentAgentModal = null;
-}
-
-function saveAgentCause() {
-  if(!currentAgentModal) return;
-  currentAgentModal.causes = [...document.querySelectorAll('#modalCausesChk input:checked')].map(i=>i.value);
-  currentAgentModal.actions = [...document.querySelectorAll('#modalActionsChk input:checked')].map(i=>i.value);
-  currentAgentModal.comment = document.getElementById('modalComment').value;
-  saveToStorage(); closeModal(); renderDashTable();
-  showToast('✅ Cause & action enregistrées pour '+currentAgentModal?.nom);
-}
-
-// ══════════════════════════════════════════
-// ALERTES
-// ══════════════════════════════════════════
-function toggleAlerts() {
-  document.getElementById('alertPanel').classList.toggle('open');
-}
-
-// ══════════════════════════════════════════
-// IMPORT
-// ══════════════════════════════════════════
-function handleFileImport(e) {
-  const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  if(file.name.endsWith('.csv')) {
-    reader.onload = ev => { importCSV(ev.target.result); };
-    reader.readAsText(file);
+function renderKPI(){
+  const list=enriched();const total=list.length;
+  const badge=document.getElementById('badgeAlerts');
+  let kpis='';
+  if(currentUnivers==='global'){
+    const avg=total?Math.round(list.reduce((s,a)=>s+a.ratioGlobal,0)/total):0;
+    const atteint=list.filter(a=>a.ratioGlobal>=100).length;
+    const alerts=list.filter(a=>a.ratioGlobal===0).length;
+    if(alerts>0){badge.textContent=alerts;badge.style.display='';}else{badge.style.display='none';}
+    const sum=(k,r)=>{const to=agents.reduce((s,a)=>s+a['obj'+k],0);const tr=agents.reduce((s,a)=>s+a['rea'+k],0);const pct=to>0?Math.round(tr/to*100):0;return`<div class="kpi"><div class="kpi-label">${r}</div><div class="kpi-val" style="font-size:18px">${tr}/${to}</div><div class="kpi-sub">${pct}%</div></div>`;};
+    kpis=`
+      <div class="kpi info"><div class="kpi-label">Agents</div><div class="kpi-val">${total}</div><div class="kpi-sub">${getFranchises().length} franchises</div></div>
+      <div class="kpi ${avg>=50?'ok':avg>=25?'warn':'danger'}"><div class="kpi-label">Moyenne globale</div><div class="kpi-val">${avg}%</div><div class="kpi-sub">tous univers</div></div>
+      <div class="kpi ${atteint>0?'ok':'warn'}"><div class="kpi-label">≥100% global</div><div class="kpi-val">${atteint}</div><div class="kpi-sub">agents</div></div>
+      <div class="kpi ${alerts===0?'ok':'danger'}"><div class="kpi-label">Alertes 0%</div><div class="kpi-val">${alerts}</div><div class="kpi-sub">agents</div></div>
+      ${sum('FO','🔵 FTTH (FO)')}${sum('LTE','📶 LTE')}${sum('PS','📦 Pack Simple')}${sum('PC','💳 Pack Crédit')}${sum('OBA','⭐ OBA')}`;
   } else {
-    reader.onload = ev => {
-      const wb = XLSX.read(ev.target.result, {type:'binary'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const csv = XLSX.utils.sheet_to_csv(ws);
-      importCSV(csv);
-    };
-    reader.readAsBinaryString(file);
+    const ui=UINFO[currentUnivers];const U=ui.U;
+    const withObj=list.filter(a=>a['obj'+U]>0);
+    const avg=withObj.length?Math.round(withObj.reduce((s,a)=>s+(ratioFor(a,currentUnivers)||0),0)/withObj.length):0;
+    const atteint=withObj.filter(a=>(ratioFor(a,currentUnivers)||0)>=100).length;
+    const alerts=withObj.filter(a=>(ratioFor(a,currentUnivers)||0)===0).length;
+    if(alerts>0){badge.textContent=alerts;badge.style.display='';}else{badge.style.display='none';}
+    const tObj=agents.reduce((s,a)=>s+a['obj'+U],0);
+    const tRea=agents.reduce((s,a)=>s+a['rea'+U],0);
+    kpis=`
+      <div class="kpi info"><div class="kpi-label">Agents</div><div class="kpi-val">${total}</div><div class="kpi-sub">${getFranchises().length} franchises</div></div>
+      <div class="kpi ${avg>=50?'ok':avg>=25?'warn':'danger'}"><div class="kpi-label">Moyenne R/O</div><div class="kpi-val">${avg}%</div><div class="kpi-sub">${ui.label}</div></div>
+      <div class="kpi ${atteint>0?'ok':'warn'}"><div class="kpi-label">≥100%</div><div class="kpi-val">${atteint}</div><div class="kpi-sub">objectif atteint</div></div>
+      <div class="kpi ${alerts===0?'ok':'danger'}"><div class="kpi-label">Alertes 0%</div><div class="kpi-val">${alerts}</div><div class="kpi-sub">agents</div></div>
+      <div class="kpi info"><div class="kpi-label">Réalisé total</div><div class="kpi-val">${tRea}</div><div class="kpi-sub">obj: ${tObj}</div></div>`;
   }
+  document.getElementById('kpiGrid').innerHTML=kpis;
 }
 
-function importCSV(csv) {
-  const lines = csv.trim().split('\n');
-  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
-  let count = 0;
-  lines.slice(1).forEach(line => {
-    const cols = line.split(',').map(c=>c.trim());
-    if(cols.length < 4) return;
-    const get = (k,def=0) => { const i=headers.indexOf(k); return i>=0?cols[i]:def; };
-    const nom = (get('nom','')||'').toUpperCase();
-    if(!nom) return;
-    const existing = agents.findIndex(a=>a.nom===nom);
-    const agent = {
-      nom, franchise:get('franchise',''), tel:get('telephone',''), poste:get('poste',''),
-      objC:+get('objc',0)||0, reaC:+get('reac',0)||0,
-      objS:+get('objs',0)||0, reaS:+get('reas',0)||0,
-      objL:+get('objl',0)||0, reaL:+get('real',0)||0,
-      objF:+get('objf',0)||0, reaF:+get('reaf',0)||0,
-      causes:[], actions:[], comment:''
-    };
-    if(existing>=0){ const o=agents[existing]; agent.causes=o.causes||[]; agent.actions=o.actions||[]; agent.comment=o.comment||''; agents[existing]=agent; }
-    else agents.push(agent);
-    count++;
+function renderAlerts(){
+  const list=enriched().filter(a=>{
+    if(currentUnivers==='global')return a.ratioGlobal===0;
+    const U=UINFO[currentUnivers].U;return a['obj'+U]>0&&(ratioFor(a,currentUnivers)||0)===0;
   });
-  saveToStorage(); renderDashTable(); buildFranchisePills();
-  showToast('✅ '+count+' agent(s) importé(s)');
+  const bar=document.getElementById('alertBar');const detail=document.getElementById('alertsDetail');
+  if(!list.length){bar.style.display='none';detail.classList.remove('open');return;}
+  bar.style.display='flex';
+  document.getElementById('alertCount').textContent=list.length;
+  document.getElementById('alertText').textContent=`${list.length} agent${list.length>1?'s':''} à 0% — action requise`;
+  detail.innerHTML=list.map(a=>`<div class="alert-item"><span class="alert-dot"></span><span style="font-weight:600">${a.nom}</span><span style="color:var(--muted)">${a.franchise} · ${a.poste}</span><button class="btn-action" style="margin-left:auto" onclick="openCA('${a.id}')">📋 Cause</button></div>`).join('');
 }
+function toggleAlerts(){const d=document.getElementById('alertsDetail');d.classList.toggle('open');document.getElementById('alertChevron').textContent=d.classList.contains('open')?'▲':'▼';}
 
-function downloadTemplate() {
-  const csv = 'Franchise,Nom,Telephone,Poste,ObjC,ReaC,ObjS,ReaS,ObjL,ReaL,ObjF,ReaF\nEO Bouaké,NOM PRENOM,0700000000,CC,7,0,11,0,7,0,10,0';
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download = 'modele_import.csv'; a.click();
+function renderFranchiseCards(){
+  const list=enriched();
+  document.getElementById('franchiseCards').innerHTML=getFranchises().map(f=>{
+    const fa=list.filter(a=>a.franchise===f);
+    const withObj=currentUnivers==='global'?fa:fa.filter(a=>a['obj'+UINFO[currentUnivers].U]>0);
+    const avg=withObj.length?Math.round(withObj.reduce((s,a)=>s+(ratioFor(a,currentUnivers)||0),0)/withObj.length):0;
+    const alerts=withObj.filter(a=>(ratioFor(a,currentUnivers)||0)===0).length;
+    const top=fa[0];
+    const fillColor=avg>=100?'var(--green)':avg>=50?'var(--yellow)':'var(--red)';
+    return`<div class="fc" onclick="filterByFranchise('${f}')"><div class="fc-name">${f}</div><div class="fc-stats"><span>${fa.length} agents</span><span style="color:${fillColor};font-weight:600">${avg}%</span></div><div class="fc-stats"><span style="color:${alerts>0?'var(--red)':'var(--green)'}">⚠️ ${alerts} alertes</span>${top?`<span style="color:var(--accent)">🏆 ${top.nom.split(' ')[0]}</span>`:''}</div><div class="fc-bar"><div class="fc-fill" style="width:${Math.min(avg,100)}%;background:${fillColor}"></div></div></div>`;
+  }).join('');
 }
+function filterByFranchise(f){document.getElementById('filterFranchise').value=f;renderTable();}
 
-// ══════════════════════════════════════════
-// SAUVEGARDE
-// ══════════════════════════════════════════
-function saveToStorage() {
-  try {
-    localStorage.setItem('pilotage_agents', JSON.stringify(agents));
-    const saves = JSON.parse(localStorage.getItem('pilotage_autosaves')||'[]');
-    saves.unshift({date:new Date().toISOString(), agents:JSON.stringify(agents)});
-    localStorage.setItem('pilotage_autosaves', JSON.stringify(saves.slice(0,5)));
-  } catch(e){}
-}
+function sortBy(key){if(sortKey===key)sortDir*=-1;else{sortKey=key;sortDir=-1;}renderTable();}
+function renderTable(){
+  let list=enriched();
+  const fF=document.getElementById('filterFranchise').value;
+  const fP=document.getElementById('filterPoste').value;
+  const fPerf=document.getElementById('filterPerf').value;
+  const search=document.getElementById('searchAgent').value.toLowerCase();
+  if(fF)list=list.filter(a=>a.franchise===fF);
+  if(fP)list=list.filter(a=>a.poste===fP);
+  const gr=a=>ratioFor(a,currentUnivers)||0;
+  if(fPerf==='0')list=list.filter(a=>gr(a)===0);
+  else if(fPerf==='low')list=list.filter(a=>gr(a)>0&&gr(a)<50);
+  else if(fPerf==='mid')list=list.filter(a=>gr(a)>=50&&gr(a)<100);
+  else if(fPerf==='ok')list=list.filter(a=>gr(a)>=100);
+  if(search)list=list.filter(a=>a.nom.toLowerCase().includes(search)||a.franchise.toLowerCase().includes(search));
+  list.sort((a,b)=>{let va=a[sortKey]??0,vb=b[sortKey]??0;if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}return va<vb?-sortDir:va>vb?sortDir:0;});
+  const thead=document.getElementById('mainThead');
+  const tbody=document.getElementById('mainTbody');
 
-function loadFromStorage() {
-  try {
-    const d = localStorage.getItem('pilotage_agents');
-    if(d) agents = JSON.parse(d);
-  } catch(e){}
-}
+  function miniBar(r){if(r===null)return'<span style="color:var(--muted)">—</span>';const col=colorR(r);return`<div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:${Math.min(r,100)}%;background:${col}"></div></div><span class="ratio-num" style="color:${col}">${r}%</span></div>`;}
+  function ucell(obj,rea){const r=obj>0?Math.round(rea/obj*100):null;const col=colorR(r);return`<td class="u-cell" style="color:${col}">${r!==null?`${rea}/${obj}<br><small>${r}%</small>`:'—'}</td>`;}
+  const actions=id=>`<button class="btn-edit" onclick="editAgent('${id}')">✏️</button><button class="btn-action" onclick="openCA('${id}')">📋</button><button class="btn-del" onclick="askDelete('${id}')">🗑️</button>`;
 
-function exportData() {
-  const name = document.getElementById('saveName').value||'sauvegarde_pilotage';
-  const blob = new Blob([JSON.stringify({agents, date:new Date().toISOString()},null,2)],{type:'application/json'});
-  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name+'.json'; a.click();
-}
-
-function restoreData(e) {
-  const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if(data.agents) { agents = data.agents; saveToStorage(); renderDashTable(); buildFranchisePills(); showToast('✅ Données restaurées'); }
-    } catch(err) { showToast('❌ Fichier invalide'); }
-  };
-  reader.readAsText(file);
-}
-
-function renderAutoSaves() {
-  const saves = JSON.parse(localStorage.getItem('pilotage_autosaves')||'[]');
-  document.getElementById('autoSaveList').innerHTML = saves.length ? saves.map((s,i)=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
-      <div>
-        <div style="font-weight:600;font-size:13px">Sauvegarde ${i+1}</div>
-        <div style="font-size:12px;color:var(--text2)">${new Date(s.date).toLocaleString('fr-FR')}</div>
-      </div>
-      <button class="btn btn-outline btn-sm" onclick="restoreAutoSave(${i})">Restaurer</button>
-    </div>`).join('')
-  : '<div style="color:var(--text2);font-size:13px">Aucune sauvegarde automatique</div>';
-}
-
-function restoreAutoSave(i) {
-  const saves = JSON.parse(localStorage.getItem('pilotage_autosaves')||'[]');
-  if(!saves[i]) return;
-  try { agents=JSON.parse(saves[i].agents); saveToStorage(); renderDashTable(); buildFranchisePills(); showToast('✅ Sauvegarde restaurée'); } catch(e){}
-}
-
-function checkPersist() {
-  document.getElementById('persistStatus').textContent = localStorage.getItem('pilotage_agents')
-    ? '🟢 Données présentes dans ce navigateur ('+agents.length+' agents)'
-    : '🔴 Aucune donnée sauvegardée localement';
-}
-
-// ══════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  loadFromStorage();
-
-  // Données par défaut si vide
-  if(!agents.length) {
-    agents = [
-      {nom:'JACOB KOUASSI',franchise:'EO Dar Es',tel:'0778909805',poste:'STAGIAIRE',objC:7,reaC:2,objS:11,reaS:6,objL:7,reaL:20,objF:10,reaF:6,causes:[],actions:[],comment:''},
-      {nom:'KOUADIO JOCELYNE',franchise:'Eo Katiola',tel:'0707175902',poste:'CC',objC:7,reaC:2,objS:11,reaS:15,objL:7,reaL:16,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'FATOUMA FOFANA',franchise:'Eo Katiola',tel:'0747404041',poste:'CC',objC:7,reaC:2,objS:11,reaS:8,objL:7,reaL:16,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'KOMPE FOFANA',franchise:'EO Bouaké',tel:'0779409986',poste:'CC',objC:7,reaC:2,objS:11,reaS:0,objL:7,reaL:4,objF:10,reaF:1,causes:[],actions:[],comment:''},
-      {nom:'GBANGBO ANNE GISELE',franchise:'EO Bouaké',tel:'0789906787',poste:'STAGIAIRE',objC:7,reaC:2,objS:11,reaS:1,objL:7,reaL:7,objF:10,reaF:5,causes:[],actions:[],comment:''},
-      {nom:'SEKONGO',franchise:'EO Bouaké',tel:'0747031104',poste:'MC',objC:7,reaC:2,objS:11,reaS:3,objL:7,reaL:4,objF:10,reaF:8,causes:[],actions:[],comment:''},
-      {nom:'BENJAMIN YAO',franchise:'EO Dar Es',tel:'0747268228',poste:'STAGIAIRE',objC:7,reaC:1,objS:11,reaS:9,objL:7,reaL:21,objF:10,reaF:3,causes:[],actions:[],comment:''},
-      {nom:'ODILON KOFFI',franchise:'EO Belle Ville',tel:'0748705689',poste:'CC',objC:7,reaC:1,objS:11,reaS:1,objL:7,reaL:7,objF:10,reaF:4,causes:[],actions:[],comment:''},
-      {nom:'YEO KIEMA',franchise:'EO Belle Ville',tel:'0789898953',poste:'CC',objC:7,reaC:1,objS:11,reaS:1,objL:7,reaL:15,objF:10,reaF:13,causes:[],actions:[],comment:''},
-      {nom:'ZOUNGRANA ALIMA',franchise:'EO Belle Ville',tel:'0747505631',poste:'MC',objC:7,reaC:1,objS:11,reaS:5,objL:7,reaL:5,objF:10,reaF:8,causes:[],actions:[],comment:''},
-      {nom:'KONE KARIDJATOU',franchise:'EO Bouaké',tel:'0797329538',poste:'STAGIAIRE',objC:7,reaC:1,objS:11,reaS:0,objL:7,reaL:7,objF:10,reaF:9,causes:[],actions:[],comment:''},
-      {nom:'COULIBALY MAMA',franchise:'Ps Dabakala',tel:'0777464376',poste:'STAGIAIRE',objC:7,reaC:0,objS:11,reaS:4,objL:7,reaL:17,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'YEO SIATOU',franchise:'Ps Dabakala',tel:'0779707771',poste:'STAGIAIRE',objC:7,reaC:0,objS:11,reaS:5,objL:7,reaL:17,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'PINGUIN ADELE',franchise:'Ps Dabakala',tel:'0747404041',poste:'STAGIAIRE',objC:7,reaC:0,objS:11,reaS:2,objL:7,reaL:17,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'TOURE FRANCIS',franchise:'EO Bouaké',tel:'0708548161',poste:'CC',objC:7,reaC:0,objS:11,reaS:0,objL:7,reaL:1,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'STEPHANE AVOHOU',franchise:'EO Bouaké',tel:'0708144652',poste:'MC',objC:7,reaC:0,objS:11,reaS:2,objL:7,reaL:5,objF:10,reaF:6,causes:[],actions:[],comment:''},
-      {nom:'LOIC ASSIE DEFALONE',franchise:'EO Bouaké',tel:'0747198196',poste:'STAGIAIRE',objC:7,reaC:0,objS:11,reaS:1,objL:7,reaL:9,objF:10,reaF:5,causes:[],actions:[],comment:''},
-      {nom:'GNAMIEN TOPE JEKHIEL',franchise:'EO Bouaké',tel:'0747901081',poste:'SAV',objC:7,reaC:0,objS:11,reaS:0,objL:7,reaL:0,objF:10,reaF:1,causes:[],actions:[],comment:''},
-      {nom:'KOUASSI STEPHANIE',franchise:'EO Bouaké',tel:'0709502628',poste:'CC',objC:7,reaC:0,objS:11,reaS:0,objL:7,reaL:0,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'KONATE FATOUMATA',franchise:'EO Bouaké',tel:'0708759382',poste:'CC',objC:7,reaC:0,objS:11,reaS:0,objL:7,reaL:0,objF:10,reaF:4,causes:[],actions:[],comment:''},
-      {nom:'KONAN ARMAND',franchise:'EO Bouaké',tel:'0777667033',poste:'MC',objC:6,reaC:0,objS:11,reaS:0,objL:7,reaL:2,objF:10,reaF:3,causes:[],actions:[],comment:''},
-      {nom:'GLADYS',franchise:'EO Bouaké',tel:'0768799509',poste:'MC',objC:6,reaC:0,objS:11,reaS:0,objL:7,reaL:1,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'KOFFI DANIELLE',franchise:'EO Bouaké',tel:'0777676962',poste:'MC',objC:6,reaC:0,objS:11,reaS:0,objL:7,reaL:1,objF:10,reaF:0,causes:[],actions:[],comment:''},
-      {nom:'JEAN CLAUDE',franchise:'EO Bouaké',tel:'0707689444',poste:'MC',objC:6,reaC:0,objS:11,reaS:1,objL:7,reaL:2,objF:10,reaF:0,causes:[],actions:[],comment:''},
-    ];
-    saveToStorage();
+  if(currentUnivers==='global'){
+    thead.innerHTML=`<tr><th onclick="sortBy('nom')">Agent</th><th onclick="sortBy('franchise')">Franchise</th><th onclick="sortBy('poste')">Poste</th><th class="u-cell" onclick="sortBy('reaFO')" style="color:#3b82f6">🔵 FO</th><th class="u-cell" onclick="sortBy('reaLTE')" style="color:#a855f7">📶 LTE</th><th class="u-cell" onclick="sortBy('reaPS')" style="color:#f97316">📦 Pack S</th><th class="u-cell" onclick="sortBy('reaPC')" style="color:#14b8a6">💳 Pack C</th><th class="u-cell" onclick="sortBy('reaOBA')" style="color:#eab308">⭐ OBA</th><th onclick="sortBy('ratioGlobal')">Moy R/O ↓</th><th onclick="sortBy('rang')">Rang</th><th>Actions</th></tr>`;
+    tbody.innerHTML=list.length?list.map(a=>`<tr><td class="agent-name">${a.ratioGlobal===0?'<span class="alert-flag">⚠️</span>':''}${a.nom}</td><td style="font-size:11px">${a.franchise}</td><td><span class="badge-poste">${a.poste}</span></td>${ucell(a.objFO,a.reaFO)}${ucell(a.objLTE,a.reaLTE)}${ucell(a.objPS,a.reaPS)}${ucell(a.objPC,a.reaPC)}${ucell(a.objOBA,a.reaOBA)}<td>${miniBar(a.ratioGlobal)}</td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">${a.rang}e</td><td style="white-space:nowrap">${actions(a.id)}</td></tr>`).join(''):'<tr class="empty-row"><td colspan="11">Aucun agent</td></tr>';
+  } else {
+    const ui=UINFO[currentUnivers];const U=ui.U;
+    thead.innerHTML=`<tr><th onclick="sortBy('nom')">Agent</th><th onclick="sortBy('franchise')">Franchise</th><th onclick="sortBy('poste')">Poste</th><th onclick="sortBy('obj${U}')">Objectif</th><th onclick="sortBy('rea${U}')">Réalisé</th><th>R/O ↓</th><th>Reste</th><th onclick="sortBy('rang')">Rang</th><th>Actions</th></tr>`;
+    tbody.innerHTML=list.length?list.map(a=>{const obj=a['obj'+U],rea=a['rea'+U];const r=ratioFor(a,currentUnivers);const reste=rea-obj;return`<tr><td class="agent-name">${obj>0&&(r||0)===0?'<span class="alert-flag">⚠️</span>':''}${a.nom}</td><td style="font-size:11px">${a.franchise}</td><td><span class="badge-poste">${a.poste}</span></td><td style="font-family:var(--mono)">${obj||'—'}</td><td style="font-family:var(--mono)">${rea}</td><td>${miniBar(r)}</td><td style="font-family:var(--mono);color:${reste>=0?'var(--green)':'var(--red)'}">${obj>0?(reste>=0?'+':'')+reste:'—'}</td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">${a.rang}e</td><td style="white-space:nowrap">${actions(a.id)}</td></tr>`;}).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
   }
+}
 
-  buildFranchisePills();
-  buildCauseGrid();
-  renderDashTable();
-});
+function renderSaisieList(){
+  const search=document.getElementById('searchSaisie').value.toLowerCase();
+  let list=enriched();
+  if(search)list=list.filter(a=>a.nom.toLowerCase().includes(search)||a.franchise.toLowerCase().includes(search));
+  function rc(obj,rea){const r=obj>0?Math.round(rea/obj*100):null;return`<td class="u-cell" style="color:${colorR(r)};font-family:var(--mono)">${r!==null?r+'%':'—'}</td>`;}
+  document.getElementById('saisieTbody').innerHTML=list.length?list.map(a=>`<tr><td style="font-size:11px">${a.franchise}</td><td style="font-weight:600">${a.nom}</td><td><span class="badge-poste">${a.poste}</span></td>${rc(a.objFO,a.reaFO)}${rc(a.objLTE,a.reaLTE)}${rc(a.objPS,a.reaPS)}${rc(a.objPC,a.reaPC)}${rc(a.objOBA,a.reaOBA)}<td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('${a.id}')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('${a.id}')">🗑️</button></td></tr>`).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
+}
+
+function saveAgent(){
+  const id=document.getElementById('f_editId').value;
+  const nom=document.getElementById('f_nom').value.trim();
+  const franchise=document.getElementById('f_franchise').value.trim();
+  const poste=document.getElementById('f_poste').value;
+  if(!nom||!franchise||!poste){showToast('Remplissez les champs obligatoires','error');return;}
+  const obj={franchise,nom,tel:document.getElementById('f_tel').value.trim(),poste};
+  UCOLS.forEach(U=>{obj['obj'+U]=+document.getElementById('f_obj'+U).value||0;obj['rea'+U]=+document.getElementById('f_rea'+U).value||0;});
+  if(id){const idx=agents.findIndex(a=>a.id===id);if(idx>=0)agents[idx]={...agents[idx],...obj};showToast('Agent mis à jour ✅');}
+  else{agents.push({id:uid(),causes:[],actions:[],comment:'',...obj});showToast('Agent ajouté ✅');}
+  saveData();renderAll();resetForm();
+}
+function editAgent(id){
+  const a=agents.find(x=>x.id===id);if(!a)return;
+  document.getElementById('f_editId').value=a.id;
+  document.getElementById('f_franchise').value=a.franchise;
+  document.getElementById('f_nom').value=a.nom;
+  document.getElementById('f_tel').value=a.tel||'';
+  document.getElementById('f_poste').value=a.poste;
+  UCOLS.forEach(U=>{document.getElementById('f_obj'+U).value=a['obj'+U];document.getElementById('f_rea'+U).value=a['rea'+U];});
+  document.getElementById('formMode').textContent='✏️';
+  document.getElementById('formTitle').textContent='Modifier – '+a.nom;
+  showSection('saisie');window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetForm(){
+  ['f_editId','f_franchise','f_nom','f_tel'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('f_poste').value='';
+  UCOLS.forEach(U=>{document.getElementById('f_obj'+U).value='';document.getElementById('f_rea'+U).value='';});
+  document.getElementById('formMode').textContent='➕';
+  document.getElementById('formTitle').textContent='Ajouter un agent';
+}
+function askDelete(id){deleteTargetId=id;const a=agents.find(x=>x.id===id);document.getElementById('confirmMsg').textContent=`Supprimer "${a?a.nom:'cet agent'}" ?`;document.getElementById('confirmModal').classList.add('open');}
+function confirmDeleteAgent(){agents=agents.filter(a=>a.id!==deleteTargetId);saveData();renderAll();closeConfirm();showToast('Agent supprimé');}
+function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');deleteTargetId=null;}
+
+function openCA(id){
+  caTargetId=id;const a=agents.find(x=>x.id===id);if(!a)return;
+  document.getElementById('caAgentName').textContent=a.nom;
+  document.getElementById('caComment').value=a.comment||'';
+  document.getElementById('caGrid').innerHTML=CAUSES.map(c=>`<div class="cause-chip ${(a.causes||[]).includes(c.id)?'selected':''}" onclick="toggleCause('${c.id}',this)"><span>${c.icon}</span><div><div style="font-weight:600;font-size:11px">${c.label}</div><div style="font-size:10px;color:var(--muted)">${c.desc}</div></div></div>`).join('');
+  renderActionList(a);document.getElementById('caModal').classList.add('open');
+}
+function renderActionList(a){
+  const sel=a.causes||[];const rel=sel.length?ACTIONS.filter(ac=>ac.causes.some(c=>sel.includes(c))):ACTIONS;
+  const pm={urgent:'p-urgent',important:'p-important',normal:'p-normal'};const pl={urgent:'🔴 Urgent',important:'🟡 Important',normal:'🟢 Normal'};
+  document.getElementById('actionList').innerHTML=rel.map(ac=>`<div class="action-chip ${(a.actions||[]).includes(ac.id)?'selected':''}" onclick="toggleAction('${ac.id}',this)"><span>${ac.icon}</span><span>${ac.label}</span><span class="priority-badge ${pm[ac.priority]}">${pl[ac.priority]}</span></div>`).join('');
+}
+function toggleCause(cid,el){el.classList.toggle('selected');const a=agents.find(x=>x.id===caTargetId);if(!a)return;if(!a.causes)a.causes=[];a.causes.includes(cid)?a.causes=a.causes.filter(c=>c!==cid):a.causes.push(cid);renderActionList(a);}
+function toggleAction(aid,el){el.classList.toggle('selected');const a=agents.find(x=>x.id===caTargetId);if(!a)return;if(!a.actions)a.actions=[];a.actions.includes(aid)?a.actions=a.actions.filter(c=>c!==aid):a.actions.push(aid);}
+function saveCA(){const a=agents.find(x=>x.id===caTargetId);if(!a)return;a.comment=document.getElementById('caComment').value;saveData();renderAll();closeCA();showToast('Cause & Action enregistrés ✅');}
+function closeCA(){document.getElementById('caModal').classList.remove('open');caTargetId=null;}
+
+function selectMode(mode,el){importMode=mode;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)parseCSV(f);});
+function handleFileSelect(e){const f=e.target.files[0];if(f)parseCSV(f);}
+function parseCSV(file){
+  const r=new FileReader();
+  r.onload=ev=>{
+    const lines=ev.target.result.split('\n').map(l=>l.trim()).filter(Boolean);
+    if(lines.length<2){showToast('Fichier vide ou invalide','error');return;}
+    const headers=lines[0].split(',').map(h=>h.trim());
+    const missing=['Franchise','Nom','Poste'].filter(h=>!headers.includes(h));
+    if(missing.length){showToast('Colonnes manquantes: '+missing.join(', '),'error');return;}
+    const parsed=[];
+    for(let i=1;i<lines.length;i++){
+      const cols=lines[i].split(',');const row={};headers.forEach((h,j)=>row[h]=(cols[j]||'').trim());
+      if(!row.Franchise||!row.Nom||!row.Poste)continue;
+      parsed.push({franchise:row.Franchise,nom:row.Nom,tel:row.Telephone||'',poste:row.Poste,
+        objFO:+row.ObjFO||0,reaFO:+row.ReaFO||0,objLTE:+row.ObjLTE||0,reaLTE:+row.ReaLTE||0,
+        objPS:+row.ObjPS||0,reaPS:+row.ReaPS||0,objPC:+row.ObjPC||0,reaPC:+row.ReaPC||0,
+        objOBA:+row.ObjOBA||0,reaOBA:+row.ReaOBA||0});
+    }
+    if(!parsed.length){showToast('Aucune ligne valide','error');return;}
+    pendingImport=parsed;showPreview(parsed);
+  };
+  r.readAsText(file);
+}
+function showPreview(parsed){
+  const isNew=a=>!agents.some(ex=>ex.nom.toLowerCase()===a.nom.toLowerCase()&&ex.franchise.toLowerCase()===a.franchise.toLowerCase());
+  const nc=parsed.filter(isNew).length;
+  document.getElementById('importSummary').textContent=`${parsed.length} ligne(s) : ${nc} nouveau(x), ${parsed.length-nc} mise(s) à jour`;
+  document.getElementById('previewTable').innerHTML=`<table><thead><tr><th>Franchise</th><th>Nom</th><th>Poste</th><th>FO</th><th>LTE</th><th>Statut</th></tr></thead><tbody>${parsed.map(a=>{const n=isNew(a);return`<tr class="${n?'preview-row-new':'preview-row-update'}"><td>${a.franchise}</td><td>${a.nom}</td><td>${a.poste}</td><td>${a.objFO}</td><td>${a.objLTE}</td><td style="font-size:10px;font-weight:600;color:${n?'var(--green)':'var(--accent2)'}">${n?'✨ Nouveau':'🔄 MAJ'}</td></tr>`;}).join('')}</tbody></table>`;
+  document.getElementById('importPreview').style.display='block';
+}
+function confirmImport(){
+  if(importMode==='replace'){agents=pendingImport.map(a=>({id:uid(),causes:[],actions:[],comment:'',...a}));}
+  else{pendingImport.forEach(imp=>{const idx=agents.findIndex(ex=>ex.nom.toLowerCase()===imp.nom.toLowerCase()&&ex.franchise.toLowerCase()===imp.franchise.toLowerCase());if(idx>=0){UCOLS.forEach(U=>{agents[idx]['obj'+U]=imp['obj'+U];agents[idx]['rea'+U]=imp['rea'+U];});}else{agents.push({id:uid(),causes:[],actions:[],comment:'',...imp});}});}
+  saveData();renderAll();cancelImport();showToast(`Import réussi : ${pendingImport.length} agent(s) ✅`);pendingImport=[];
+}
+function cancelImport(){document.getElementById('importPreview').style.display='none';document.getElementById('csvFile').value='';pendingImport=[];}
+function downloadTemplate(){
+  const header='Franchise,Nom,Telephone,Poste,ObjFO,ReaFO,ObjLTE,ReaLTE,ObjPS,ReaPS,ObjPC,ReaPC,ObjOBA,ReaOBA';
+  const rows=agents.map(a=>[a.franchise,a.nom,a.tel||'',a.poste,a.objFO,a.reaFO,a.objLTE,a.reaLTE,a.objPS,a.reaPS,a.objPC,a.reaPC,a.objOBA,a.reaOBA].join(','));
+  download('modele_avril2026.csv','text/csv',[header,...rows].join('\n'));
+}
+
+function exportBackup(){const name=document.getElementById('saveName').value||'sauvegarde';download(name.replace(/\s/g,'_')+'.json','application/json',JSON.stringify({version:2,date:new Date().toISOString(),name,agents,period:localStorage.getItem('pil_period')||''},null,2));showToast('Exporté ✅');}
+function restoreBackup(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d.agents)throw 0;agents=d.agents;if(d.period){localStorage.setItem('pil_period',d.period);document.getElementById('periodLabel').value=d.period;}saveData();renderAll();showToast('Restauré ✅');}catch{showToast('Fichier invalide','error');}};r.readAsText(f);}
+function download(name,type,content){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();}
+
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  ['dashboard','saisie','import','sauvegarde'].forEach((s,i)=>{if(s===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');});
+  if(id==='sauvegarde')renderAutoBackups();
+}
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type?' '+type:'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+document.getElementById('caModal').addEventListener('click',e=>{if(e.target===document.getElementById('caModal'))closeCA();});
+document.getElementById('confirmModal').addEventListener('click',e=>{if(e.target===document.getElementById('confirmModal'))closeConfirm();});
+
+loadData();
 </script>
-
-
-<deepl-input-controller translate="no"></deepl-input-controller></body></html>
-
+</body>
+</html>
