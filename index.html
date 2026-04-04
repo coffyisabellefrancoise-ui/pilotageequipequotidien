@@ -116,7 +116,10 @@ pre{font-family:var(--mono);font-size:10px;background:var(--bg);border:1px solid
 .format-box h4{font-size:12px;font-weight:600;margin-bottom:7px;color:var(--muted)}
 .backup-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:17px;margin-bottom:13px}
 .backup-section h3{font-size:13px;font-weight:600;margin-bottom:11px}
-.status-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--green);border-radius:99px;padding:3px 11px;font-size:11px}
+.status-pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:3px 11px;font-size:11px}
+.status-pill.online{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--green)}
+.status-pill.offline{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+.status-pill.syncing{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:var(--yellow)}
 .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
 .history-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
 .history-item:last-child{border:none}
@@ -149,6 +152,31 @@ textarea:focus{border-color:var(--accent)}
 .btn-danger{background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#fff;padding:10px 17px;border-radius:10px;font-size:12px;font-weight:600;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}.toast.error{background:var(--red)}
+
+/* Sync indicator in header */
+.sync-status{display:flex;align-items:center;gap:5px;font-size:10px;padding:4px 10px;border-radius:99px;border:1px solid var(--border);color:var(--muted)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:background .3s}
+.sync-dot.online{background:var(--green);animation:pulse 2s infinite}
+.sync-dot.syncing{background:var(--yellow);animation:spin-dot 1s linear infinite}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin-dot{0%{transform:scale(1)}50%{transform:scale(1.5)}100%{transform:scale(1)}}
+
+/* Firebase config modal */
+.config-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:520px;padding:28px}
+.config-modal h2{font-size:16px;font-weight:700;margin-bottom:6px}
+.config-modal p{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.config-step{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start}
+.step-num{background:var(--accent);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-txt{font-size:11px;line-height:1.6;color:var(--text)}
+.step-txt a{color:var(--accent);text-decoration:none}
+.step-txt a:hover{text-decoration:underline}
+.config-input-group{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.config-input-group label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.config-input-group input{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:11px;padding:8px 10px;outline:none;transition:border .2s;width:100%}
+.config-input-group input:focus{border-color:var(--accent)}
+.config-note{background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+
 @media(max-width:680px){.form-grid{grid-template-columns:1fr}.cause-grid{grid-template-columns:1fr}header{padding:0 10px}.kpi-grid{grid-template-columns:repeat(2,1fr)}main{padding:12px}}
 </style>
 </head>
@@ -162,6 +190,10 @@ textarea:focus{border-color:var(--accent)}
     <button class="nav-tab" onclick="showSection('import')">📥 Import CSV</button>
     <button class="nav-tab" onclick="showSection('sauvegarde')">💾 Sauvegarde</button>
   </nav>
+  <div class="sync-status" id="syncStatus" title="Statut de connexion Firebase">
+    <div class="sync-dot" id="syncDot"></div>
+    <span id="syncLabel">Connexion…</span>
+  </div>
 </header>
 
 <main>
@@ -297,8 +329,26 @@ EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
 <!-- SAUVEGARDE -->
 <div class="section" id="section-sauvegarde">
   <h2 style="font-size:16px;font-weight:600;margin-bottom:16px">💾 Sauvegarde & Restauration</h2>
+
+  <!-- Firebase Config -->
+  <div class="backup-section" id="firebaseConfigSection">
+    <h3>🔥 Configuration Firebase (partage en temps réel)</h3>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:13px">Entrez les informations de votre base Firebase pour activer le partage des données avec tous les collaborateurs.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px">
+      <div class="config-input-group"><label>API Key</label><input type="text" id="fb_apiKey" placeholder="AIzaSy…"/></div>
+      <div class="config-input-group"><label>Project ID</label><input type="text" id="fb_projectId" placeholder="mon-projet-12345"/></div>
+      <div class="config-input-group" style="grid-column:1/-1"><label>Database URL</label><input type="text" id="fb_dbUrl" placeholder="https://mon-projet-12345-default-rtdb.firebaseio.com"/></div>
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      <button class="btn-primary" onclick="saveFirebaseConfig()">🔥 Connecter Firebase</button>
+      <button class="btn-secondary" onclick="testFirebaseConnection()">🧪 Tester la connexion</button>
+      <button class="btn-secondary" style="color:var(--red);border-color:var(--red)" onclick="clearFirebaseConfig()">🗑️ Déconnecter</button>
+    </div>
+    <div id="fbConfigStatus" style="margin-top:9px;font-size:11px;color:var(--muted)"></div>
+  </div>
+
   <div class="backup-section">
-    <h3>📤 Exporter une sauvegarde</h3>
+    <h3>📤 Exporter une sauvegarde locale</h3>
     <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
       <input type="text" id="saveName" placeholder="Nom de la sauvegarde" style="width:250px"/>
       <button class="btn-primary" onclick="exportBackup()">⬇️ Exporter (.json)</button>
@@ -306,23 +356,39 @@ EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
   </div>
   <div class="backup-section">
     <h3>📂 Restaurer depuis un fichier</h3>
-    <p style="font-size:11px;color:var(--muted);margin-bottom:11px">⚠️ Écrase toutes les données actuelles.</p>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:11px">⚠️ Écrase toutes les données actuelles (Firebase inclus si connecté).</p>
     <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup(event)"/>
     <button class="btn-secondary" onclick="document.getElementById('restoreFile').click()">📂 Choisir un fichier .json</button>
   </div>
   <div class="backup-section">
-    <h3>🕒 Sauvegardes automatiques (5 dernières)</h3>
-    <div id="autoBackupList"></div>
-    <button class="btn-secondary" style="font-size:11px;padding:6px 11px;margin-top:10px" onclick="refreshAutoBackups()">🔄 Rafraîchir</button>
-  </div>
-  <div class="backup-section">
-    <h3>🔐 Statut</h3>
-    <div class="status-pill"><span class="dot"></span> Données sauvegardées dans ce navigateur</div>
-    <p style="font-size:11px;color:var(--muted);margin-top:7px">💡 Exportez régulièrement pour éviter toute perte si vous changez d'appareil.</p>
+    <h3>🔐 Statut de synchronisation</h3>
+    <div id="mainStatusPill" class="status-pill offline"><span class="dot"></span> <span id="mainStatusText">Non connecté à Firebase</span></div>
+    <p style="font-size:11px;color:var(--muted);margin-top:7px" id="mainStatusSub">Configurez Firebase ci-dessus pour partager les données avec vos collègues.</p>
   </div>
 </div>
 
 </main>
+
+<!-- FIREBASE CONFIG FIRST-TIME MODAL -->
+<div class="modal-overlay" id="fbSetupModal">
+  <div class="config-modal">
+    <h2>🔥 Configurer Firebase</h2>
+    <p>Pour partager les données avec vos collègues, configurez Firebase gratuitement en 5 minutes. Suivez ces étapes :</p>
+    <div class="config-step"><div class="step-num">1</div><div class="step-txt">Allez sur <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> et créez un projet (ex: <strong>pilotage-equipe</strong>)</div></div>
+    <div class="config-step"><div class="step-num">2</div><div class="step-txt">Dans le projet, activez <strong>Realtime Database</strong> → Créer une base → Mode <strong>test</strong></div></div>
+    <div class="config-step"><div class="step-num">3</div><div class="step-txt">Allez dans <strong>Paramètres du projet → Vos applications → Web</strong> et copiez les informations de configuration</div></div>
+    <div class="config-step"><div class="step-num">4</div><div class="step-txt">Collez les valeurs ci-dessous et cliquez <strong>Connecter</strong></div></div>
+    <div class="config-note">💡 La base de données en mode test est gratuite et accessible à tous sans compte. Vos collègues n'ont rien à configurer, ils voient les données automatiquement.</div>
+    <div class="config-input-group"><label>API Key</label><input type="text" id="fb_apiKey2" placeholder="AIzaSy…"/></div>
+    <div class="config-input-group"><label>Project ID</label><input type="text" id="fb_projectId2" placeholder="mon-projet-12345"/></div>
+    <div class="config-input-group"><label>Database URL</label><input type="text" id="fb_dbUrl2" placeholder="https://mon-projet-12345-default-rtdb.firebaseio.com"/></div>
+    <div style="display:flex;gap:7px;margin-top:16px">
+      <button class="btn-primary" onclick="saveFirebaseConfigFromModal()">🔥 Connecter et partager</button>
+      <button class="btn-secondary" onclick="closeFbSetup()">Plus tard</button>
+    </div>
+    <div id="fbSetupStatus" style="margin-top:9px;font-size:11px;color:var(--muted)"></div>
+  </div>
+</div>
 
 <!-- CAUSE/ACTION MODAL -->
 <div class="modal-overlay" id="caModal">
@@ -360,18 +426,127 @@ EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
 
 <div class="toast" id="toast"></div>
 
-<script>
-let agents=[];
-let currentUnivers='global';
-let importMode='replace';
-let pendingImport=[];
-let deleteTargetId=null;
-let caTargetId=null;
-let sortKey='ratioGlobal';
-let sortDir=-1;
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const UCOLS=['FO','LTE','PS','PC','OBA'];
-const UINFO={
+// ─── Firebase state ───────────────────────────────────────────────────────────
+let fbApp = null;
+let fbDb = null;
+let fbListener = null;
+let firebaseReady = false;
+
+// ─── Expose Firebase functions to global scope ────────────────────────────────
+window._fbInit = function(config) {
+  try {
+    if (fbApp) {
+      // Already initialized — just reconnect listener
+      connectListener();
+      return true;
+    }
+    fbApp = initializeApp(config, 'pilotage-' + Date.now());
+    fbDb = getDatabase(fbApp);
+    firebaseReady = true;
+    connectListener();
+    updateSyncUI('online');
+    return true;
+  } catch(e) {
+    console.error('Firebase init error:', e);
+    updateSyncUI('error');
+    return false;
+  }
+};
+
+window._fbSave = async function(data) {
+  if (!fbDb) return false;
+  try {
+    updateSyncUI('syncing');
+    await set(ref(fbDb, 'pilotage'), data);
+    updateSyncUI('online');
+    return true;
+  } catch(e) {
+    console.error('Firebase save error:', e);
+    updateSyncUI('error');
+    return false;
+  }
+};
+
+window._fbDisconnect = function() {
+  if (fbListener) { fbListener(); fbListener = null; }
+  fbApp = null; fbDb = null; firebaseReady = false;
+  updateSyncUI('offline');
+};
+
+function connectListener() {
+  if (!fbDb) return;
+  if (fbListener) fbListener(); // unsubscribe previous
+  const dataRef = ref(fbDb, 'pilotage');
+  fbListener = onValue(dataRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      window._onFirebaseData(data);
+    }
+  }, (error) => {
+    console.error('Firebase listen error:', error);
+    updateSyncUI('error');
+  });
+}
+
+function updateSyncUI(state) {
+  const dot = document.getElementById('syncDot');
+  const label = document.getElementById('syncLabel');
+  const pill = document.getElementById('mainStatusPill');
+  const pillText = document.getElementById('mainStatusText');
+  const pillSub = document.getElementById('mainStatusSub');
+  if (!dot) return;
+  dot.className = 'sync-dot ' + state;
+  if (state === 'online') {
+    label.textContent = 'En ligne 🟢';
+    if (pill) { pill.className='status-pill online'; pillText.textContent='Connecté à Firebase — données partagées'; pillSub.textContent='Toutes les modifications sont visibles par vos collègues en temps réel.'; }
+  } else if (state === 'syncing') {
+    label.textContent = 'Sync…';
+  } else if (state === 'error') {
+    label.textContent = 'Erreur 🔴';
+    if (pill) { pill.className='status-pill offline'; pillText.textContent='Erreur de connexion Firebase'; pillSub.textContent='Vérifiez votre configuration Firebase dans Sauvegarde.'; }
+  } else {
+    label.textContent = 'Hors ligne';
+    if (pill) { pill.className='status-pill offline'; pillText.textContent='Non connecté à Firebase'; pillSub.textContent='Configurez Firebase dans Sauvegarde pour partager les données.'; }
+  }
+}
+
+// Try to auto-connect if config saved
+const savedCfg = localStorage.getItem('pil_fb_config');
+if (savedCfg) {
+  try {
+    const cfg = JSON.parse(savedCfg);
+    window._fbInit(cfg);
+    // Pre-fill config fields
+    setTimeout(() => {
+      ['apiKey','projectId','dbUrl'].forEach(k => {
+        const el = document.getElementById('fb_' + k);
+        if (el) el.value = cfg[k] || '';
+      });
+    }, 300);
+  } catch(e) {}
+} else {
+  updateSyncUI('offline');
+}
+</script>
+
+<script>
+let agents = [];
+let currentUnivers = 'global';
+let importMode = 'replace';
+let pendingImport = [];
+let deleteTargetId = null;
+let caTargetId = null;
+let sortKey = 'ratioGlobal';
+let sortDir = -1;
+let _ignoreNextFirebaseUpdate = false;
+
+const UCOLS = ['FO','LTE','PS','PC','OBA'];
+const UINFO = {
   fo:{label:'FTTH (FO)',icon:'🔵',color:'#3b82f6',U:'FO'},
   lte:{label:'LTE',icon:'📶',color:'#a855f7',U:'LTE'},
   ps:{label:'Pack Simple',icon:'📦',color:'#f97316',U:'PS'},
@@ -416,7 +591,6 @@ const ACTIONS=[
   {id:'a24',causes:['absence'],icon:'🏥',label:'Escalade RH si prolongé',priority:'normal'},
 ];
 
-// DEFAULT DATA — OBJECTIFS AVRIL 2026
 function getDefaultAgents(){
   const data=[
     {franchise:'EO Dar Es',nom:'BENJAMIN YAO',tel:'0747268228',poste:'STAGIAIRE',objFO:10,reaFO:0,objLTE:7,reaLTE:0,objPS:12,reaPS:0,objPC:9,reaPC:0,objOBA:8,reaOBA:0},
@@ -449,6 +623,42 @@ function getDefaultAgents(){
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
+// Called by Firebase listener when remote data changes
+window._onFirebaseData = function(data) {
+  if (_ignoreNextFirebaseUpdate) { _ignoreNextFirebaseUpdate = false; return; }
+  if (data.agents) {
+    agents = data.agents;
+    if (data.period) {
+      localStorage.setItem('pil_period', data.period);
+      document.getElementById('periodLabel').value = data.period;
+      document.getElementById('periodDisplay').textContent = data.period ? '📅 ' + data.period : '';
+    }
+    renderAll();
+    showToast('🔄 Données mises à jour depuis Firebase');
+  }
+};
+
+function getFirebasePayload() {
+  return {
+    agents: agents,
+    period: localStorage.getItem('pil_period') || 'Avril 2026',
+    lastUpdate: new Date().toISOString()
+  };
+}
+
+async function saveData() {
+  localStorage.setItem('pil_agents', JSON.stringify(agents));
+  // Save to Firebase if connected
+  if (window._fbSave) {
+    _ignoreNextFirebaseUpdate = true;
+    const ok = await window._fbSave(getFirebasePayload());
+    if (!ok) {
+      // Firebase failed, revert flag
+      _ignoreNextFirebaseUpdate = false;
+    }
+  }
+}
+
 function ratioFor(a,uKey){
   if(uKey==='global'){
     const vals=UCOLS.map(U=>{const o=a['obj'+U],r=a['rea'+U];return o>0?r/o:null;}).filter(v=>v!==null);
@@ -470,32 +680,108 @@ function loadData(){
   const p=localStorage.getItem('pil_period')||'Avril 2026';
   document.getElementById('periodLabel').value=p;
   document.getElementById('periodDisplay').textContent=p?'📅 '+p:'';
-  renderAll();autoSave();
+  renderAll();
+
+  // Show Firebase setup modal if not configured yet
+  const cfg = localStorage.getItem('pil_fb_config');
+  if (!cfg) {
+    setTimeout(() => {
+      document.getElementById('fbSetupModal').classList.add('open');
+    }, 1000);
+  }
 }
-function saveData(){localStorage.setItem('pil_agents',JSON.stringify(agents));autoSave();}
-function savePeriod(){
+
+async function savePeriod(){
   const v=document.getElementById('periodLabel').value.trim();
   localStorage.setItem('pil_period',v);
   document.getElementById('periodDisplay').textContent=v?'📅 '+v:'';
+  if (window._fbSave) {
+    await window._fbSave(getFirebasePayload());
+  }
   showToast('Période enregistrée');
 }
-function autoSave(){
-  const h=JSON.parse(localStorage.getItem('pil_history')||'[]');
-  h.unshift({ts:new Date().toISOString(),data:JSON.parse(JSON.stringify(agents))});
-  if(h.length>5)h.length=5;
-  localStorage.setItem('pil_history',JSON.stringify(h));
-  renderAutoBackups();
-}
-function renderAutoBackups(){
-  const h=JSON.parse(localStorage.getItem('pil_history')||'[]');
-  const el=document.getElementById('autoBackupList');if(!el)return;
-  el.innerHTML=h.length?h.map((s,i)=>{const d=new Date(s.ts);return`<div class="history-item"><span class="history-time">🕒 ${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span><span style="color:var(--muted);font-size:11px">${s.data.length} agents</span><button class="btn-action" onclick="restoreFromHistory(${i})" style="margin-left:auto">↩️ Restaurer</button></div>`;}).join(''):'<p style="color:var(--muted);font-size:11px">Aucune sauvegarde</p>';
-}
-function refreshAutoBackups(){renderAutoBackups();showToast('Actualisé');}
-function restoreFromHistory(i){const h=JSON.parse(localStorage.getItem('pil_history')||'[]');if(!h[i])return;agents=JSON.parse(JSON.stringify(h[i].data));saveData();renderAll();showToast('Restauré ✅');}
 
+// ─── Firebase Config ──────────────────────────────────────────────────────────
+function getConfigFromFields(suffix) {
+  const s = suffix || '';
+  return {
+    apiKey: document.getElementById('fb_apiKey'+s).value.trim(),
+    projectId: document.getElementById('fb_projectId'+s).value.trim(),
+    dbUrl: document.getElementById('fb_dbUrl'+s).value.trim(),
+  };
+}
+
+function saveFirebaseConfig() {
+  const cfg = getConfigFromFields('');
+  if (!cfg.apiKey || !cfg.projectId || !cfg.dbUrl) {
+    document.getElementById('fbConfigStatus').textContent = '⚠️ Tous les champs sont requis.';
+    return;
+  }
+  applyFirebaseConfig(cfg, 'fbConfigStatus');
+}
+
+function saveFirebaseConfigFromModal() {
+  const cfg = getConfigFromFields('2');
+  if (!cfg.apiKey || !cfg.projectId || !cfg.dbUrl) {
+    document.getElementById('fbSetupStatus').textContent = '⚠️ Tous les champs sont requis.';
+    return;
+  }
+  applyFirebaseConfig(cfg, 'fbSetupStatus', true);
+}
+
+function applyFirebaseConfig(cfg, statusId, fromModal) {
+  localStorage.setItem('pil_fb_config', JSON.stringify(cfg));
+  const fbConfig = {
+    apiKey: cfg.apiKey,
+    projectId: cfg.projectId,
+    databaseURL: cfg.dbUrl,
+  };
+  const ok = window._fbInit(fbConfig);
+  const el = document.getElementById(statusId);
+  if (ok) {
+    if (el) el.textContent = '✅ Firebase connecté avec succès ! Les données sont maintenant partagées.';
+    showToast('🔥 Firebase connecté ✅');
+    // Push current data to Firebase
+    setTimeout(async () => {
+      await window._fbSave(getFirebasePayload());
+    }, 800);
+    if (fromModal) setTimeout(closeFbSetup, 1500);
+    // Pre-fill the other form too
+    ['apiKey','projectId','dbUrl'].forEach(k => {
+      const el2 = document.getElementById('fb_' + k);
+      if (el2) el2.value = cfg[k] || '';
+    });
+  } else {
+    if (el) el.textContent = '❌ Erreur de connexion. Vérifiez vos informations.';
+  }
+}
+
+function testFirebaseConnection() {
+  const cfg = localStorage.getItem('pil_fb_config');
+  if (!cfg) { showToast('Configurez Firebase d\'abord', 'error'); return; }
+  showToast('🧪 Test en cours…');
+  setTimeout(() => {
+    if (window._fbSave) {
+      window._fbSave({ping: Date.now()}).then(ok => {
+        showToast(ok ? '✅ Connexion OK !' : '❌ Connexion échouée', ok ? '' : 'error');
+      });
+    }
+  }, 300);
+}
+
+function clearFirebaseConfig() {
+  localStorage.removeItem('pil_fb_config');
+  if (window._fbDisconnect) window._fbDisconnect();
+  showToast('Firebase déconnecté');
+  document.getElementById('fbConfigStatus').textContent = 'Firebase déconnecté.';
+}
+
+function closeFbSetup() {
+  document.getElementById('fbSetupModal').classList.remove('open');
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
 function setUnivers(u,el){currentUnivers=u;document.querySelectorAll('.utab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderAll();}
-
 function renderAll(){renderKPI();renderAlerts();renderFranchiseCards();renderTable();renderSaisieList();updateFranchiseFilter();updateFranchiseDatalist();}
 function updateFranchiseFilter(){const sel=document.getElementById('filterFranchise');const cur=sel.value;sel.innerHTML='<option value="">Toutes franchises</option>'+getFranchises().map(f=>`<option${f===cur?' selected':''}>${f}</option>`).join('');}
 function updateFranchiseDatalist(){document.getElementById('franchiseList').innerHTML=getFranchises().map(f=>`<option value="${f}">`).join('');}
@@ -581,11 +867,9 @@ function renderTable(){
   list.sort((a,b)=>{let va=a[sortKey]??0,vb=b[sortKey]??0;if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}return va<vb?-sortDir:va>vb?sortDir:0;});
   const thead=document.getElementById('mainThead');
   const tbody=document.getElementById('mainTbody');
-
   function miniBar(r){if(r===null)return'<span style="color:var(--muted)">—</span>';const col=colorR(r);return`<div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:${Math.min(r,100)}%;background:${col}"></div></div><span class="ratio-num" style="color:${col}">${r}%</span></div>`;}
   function ucell(obj,rea){const r=obj>0?Math.round(rea/obj*100):null;const col=colorR(r);return`<td class="u-cell" style="color:${col}">${r!==null?`${rea}/${obj}<br><small>${r}%</small>`:'—'}</td>`;}
   const actions=id=>`<button class="btn-edit" onclick="editAgent('${id}')">✏️</button><button class="btn-action" onclick="openCA('${id}')">📋</button><button class="btn-del" onclick="askDelete('${id}')">🗑️</button>`;
-
   if(currentUnivers==='global'){
     thead.innerHTML=`<tr><th onclick="sortBy('nom')">Agent</th><th onclick="sortBy('franchise')">Franchise</th><th onclick="sortBy('poste')">Poste</th><th class="u-cell" onclick="sortBy('reaFO')" style="color:#3b82f6">🔵 FO</th><th class="u-cell" onclick="sortBy('reaLTE')" style="color:#a855f7">📶 LTE</th><th class="u-cell" onclick="sortBy('reaPS')" style="color:#f97316">📦 Pack S</th><th class="u-cell" onclick="sortBy('reaPC')" style="color:#14b8a6">💳 Pack C</th><th class="u-cell" onclick="sortBy('reaOBA')" style="color:#eab308">⭐ OBA</th><th onclick="sortBy('ratioGlobal')">Moy R/O ↓</th><th onclick="sortBy('rang')">Rang</th><th>Actions</th></tr>`;
     tbody.innerHTML=list.length?list.map(a=>`<tr><td class="agent-name">${a.ratioGlobal===0?'<span class="alert-flag">⚠️</span>':''}${a.nom}</td><td style="font-size:11px">${a.franchise}</td><td><span class="badge-poste">${a.poste}</span></td>${ucell(a.objFO,a.reaFO)}${ucell(a.objLTE,a.reaLTE)}${ucell(a.objPS,a.reaPS)}${ucell(a.objPC,a.reaPC)}${ucell(a.objOBA,a.reaOBA)}<td>${miniBar(a.ratioGlobal)}</td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">${a.rang}e</td><td style="white-space:nowrap">${actions(a.id)}</td></tr>`).join(''):'<tr class="empty-row"><td colspan="11">Aucun agent</td></tr>';
@@ -604,7 +888,7 @@ function renderSaisieList(){
   document.getElementById('saisieTbody').innerHTML=list.length?list.map(a=>`<tr><td style="font-size:11px">${a.franchise}</td><td style="font-weight:600">${a.nom}</td><td><span class="badge-poste">${a.poste}</span></td>${rc(a.objFO,a.reaFO)}${rc(a.objLTE,a.reaLTE)}${rc(a.objPS,a.reaPS)}${rc(a.objPC,a.reaPC)}${rc(a.objOBA,a.reaOBA)}<td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('${a.id}')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('${a.id}')">🗑️</button></td></tr>`).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
 }
 
-function saveAgent(){
+async function saveAgent(){
   const id=document.getElementById('f_editId').value;
   const nom=document.getElementById('f_nom').value.trim();
   const franchise=document.getElementById('f_franchise').value.trim();
@@ -614,7 +898,7 @@ function saveAgent(){
   UCOLS.forEach(U=>{obj['obj'+U]=+document.getElementById('f_obj'+U).value||0;obj['rea'+U]=+document.getElementById('f_rea'+U).value||0;});
   if(id){const idx=agents.findIndex(a=>a.id===id);if(idx>=0)agents[idx]={...agents[idx],...obj};showToast('Agent mis à jour ✅');}
   else{agents.push({id:uid(),causes:[],actions:[],comment:'',...obj});showToast('Agent ajouté ✅');}
-  saveData();renderAll();resetForm();
+  await saveData();renderAll();resetForm();
 }
 function editAgent(id){
   const a=agents.find(x=>x.id===id);if(!a)return;
@@ -636,7 +920,7 @@ function resetForm(){
   document.getElementById('formTitle').textContent='Ajouter un agent';
 }
 function askDelete(id){deleteTargetId=id;const a=agents.find(x=>x.id===id);document.getElementById('confirmMsg').textContent=`Supprimer "${a?a.nom:'cet agent'}" ?`;document.getElementById('confirmModal').classList.add('open');}
-function confirmDeleteAgent(){agents=agents.filter(a=>a.id!==deleteTargetId);saveData();renderAll();closeConfirm();showToast('Agent supprimé');}
+async function confirmDeleteAgent(){agents=agents.filter(a=>a.id!==deleteTargetId);await saveData();renderAll();closeConfirm();showToast('Agent supprimé');}
 function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');deleteTargetId=null;}
 
 function openCA(id){
@@ -653,7 +937,7 @@ function renderActionList(a){
 }
 function toggleCause(cid,el){el.classList.toggle('selected');const a=agents.find(x=>x.id===caTargetId);if(!a)return;if(!a.causes)a.causes=[];a.causes.includes(cid)?a.causes=a.causes.filter(c=>c!==cid):a.causes.push(cid);renderActionList(a);}
 function toggleAction(aid,el){el.classList.toggle('selected');const a=agents.find(x=>x.id===caTargetId);if(!a)return;if(!a.actions)a.actions=[];a.actions.includes(aid)?a.actions=a.actions.filter(c=>c!==aid):a.actions.push(aid);}
-function saveCA(){const a=agents.find(x=>x.id===caTargetId);if(!a)return;a.comment=document.getElementById('caComment').value;saveData();renderAll();closeCA();showToast('Cause & Action enregistrés ✅');}
+async function saveCA(){const a=agents.find(x=>x.id===caTargetId);if(!a)return;a.comment=document.getElementById('caComment').value;await saveData();renderAll();closeCA();showToast('Cause & Action enregistrés ✅');}
 function closeCA(){document.getElementById('caModal').classList.remove('open');caTargetId=null;}
 
 function selectMode(mode,el){importMode=mode;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
@@ -691,10 +975,10 @@ function showPreview(parsed){
   document.getElementById('previewTable').innerHTML=`<table><thead><tr><th>Franchise</th><th>Nom</th><th>Poste</th><th>FO</th><th>LTE</th><th>Statut</th></tr></thead><tbody>${parsed.map(a=>{const n=isNew(a);return`<tr class="${n?'preview-row-new':'preview-row-update'}"><td>${a.franchise}</td><td>${a.nom}</td><td>${a.poste}</td><td>${a.objFO}</td><td>${a.objLTE}</td><td style="font-size:10px;font-weight:600;color:${n?'var(--green)':'var(--accent2)'}">${n?'✨ Nouveau':'🔄 MAJ'}</td></tr>`;}).join('')}</tbody></table>`;
   document.getElementById('importPreview').style.display='block';
 }
-function confirmImport(){
+async function confirmImport(){
   if(importMode==='replace'){agents=pendingImport.map(a=>({id:uid(),causes:[],actions:[],comment:'',...a}));}
   else{pendingImport.forEach(imp=>{const idx=agents.findIndex(ex=>ex.nom.toLowerCase()===imp.nom.toLowerCase()&&ex.franchise.toLowerCase()===imp.franchise.toLowerCase());if(idx>=0){UCOLS.forEach(U=>{agents[idx]['obj'+U]=imp['obj'+U];agents[idx]['rea'+U]=imp['rea'+U];});}else{agents.push({id:uid(),causes:[],actions:[],comment:'',...imp});}});}
-  saveData();renderAll();cancelImport();showToast(`Import réussi : ${pendingImport.length} agent(s) ✅`);pendingImport=[];
+  await saveData();renderAll();cancelImport();showToast(`Import réussi : ${pendingImport.length} agent(s) ✅`);pendingImport=[];
 }
 function cancelImport(){document.getElementById('importPreview').style.display='none';document.getElementById('csvFile').value='';pendingImport=[];}
 function downloadTemplate(){
@@ -704,7 +988,7 @@ function downloadTemplate(){
 }
 
 function exportBackup(){const name=document.getElementById('saveName').value||'sauvegarde';download(name.replace(/\s/g,'_')+'.json','application/json',JSON.stringify({version:2,date:new Date().toISOString(),name,agents,period:localStorage.getItem('pil_period')||''},null,2));showToast('Exporté ✅');}
-function restoreBackup(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d.agents)throw 0;agents=d.agents;if(d.period){localStorage.setItem('pil_period',d.period);document.getElementById('periodLabel').value=d.period;}saveData();renderAll();showToast('Restauré ✅');}catch{showToast('Fichier invalide','error');}};r.readAsText(f);}
+async function restoreBackup(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{try{const d=JSON.parse(ev.target.result);if(!d.agents)throw 0;agents=d.agents;if(d.period){localStorage.setItem('pil_period',d.period);document.getElementById('periodLabel').value=d.period;}await saveData();renderAll();showToast('Restauré ✅');}catch{showToast('Fichier invalide','error');}};r.readAsText(f);}
 function download(name,type,content){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();}
 
 function showSection(id){
@@ -712,12 +996,12 @@ function showSection(id){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('section-'+id).classList.add('active');
   ['dashboard','saisie','import','sauvegarde'].forEach((s,i)=>{if(s===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');});
-  if(id==='sauvegarde')renderAutoBackups();
 }
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type?' '+type:'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 
 document.getElementById('caModal').addEventListener('click',e=>{if(e.target===document.getElementById('caModal'))closeCA();});
 document.getElementById('confirmModal').addEventListener('click',e=>{if(e.target===document.getElementById('confirmModal'))closeConfirm();});
+document.getElementById('fbSetupModal').addEventListener('click',e=>{if(e.target===document.getElementById('fbSetupModal'))closeFbSetup();});
 
 loadData();
 </script>
