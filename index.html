@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Pilotage Équipe – Avril 2026</title>
-<link href="index_fichiers/css2.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#0f1117;--surface:#181c27;--surface2:#1e2333;--border:#2a2f45;
@@ -186,13 +186,14 @@ textarea:focus{border-color:var(--accent)}
   <div class="logo">📊 PILOTAGE ÉQUIPE</div>
   <nav class="nav-tabs">
     <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
-    <button class="nav-tab" onclick="showSection('saisie')">✏️ Saisie <span class="badge" id="badgeAlerts" style="">7</span></button>
+    <button class="nav-tab" onclick="showSection('franchises')">🏪 Franchises</button>
+    <button class="nav-tab" onclick="showSection('saisie')">✏️ Saisie <span class="badge" id="badgeAlerts" style="display:none"></span></button>
     <button class="nav-tab" onclick="showSection('import')">📥 Import CSV</button>
     <button class="nav-tab" onclick="showSection('sauvegarde')">💾 Sauvegarde</button>
   </nav>
   <div class="sync-status" id="syncStatus" title="Statut de connexion Firebase">
-    <div class="sync-dot online" id="syncDot"></div>
-    <span id="syncLabel">En ligne 🟢</span>
+    <div class="sync-dot" id="syncDot"></div>
+    <span id="syncLabel">Connexion…</span>
   </div>
 </header>
 
@@ -202,9 +203,9 @@ textarea:focus{border-color:var(--accent)}
 <div class="section active" id="section-dashboard">
   <div class="period-banner">
     <span>📅</span><label>Période :</label>
-    <input type="text" id="periodLabel" placeholder="ex: Avril 2026" style="min-width:180px" value="Avril 2026">
+    <input type="text" id="periodLabel" placeholder="ex: Avril 2026" style="min-width:180px"/>
     <button class="period-save" onclick="savePeriod()">Enregistrer</button>
-    <span id="periodDisplay" style="color:var(--accent);font-size:12px;font-weight:600">📅 Avril 2026</span>
+    <span id="periodDisplay" style="color:var(--accent);font-size:12px;font-weight:600"></span>
   </div>
 
   <div class="univers-tabs">
@@ -216,40 +217,35 @@ textarea:focus{border-color:var(--accent)}
     <button class="utab u-oba" onclick="setUnivers('oba',this)">⭐ OBA</button>
   </div>
 
-  <div class="kpi-grid" id="kpiGrid">
-      <div class="kpi info"><div class="kpi-label">Agents</div><div class="kpi-val">24</div><div class="kpi-sub">5 franchises</div></div>
-      <div class="kpi danger"><div class="kpi-label">Moyenne globale</div><div class="kpi-val">7%</div><div class="kpi-sub">tous univers</div></div>
-      <div class="kpi warn"><div class="kpi-label">≥100% global</div><div class="kpi-val">0</div><div class="kpi-sub">agents</div></div>
-      <div class="kpi danger"><div class="kpi-label">Alertes 0%</div><div class="kpi-val">7</div><div class="kpi-sub">agents</div></div>
-      <div class="kpi"><div class="kpi-label">🔵 FTTH (FO)</div><div class="kpi-val" style="font-size:18px">16/190</div><div class="kpi-sub">8%</div></div><div class="kpi"><div class="kpi-label">📶 LTE</div><div class="kpi-val" style="font-size:18px">26/168</div><div class="kpi-sub">15%</div></div><div class="kpi"><div class="kpi-label">📦 Pack Simple</div><div class="kpi-val" style="font-size:18px">4/288</div><div class="kpi-sub">1%</div></div><div class="kpi"><div class="kpi-label">💳 Pack Crédit</div><div class="kpi-val" style="font-size:18px">3/189</div><div class="kpi-sub">2%</div></div><div class="kpi"><div class="kpi-label">⭐ OBA</div><div class="kpi-val" style="font-size:18px">0/140</div><div class="kpi-sub">0%</div></div></div>
+  <div class="kpi-grid" id="kpiGrid"></div>
 
-  <div id="alertBar" style="display: flex;" class="alert-bar" onclick="toggleAlerts()">
-    <span class="alert-count" id="alertCount">7</span>
-    <span class="alert-text" id="alertText">7 agents à 0% — action requise</span>
+  <div id="alertBar" style="display:none" class="alert-bar" onclick="toggleAlerts()">
+    <span class="alert-count" id="alertCount">0</span>
+    <span class="alert-text" id="alertText"></span>
     <span id="alertChevron">▼</span>
   </div>
-  <div class="alerts-detail" id="alertsDetail"><div class="alert-item"><span class="alert-dot"></span><span style="font-weight:600">BENJAMIN YAO</span><span style="color:var(--muted)">EO Dar Es · STAGIAIRE</span><button class="btn-action" style="margin-left:auto" onclick="openCA('mni3jlhrkbme')">📋 Cause</button></div><div class="alert-item"><span class="alert-dot"></span><span style="font-weight:600">ODILON KOFFI</span><span style="color:var(--muted)">EO Belle Ville · CC</span><button class="btn-action" style="margin-left:auto" onclick="openCA('mni3jlhsyi8r')">📋 Cause</button></div><div class="alert-item"><span class="alert-dot"></span><span style="font-weight:600">SEKONGO</span><span style="color:var(--muted)">EO Bouaké · MC</span><button class="btn-action" style="margin-left:auto" onclick="openCA('mni3jlhsdglp')">📋 Cause</button></div><div class="alert-item"><span class="alert-dot"></span><span style="font-weight:600">GNAMIEN TOPE JEKHIEL</span><span style="color:var(--muted)">EO Bouaké · SAV</span><button class="btn-action" style="margin-left:auto" onclick="openCA('mni3jlhs4ra6')">📋 Cause</button></div><div class="alert-item"><span class="alert-dot"></span><span style="font-weight:600">KOUASSI STEPHANIE</span><span style="color:var(--muted)">EO Bouaké · CC</span><button class="btn-action" style="margin-left:auto" onclick="openCA('mni3jlhscdtf')">📋 Cause</button></div><div class="alert-item"><span class="alert-dot"></span><span style="font-weight:600">KONATE FATOUMATA</span><span style="color:var(--muted)">EO Bouaké · CC</span><button class="btn-action" style="margin-left:auto" onclick="openCA('mni3jlhswsjg')">📋 Cause</button></div><div class="alert-item"><span class="alert-dot"></span><span style="font-weight:600">KONAN ARMAND</span><span style="color:var(--muted)">EO Bouaké · MC</span><button class="btn-action" style="margin-left:auto" onclick="openCA('mni3jlhsgwir')">📋 Cause</button></div></div>
+  <div class="alerts-detail" id="alertsDetail"></div>
 
-  <div class="franchise-grid" id="franchiseCards"><div class="fc" onclick="filterByFranchise('EO Belle Ville')"><div class="fc-name">EO Belle Ville</div><div class="fc-stats"><span>3 agents</span><span style="color:var(--red);font-weight:600">6%</span></div><div class="fc-stats"><span style="color:var(--red)">⚠️ 1 alertes</span><span style="color:var(--accent)">🏆 ZOUNGRANA</span></div><div class="fc-bar"><div class="fc-fill" style="width:6%;background:var(--red)"></div></div></div><div class="fc" onclick="filterByFranchise('EO Bouaké')"><div class="fc-name">EO Bouaké</div><div class="fc-stats"><span>14 agents</span><span style="color:var(--red);font-weight:600">4%</span></div><div class="fc-stats"><span style="color:var(--red)">⚠️ 5 alertes</span><span style="color:var(--accent)">🏆 GBANGBO</span></div><div class="fc-bar"><div class="fc-fill" style="width:4%;background:var(--red)"></div></div></div><div class="fc" onclick="filterByFranchise('EO Dar Es')"><div class="fc-name">EO Dar Es</div><div class="fc-stats"><span>2 agents</span><span style="color:var(--red);font-weight:600">1%</span></div><div class="fc-stats"><span style="color:var(--red)">⚠️ 1 alertes</span><span style="color:var(--accent)">🏆 JACOB</span></div><div class="fc-bar"><div class="fc-fill" style="width:1%;background:var(--red)"></div></div></div><div class="fc" onclick="filterByFranchise('Eo Katiola')"><div class="fc-name">Eo Katiola</div><div class="fc-stats"><span>2 agents</span><span style="color:var(--red);font-weight:600">19%</span></div><div class="fc-stats"><span style="color:var(--green)">⚠️ 0 alertes</span><span style="color:var(--accent)">🏆 KOUADIO</span></div><div class="fc-bar"><div class="fc-fill" style="width:19%;background:var(--red)"></div></div></div><div class="fc" onclick="filterByFranchise('Ps Dabakala')"><div class="fc-name">Ps Dabakala</div><div class="fc-stats"><span>3 agents</span><span style="color:var(--red);font-weight:600">16%</span></div><div class="fc-stats"><span style="color:var(--green)">⚠️ 0 alertes</span><span style="color:var(--accent)">🏆 YEO</span></div><div class="fc-bar"><div class="fc-fill" style="width:16%;background:var(--red)"></div></div></div></div>
+  <div class="franchise-grid" id="franchiseCards"></div>
 
   <div class="filters">
     <span class="filter-label">Filtrer :</span>
-    <select id="filterFranchise" onchange="renderTable()"><option value="" selected="selected">Toutes franchises</option><option>EO Belle Ville</option><option>EO Bouaké</option><option>EO Dar Es</option><option>Eo Katiola</option><option>Ps Dabakala</option></select>
+    <select id="filterFranchise" onchange="renderTable()"><option value="">Toutes franchises</option></select>
     <select id="filterPoste" onchange="renderTable()">
-      <option value="" selected="selected">Tous postes</option><option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option>
+      <option value="">Tous postes</option><option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option>
     </select>
     <select id="filterPerf" onchange="renderTable()">
-      <option value="" selected="selected">Toutes perf.</option>
+      <option value="">Toutes perf.</option>
       <option value="0">0% seulement</option>
       <option value="low">Faible (&lt;50%)</option>
       <option value="mid">Moyen (50–99%)</option>
       <option value="ok">Atteint (≥100%)</option>
     </select>
-    <input type="text" class="search-input" id="searchAgent" placeholder="🔍 Rechercher…" oninput="renderTable()">
+    <input type="text" class="search-input" id="searchAgent" placeholder="🔍 Rechercher…" oninput="renderTable()"/>
   </div>
 
   <div class="table-wrap">
-    <table><thead id="mainThead"><tr><th onclick="sortBy('nom')">Agent</th><th onclick="sortBy('franchise')">Franchise</th><th onclick="sortBy('poste')">Poste</th><th class="u-cell" onclick="sortBy('reaFO')" style="color:#3b82f6">🔵 FO</th><th class="u-cell" onclick="sortBy('reaLTE')" style="color:#a855f7">📶 LTE</th><th class="u-cell" onclick="sortBy('reaPS')" style="color:#f97316">📦 Pack S</th><th class="u-cell" onclick="sortBy('reaPC')" style="color:#14b8a6">💳 Pack C</th><th class="u-cell" onclick="sortBy('reaOBA')" style="color:#eab308">⭐ OBA</th><th onclick="sortBy('ratioGlobal')">Moy R/O ↓</th><th onclick="sortBy('rang')">Rang</th><th>Actions</th></tr></thead><tbody id="mainTbody"><tr><td class="agent-name">YEO SIATOU</td><td style="font-size:11px">Ps Dabakala</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--muted)">—</td><td class="u-cell" style="color:var(--red)">3/7<br><small>43%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--muted)">—</td><td class="u-cell" style="color:var(--muted)">—</td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:21%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">21%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">1e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsl2v2')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhsl2v2')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhsl2v2')">🗑️</button></td></tr><tr><td class="agent-name">KOUADIO JOCELYNE</td><td style="font-size:11px">Eo Katiola</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--muted)">—</td><td class="u-cell" style="color:var(--yellow)">6/7<br><small>86%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:21%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">21%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">2e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs25n8')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhs25n8')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhs25n8')">🗑️</button></td></tr><tr><td class="agent-name">ZOUNGRANA ALIMA</td><td style="font-size:11px">EO Belle Ville</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red)">3/10<br><small>30%</small></td><td class="u-cell" style="color:var(--red)">3/7<br><small>43%</small></td><td class="u-cell" style="color:var(--red)">1/12<br><small>8%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:16%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">16%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">3e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsgezn')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhsgezn')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhsgezn')">🗑️</button></td></tr><tr><td class="agent-name">FATOUMA FOFANA</td><td style="font-size:11px">Eo Katiola</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--muted)">—</td><td class="u-cell" style="color:var(--red)">3/7<br><small>43%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">2/9<br><small>22%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:16%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">16%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">4e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsa1wc')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhsa1wc')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhsa1wc')">🗑️</button></td></tr><tr><td class="agent-name">GBANGBO ANNE GISELE</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--red)">1/10<br><small>10%</small></td><td class="u-cell" style="color:var(--yellow)">4/7<br><small>57%</small></td><td class="u-cell" style="color:var(--red)">1/12<br><small>8%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:15%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">15%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">5e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhslggv')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhslggv')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhslggv')">🗑️</button></td></tr><tr><td class="agent-name">COULIBALY MAMA</td><td style="font-size:11px">Ps Dabakala</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--muted)">—</td><td class="u-cell" style="color:var(--red)">2/7<br><small>29%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--muted)">—</td><td class="u-cell" style="color:var(--muted)">—</td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:14%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">14%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">6e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs8rs6')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhs8rs6')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhs8rs6')">🗑️</button></td></tr><tr><td class="agent-name">PINGUIN ADELE</td><td style="font-size:11px">Ps Dabakala</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--muted)">—</td><td class="u-cell" style="color:var(--red)">2/7<br><small>29%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--muted)">—</td><td class="u-cell" style="color:var(--muted)">—</td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:14%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">14%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">7e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhszxg4')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhszxg4')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhszxg4')">🗑️</button></td></tr><tr><td class="agent-name">STEPHANE AVOHOU</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red)">2/10<br><small>20%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">1/9<br><small>11%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:6%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">6%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">8e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhswu5x')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhswu5x')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhswu5x')">🗑️</button></td></tr><tr><td class="agent-name">LOIC ASSIE DEFALONE</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--red)">2/10<br><small>20%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">1/12<br><small>8%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:6%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">6%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">9e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhshh88')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhshh88')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhshh88')">🗑️</button></td></tr><tr><td class="agent-name">KONE KARIDJATOU</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red)">3/10<br><small>30%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:6%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">6%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">10e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs865l')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhs865l')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhs865l')">🗑️</button></td></tr><tr><td class="agent-name">TOURE FRANCIS</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red)">1/10<br><small>10%</small></td><td class="u-cell" style="color:var(--red)">1/7<br><small>14%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:5%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">5%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">11e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsxx1b')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhsxx1b')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhsxx1b')">🗑️</button></td></tr><tr><td class="agent-name">KOFFI DANIELLE</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red)">1/10<br><small>10%</small></td><td class="u-cell" style="color:var(--red)">1/7<br><small>14%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/3<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:5%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">5%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">12e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhspenu')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhspenu')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhspenu')">🗑️</button></td></tr><tr><td class="agent-name">GLADYS</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">1/7<br><small>14%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/3<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:3%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">3%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">13e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs9a0g')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhs9a0g')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhs9a0g')">🗑️</button></td></tr><tr><td class="agent-name">JACOB KOUASSI</td><td style="font-size:11px">EO Dar Es</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--red)">1/10<br><small>10%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:2%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">2%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">14e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs1btl')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhs1btl')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhs1btl')">🗑️</button></td></tr><tr><td class="agent-name">YEO KIEMA</td><td style="font-size:11px">EO Belle Ville</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red)">1/10<br><small>10%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:2%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">2%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">15e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsrxk2')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhsrxk2')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhsrxk2')">🗑️</button></td></tr><tr><td class="agent-name">KOMPE FOFANA</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">1/12<br><small>8%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:2%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">2%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">16e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs5pmq')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhs5pmq')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhs5pmq')">🗑️</button></td></tr><tr><td class="agent-name">JEAN CLAUDE</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red)">1/10<br><small>10%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/3<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:2%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">2%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">17e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs3v9v')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhs3v9v')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhs3v9v')">🗑️</button></td></tr><tr><td class="agent-name"><span class="alert-flag">⚠️</span>BENJAMIN YAO</td><td style="font-size:11px">EO Dar Es</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:0%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">0%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">18e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhrkbme')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhrkbme')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhrkbme')">🗑️</button></td></tr><tr><td class="agent-name"><span class="alert-flag">⚠️</span>ODILON KOFFI</td><td style="font-size:11px">EO Belle Ville</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:0%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">0%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">19e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsyi8r')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhsyi8r')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhsyi8r')">🗑️</button></td></tr><tr><td class="agent-name"><span class="alert-flag">⚠️</span>SEKONGO</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:0%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">0%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">20e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsdglp')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhsdglp')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhsdglp')">🗑️</button></td></tr><tr><td class="agent-name"><span class="alert-flag">⚠️</span>GNAMIEN TOPE JEKHIEL</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">SAV</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:0%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">0%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">21e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs4ra6')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhs4ra6')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhs4ra6')">🗑️</button></td></tr><tr><td class="agent-name"><span class="alert-flag">⚠️</span>KOUASSI STEPHANIE</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--muted)">—</td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:0%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">0%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">22e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhscdtf')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhscdtf')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhscdtf')">🗑️</button></td></tr><tr><td class="agent-name"><span class="alert-flag">⚠️</span>KONATE FATOUMATA</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/8<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:0%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">0%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">23e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhswsjg')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhswsjg')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhswsjg')">🗑️</button></td></tr><tr><td class="agent-name"><span class="alert-flag">⚠️</span>KONAN ARMAND</td><td style="font-size:11px">EO Bouaké</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red)">0/10<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/7<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/12<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/9<br><small>0%</small></td><td class="u-cell" style="color:var(--red)">0/3<br><small>0%</small></td><td><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:0%;background:var(--red)"></div></div><span class="ratio-num" style="color:var(--red)">0%</span></div></td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">24e</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsgwir')">✏️</button><button class="btn-action" onclick="openCA('mni3jlhsgwir')">📋</button><button class="btn-del" onclick="askDelete('mni3jlhsgwir')">🗑️</button></td></tr></tbody></table>
+    <table><thead id="mainThead"></thead><tbody id="mainTbody"></tbody></table>
   </div>
 </div>
 
@@ -258,27 +254,27 @@ textarea:focus{border-color:var(--accent)}
   <div class="form-card">
     <div class="form-title"><span id="formMode">➕</span><span id="formTitle">Ajouter un agent</span></div>
     <div class="form-grid">
-      <div class="form-group"><label>Franchise *</label><input type="text" class="form-inp" id="f_franchise" list="franchiseList" placeholder="EO Bouaké"><datalist id="franchiseList"><option value="EO Belle Ville"></option><option value="EO Bouaké"></option><option value="EO Dar Es"></option><option value="Eo Katiola"></option><option value="Ps Dabakala"></option></datalist></div>
-      <div class="form-group"><label>Nom &amp; Prénoms *</label><input type="text" class="form-inp" id="f_nom" placeholder="DUPONT Jean"></div>
-      <div class="form-group"><label>Téléphone</label><input type="tel" id="f_tel" placeholder="07 XX XX XX XX"></div>
-      <div class="form-group"><label>Poste *</label><select class="form-sel" id="f_poste"><option value="" selected="selected">-- Choisir --</option><option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option></select></div>
+      <div class="form-group"><label>Franchise *</label><input type="text" class="form-inp" id="f_franchise" list="franchiseList" placeholder="EO Bouaké"/><datalist id="franchiseList"></datalist></div>
+      <div class="form-group"><label>Nom & Prénoms *</label><input type="text" class="form-inp" id="f_nom" placeholder="DUPONT Jean"/></div>
+      <div class="form-group"><label>Téléphone</label><input type="tel" id="f_tel" placeholder="07 XX XX XX XX"/></div>
+      <div class="form-group"><label>Poste *</label><select class="form-sel" id="f_poste"><option value="">-- Choisir --</option><option>CC</option><option>MC</option><option>STAGIAIRE</option><option>SAV</option></select></div>
       <div class="section-sep"><span>🔵 FTTH (FO)</span></div>
-      <div class="form-group"><label>Objectif FO</label><input type="number" id="f_objFO" min="0" placeholder="0"></div>
-      <div class="form-group"><label>Réalisé FO</label><input type="number" id="f_reaFO" min="0" placeholder="0"></div>
+      <div class="form-group"><label>Objectif FO</label><input type="number" id="f_objFO" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé FO</label><input type="number" id="f_reaFO" min="0" placeholder="0"/></div>
       <div class="section-sep"><span>📶 LTE</span></div>
-      <div class="form-group"><label>Objectif LTE</label><input type="number" id="f_objLTE" min="0" placeholder="0"></div>
-      <div class="form-group"><label>Réalisé LTE</label><input type="number" id="f_reaLTE" min="0" placeholder="0"></div>
+      <div class="form-group"><label>Objectif LTE</label><input type="number" id="f_objLTE" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé LTE</label><input type="number" id="f_reaLTE" min="0" placeholder="0"/></div>
       <div class="section-sep"><span>📦 Pack Simple</span></div>
-      <div class="form-group"><label>Objectif Pack S</label><input type="number" id="f_objPS" min="0" placeholder="0"></div>
-      <div class="form-group"><label>Réalisé Pack S</label><input type="number" id="f_reaPS" min="0" placeholder="0"></div>
+      <div class="form-group"><label>Objectif Pack S</label><input type="number" id="f_objPS" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé Pack S</label><input type="number" id="f_reaPS" min="0" placeholder="0"/></div>
       <div class="section-sep"><span>💳 Pack à Crédit</span></div>
-      <div class="form-group"><label>Objectif Pack C</label><input type="number" id="f_objPC" min="0" placeholder="0"></div>
-      <div class="form-group"><label>Réalisé Pack C</label><input type="number" id="f_reaPC" min="0" placeholder="0"></div>
+      <div class="form-group"><label>Objectif Pack C</label><input type="number" id="f_objPC" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé Pack C</label><input type="number" id="f_reaPC" min="0" placeholder="0"/></div>
       <div class="section-sep"><span>⭐ OBA (TIK TAK)</span></div>
-      <div class="form-group"><label>Objectif OBA</label><input type="number" id="f_objOBA" min="0" placeholder="0"></div>
-      <div class="form-group"><label>Réalisé OBA</label><input type="number" id="f_reaOBA" min="0" placeholder="0"></div>
+      <div class="form-group"><label>Objectif OBA</label><input type="number" id="f_objOBA" min="0" placeholder="0"/></div>
+      <div class="form-group"><label>Réalisé OBA</label><input type="number" id="f_reaOBA" min="0" placeholder="0"/></div>
     </div>
-    <input type="hidden" id="f_editId">
+    <input type="hidden" id="f_editId"/>
     <div class="form-actions">
       <button class="btn-primary" onclick="saveAgent()">💾 Enregistrer</button>
       <button class="btn-secondary" onclick="resetForm()">↺ Réinitialiser</button>
@@ -287,12 +283,12 @@ textarea:focus{border-color:var(--accent)}
   <div style="margin-top:20px">
     <div class="filters" style="margin-bottom:9px">
       <span class="filter-label">Agents enregistrés :</span>
-      <input type="text" class="search-input" id="searchSaisie" placeholder="🔍 Rechercher…" oninput="renderSaisieList()">
+      <input type="text" class="search-input" id="searchSaisie" placeholder="🔍 Rechercher…" oninput="renderSaisieList()"/>
     </div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Franchise</th><th>Nom</th><th>Poste</th><th class="u-cell">🔵 FO</th><th class="u-cell">📶 LTE</th><th class="u-cell">📦 Pack S</th><th class="u-cell">💳 Pack C</th><th class="u-cell">⭐ OBA</th><th>Actions</th></tr></thead>
-        <tbody id="saisieTbody"><tr><td style="font-size:11px">Ps Dabakala</td><td style="font-weight:600">YEO SIATOU</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">43%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsl2v2')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhsl2v2')">🗑️</button></td></tr><tr><td style="font-size:11px">Eo Katiola</td><td style="font-weight:600">KOUADIO JOCELYNE</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td class="u-cell" style="color:var(--yellow);font-family:var(--mono)">86%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs25n8')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhs25n8')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Belle Ville</td><td style="font-weight:600">ZOUNGRANA ALIMA</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">30%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">43%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">8%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsgezn')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhsgezn')">🗑️</button></td></tr><tr><td style="font-size:11px">Eo Katiola</td><td style="font-weight:600">FATOUMA FOFANA</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">43%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">22%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsa1wc')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhsa1wc')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">GBANGBO ANNE GISELE</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">10%</td><td class="u-cell" style="color:var(--yellow);font-family:var(--mono)">57%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">8%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhslggv')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhslggv')">🗑️</button></td></tr><tr><td style="font-size:11px">Ps Dabakala</td><td style="font-weight:600">COULIBALY MAMA</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">29%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs8rs6')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhs8rs6')">🗑️</button></td></tr><tr><td style="font-size:11px">Ps Dabakala</td><td style="font-weight:600">PINGUIN ADELE</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">29%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhszxg4')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhszxg4')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">STEPHANE AVOHOU</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">20%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">11%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhswu5x')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhswu5x')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">LOIC ASSIE DEFALONE</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">20%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">8%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhshh88')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhshh88')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">KONE KARIDJATOU</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">30%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs865l')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhs865l')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">TOURE FRANCIS</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">10%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">14%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsxx1b')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhsxx1b')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">KOFFI DANIELLE</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">10%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">14%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhspenu')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhspenu')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">GLADYS</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">14%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs9a0g')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhs9a0g')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Dar Es</td><td style="font-weight:600">JACOB KOUASSI</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">10%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs1btl')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhs1btl')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Belle Ville</td><td style="font-weight:600">YEO KIEMA</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">10%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsrxk2')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhsrxk2')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">KOMPE FOFANA</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">8%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs5pmq')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhs5pmq')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">JEAN CLAUDE</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">10%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs3v9v')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhs3v9v')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Dar Es</td><td style="font-weight:600">BENJAMIN YAO</td><td><span class="badge-poste">STAGIAIRE</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhrkbme')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhrkbme')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Belle Ville</td><td style="font-weight:600">ODILON KOFFI</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsyi8r')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhsyi8r')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">SEKONGO</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsdglp')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhsdglp')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">GNAMIEN TOPE JEKHIEL</td><td><span class="badge-poste">SAV</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhs4ra6')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhs4ra6')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">KOUASSI STEPHANIE</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--muted);font-family:var(--mono)">—</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhscdtf')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhscdtf')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">KONATE FATOUMATA</td><td><span class="badge-poste">CC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhswsjg')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhswsjg')">🗑️</button></td></tr><tr><td style="font-size:11px">EO Bouaké</td><td style="font-weight:600">KONAN ARMAND</td><td><span class="badge-poste">MC</span></td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td class="u-cell" style="color:var(--red);font-family:var(--mono)">0%</td><td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent('mni3jlhsgwir')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete('mni3jlhsgwir')">🗑️</button></td></tr></tbody>
+        <tbody id="saisieTbody"></tbody>
       </table>
     </div>
   </div>
@@ -303,12 +299,12 @@ textarea:focus{border-color:var(--accent)}
   <h2 style="font-size:16px;font-weight:600;margin-bottom:16px">📥 Importer un fichier CSV</h2>
   <div class="import-mode">
     <div class="mode-btn active" onclick="selectMode('replace',this)"><h4>🔄 Remplacer tout</h4><p>Efface tout et importe</p></div>
-    <div class="mode-btn" onclick="selectMode('update',this)"><h4>♻️ Mettre à jour</h4><p>Conserve causes &amp; actions</p></div>
+    <div class="mode-btn" onclick="selectMode('update',this)"><h4>♻️ Mettre à jour</h4><p>Conserve causes & actions</p></div>
   </div>
   <div class="drop-zone" id="dropZone" onclick="document.getElementById('csvFile').click()">
     <div style="font-size:34px;margin-bottom:9px">📂</div>
     <div style="color:var(--muted);font-size:13px"><strong style="color:var(--text)">Cliquez ou glissez votre fichier CSV ici</strong></div>
-    <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleFileSelect(event)">
+    <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleFileSelect(event)"/>
   </div>
   <div id="importPreview" style="display:none">
     <div style="display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:9px">
@@ -333,27 +329,48 @@ EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
 
 <!-- SAUVEGARDE -->
 <div class="section" id="section-sauvegarde">
-  <h2 style="font-size:16px;font-weight:600;margin-bottom:16px">💾 Sauvegarde &amp; Restauration</h2>
+  <h2 style="font-size:16px;font-weight:600;margin-bottom:16px">💾 Sauvegarde & Restauration</h2>
   <div class="backup-section">
     <h3>📤 Exporter une sauvegarde locale</h3>
     <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
-      <input type="text" id="saveName" placeholder="Nom de la sauvegarde" style="width:250px">
+      <input type="text" id="saveName" placeholder="Nom de la sauvegarde" style="width:250px"/>
       <button class="btn-primary" onclick="exportBackup()">⬇️ Exporter (.json)</button>
     </div>
   </div>
   <div class="backup-section">
     <h3>📂 Restaurer depuis un fichier</h3>
     <p style="font-size:11px;color:var(--muted);margin-bottom:11px">⚠️ Écrase toutes les données actuelles (Firebase inclus si connecté).</p>
-    <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup(event)">
+    <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup(event)"/>
     <button class="btn-secondary" onclick="document.getElementById('restoreFile').click()">📂 Choisir un fichier .json</button>
   </div>
   <div class="backup-section">
     <h3>🔐 Statut de synchronisation</h3>
-    <div id="mainStatusPill" class="status-pill online"><span class="dot"></span> <span id="mainStatusText">Connecté à Firebase — données partagées</span></div>
-    <p style="font-size:11px;color:var(--muted);margin-top:7px" id="mainStatusSub">Toutes les modifications sont visibles par vos collègues en temps réel.</p>
+    <div id="mainStatusPill" class="status-pill offline"><span class="dot"></span> <span id="mainStatusText">Non connecté à Firebase</span></div>
+    <p style="font-size:11px;color:var(--muted);margin-top:7px" id="mainStatusSub">Configurez Firebase ci-dessus pour partager les données avec vos collègues.</p>
   </div>
 </div>
 
+
+<!-- FRANCHISES -->
+<div class="section" id="section-franchises">
+  <h2 style="font-size:16px;font-weight:600;margin-bottom:16px">🏪 Ventes par Franchise</h2>
+
+  <div class="univers-tabs" id="franchisetabs">
+    <button class="utab u-global active" onclick="setFranchiseUnivers('global',this)">🌐 Global</button>
+    <button class="utab u-fo" onclick="setFranchiseUnivers('fo',this)">🔵 FO</button>
+    <button class="utab u-lte" onclick="setFranchiseUnivers('lte',this)">📶 LTE</button>
+    <button class="utab u-ps" onclick="setFranchiseUnivers('ps',this)">📦 Pack Simple</button>
+    <button class="utab u-pc" onclick="setFranchiseUnivers('pc',this)">💳 Pack Crédit</button>
+    <button class="utab u-oba" onclick="setFranchiseUnivers('oba',this)">⭐ OBA</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="franchiseTable">
+      <thead id="franchiseThead"></thead>
+      <tbody id="franchiseTbody"></tbody>
+    </table>
+  </div>
+</div>
 </main>
 
 
@@ -361,7 +378,7 @@ EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
 <div class="modal-overlay" id="caModal">
   <div class="modal">
     <div class="modal-header">
-      <h3>📋 Cause &amp; Action — <span id="caAgentName"></span></h3>
+      <h3>📋 Cause & Action — <span id="caAgentName"></span></h3>
       <button class="modal-close" onclick="closeCA()">✕</button>
     </div>
     <div class="modal-body">
@@ -391,7 +408,7 @@ EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
   </div>
 </div>
 
-<div class="toast" id="toast">🔄 Données mises à jour depuis Firebase</div>
+<div class="toast" id="toast"></div>
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -626,7 +643,16 @@ function ratioFor(a,uKey){
 }
 function colorR(r){return r===null?'var(--muted)':r>=100?'var(--green)':r>=50?'var(--yellow)':'var(--red)';}
 function enriched(){
-  return [...agents].sort((a,b)=>(ratioFor(b,currentUnivers)||0)-(ratioFor(a,currentUnivers)||0)).map((a,i)=>({...a,ratioGlobal:ratioFor(a,'global'),rang:i+1}));
+  const sorted=[...agents]
+    .map(a=>({...a,ratioGlobal:ratioFor(a,'global'),_r:ratioFor(a,currentUnivers)||0}))
+    .sort((a,b)=>b._r-a._r);
+  // Standard 1224 ranking: ex-aequo = same rank, next rank skips
+  for(let i=0;i<sorted.length;i++){
+    if(i===0){sorted[i].rang=1;}
+    else if(sorted[i]._r===sorted[i-1]._r){sorted[i].rang=sorted[i-1].rang;}
+    else{sorted[i].rang=i+1;}
+  }
+  return sorted;
 }
 function getFranchises(){return[...new Set(agents.map(a=>a.franchise))].sort();}
 
@@ -750,11 +776,11 @@ function renderTable(){
   const actions=id=>`<button class="btn-edit" onclick="editAgent('${id}')">✏️</button><button class="btn-action" onclick="openCA('${id}')">📋</button><button class="btn-del" onclick="askDelete('${id}')">🗑️</button>`;
   if(currentUnivers==='global'){
     thead.innerHTML=`<tr><th onclick="sortBy('nom')">Agent</th><th onclick="sortBy('franchise')">Franchise</th><th onclick="sortBy('poste')">Poste</th><th class="u-cell" onclick="sortBy('reaFO')" style="color:#3b82f6">🔵 FO</th><th class="u-cell" onclick="sortBy('reaLTE')" style="color:#a855f7">📶 LTE</th><th class="u-cell" onclick="sortBy('reaPS')" style="color:#f97316">📦 Pack S</th><th class="u-cell" onclick="sortBy('reaPC')" style="color:#14b8a6">💳 Pack C</th><th class="u-cell" onclick="sortBy('reaOBA')" style="color:#eab308">⭐ OBA</th><th onclick="sortBy('ratioGlobal')">Moy R/O ↓</th><th onclick="sortBy('rang')">Rang</th><th>Actions</th></tr>`;
-    tbody.innerHTML=list.length?list.map(a=>`<tr><td class="agent-name">${a.ratioGlobal===0?'<span class="alert-flag">⚠️</span>':''}${a.nom}</td><td style="font-size:11px">${a.franchise}</td><td><span class="badge-poste">${a.poste}</span></td>${ucell(a.objFO,a.reaFO)}${ucell(a.objLTE,a.reaLTE)}${ucell(a.objPS,a.reaPS)}${ucell(a.objPC,a.reaPC)}${ucell(a.objOBA,a.reaOBA)}<td>${miniBar(a.ratioGlobal)}</td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">${a.rang}e</td><td style="white-space:nowrap">${actions(a.id)}</td></tr>`).join(''):'<tr class="empty-row"><td colspan="11">Aucun agent</td></tr>';
+    tbody.innerHTML=list.length?list.map(a=>`<tr><td class="agent-name">${a.ratioGlobal===0?'<span class="alert-flag">⚠️</span>':''}${a.nom}</td><td style="font-size:11px">${a.franchise}</td><td><span class="badge-poste">${a.poste}</span></td>${ucell(a.objFO,a.reaFO)}${ucell(a.objLTE,a.reaLTE)}${ucell(a.objPS,a.reaPS)}${ucell(a.objPC,a.reaPC)}${ucell(a.objOBA,a.reaOBA)}<td>${miniBar(a.ratioGlobal)}</td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">${a.rang}${a.rang===1?'er':'e'}${list.filter(x=>x.rang===a.rang).length>1?' ex æq.':''}</td><td style="white-space:nowrap">${actions(a.id)}</td></tr>`).join(''):'<tr class="empty-row"><td colspan="11">Aucun agent</td></tr>';
   } else {
     const ui=UINFO[currentUnivers];const U=ui.U;
     thead.innerHTML=`<tr><th onclick="sortBy('nom')">Agent</th><th onclick="sortBy('franchise')">Franchise</th><th onclick="sortBy('poste')">Poste</th><th onclick="sortBy('obj${U}')">Objectif</th><th onclick="sortBy('rea${U}')">Réalisé</th><th>R/O ↓</th><th>Reste</th><th onclick="sortBy('rang')">Rang</th><th>Actions</th></tr>`;
-    tbody.innerHTML=list.length?list.map(a=>{const obj=a['obj'+U],rea=a['rea'+U];const r=ratioFor(a,currentUnivers);const reste=rea-obj;return`<tr><td class="agent-name">${obj>0&&(r||0)===0?'<span class="alert-flag">⚠️</span>':''}${a.nom}</td><td style="font-size:11px">${a.franchise}</td><td><span class="badge-poste">${a.poste}</span></td><td style="font-family:var(--mono)">${obj||'—'}</td><td style="font-family:var(--mono)">${rea}</td><td>${miniBar(r)}</td><td style="font-family:var(--mono);color:${reste>=0?'var(--green)':'var(--red)'}">${obj>0?(reste>=0?'+':'')+reste:'—'}</td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">${a.rang}e</td><td style="white-space:nowrap">${actions(a.id)}</td></tr>`;}).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
+    tbody.innerHTML=list.length?list.map(a=>{const obj=a['obj'+U],rea=a['rea'+U];const r=ratioFor(a,currentUnivers);const reste=rea-obj;return`<tr><td class="agent-name">${obj>0&&(r||0)===0?'<span class="alert-flag">⚠️</span>':''}${a.nom}</td><td style="font-size:11px">${a.franchise}</td><td><span class="badge-poste">${a.poste}</span></td><td style="font-family:var(--mono)">${obj||'—'}</td><td style="font-family:var(--mono)">${rea}</td><td>${miniBar(r)}</td><td style="font-family:var(--mono);color:${reste>=0?'var(--green)':'var(--red)'}">${obj>0?(reste>=0?'+':'')+reste:'—'}</td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">${a.rang}${a.rang===1?'er':'e'}${list.filter(x=>x.rang===a.rang).length>1?' ex æq.':''}</td><td style="white-space:nowrap">${actions(a.id)}</td></tr>`;}).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
   }
 }
 
@@ -873,7 +899,7 @@ function showSection(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('section-'+id).classList.add('active');
-  ['dashboard','saisie','import','sauvegarde'].forEach((s,i)=>{if(s===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');});
+  ['dashboard','franchises','saisie','import','sauvegarde'].forEach((s,i)=>{if(s===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');});
 }
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type?' '+type:'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 
@@ -881,8 +907,116 @@ document.getElementById('caModal').addEventListener('click',e=>{if(e.target===do
 document.getElementById('confirmModal').addEventListener('click',e=>{if(e.target===document.getElementById('confirmModal'))closeConfirm();});
 
 
+
+// ── FRANCHISE VIEW ──────────────────────────────────────────────────────────
+let franchiseUnivers = 'global';
+
+function setFranchiseUnivers(u, el) {
+  franchiseUnivers = u;
+  document.querySelectorAll('#franchisetabs .utab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderFranchiseTable();
+}
+
+function getFranchiseData() {
+  const franchises = getFranchises();
+  return franchises.map(f => {
+    const fa = agents.filter(a => a.franchise === f);
+    const sum = (key) => fa.reduce((s, a) => s + (a[key] || 0), 0);
+    return {
+      franchise: f,
+      objFO: sum('objFO'), reaFO: sum('reaFO'),
+      objLTE: sum('objLTE'), reaLTE: sum('reaLTE'),
+      objPS: sum('objPS'), reaPS: sum('reaPS'),
+      objPC: sum('objPC'), reaPC: sum('reaPC'),
+      objOBA: sum('objOBA'), reaOBA: sum('reaOBA'),
+      agents: fa.length
+    };
+  });
+}
+
+function roCell(obj, rea) {
+  if (!obj) return '<td class="u-cell" style="color:var(--muted)">N/A</td>';
+  const r = Math.round(rea / obj * 100);
+  const col = r >= 100 ? 'var(--green)' : r >= 50 ? 'var(--yellow)' : 'var(--red)';
+  const bg = r >= 100 ? 'rgba(34,197,94,.08)' : r >= 50 ? 'rgba(234,179,8,.08)' : 'rgba(239,68,68,.08)';
+  return `<td class="u-cell" style="color:${col};background:${bg};font-weight:600">${r}%</td>`;
+}
+
+function renderFranchiseTable() {
+  const data = getFranchiseData();
+  const thead = document.getElementById('franchiseThead');
+  const tbody = document.getElementById('franchiseTbody');
+
+  const UNIVERS = {
+    global: [
+      {label:'🔵 FO', obj:'objFO', rea:'reaFO'},
+      {label:'📶 LTE', obj:'objLTE', rea:'reaLTE'},
+      {label:'📦 Pack S', obj:'objPS', rea:'reaPS'},
+      {label:'💳 Pack C', obj:'objPC', rea:'reaPC'},
+      {label:'⭐ OBA', obj:'objOBA', rea:'reaOBA'},
+    ],
+    fo:  [{label:'🔵 FO', obj:'objFO', rea:'reaFO'}],
+    lte: [{label:'📶 LTE', obj:'objLTE', rea:'reaLTE'}],
+    ps:  [{label:'📦 Pack Simple', obj:'objPS', rea:'reaPS'}],
+    pc:  [{label:'💳 Pack Crédit', obj:'objPC', rea:'reaPC'}],
+    oba: [{label:'⭐ OBA', obj:'objOBA', rea:'reaOBA'}],
+  };
+
+  const cols = UNIVERS[franchiseUnivers];
+
+  // Header
+  let thHTML = '<tr><th>Franchise</th><th>Agents</th>';
+  cols.forEach(c => {
+    thHTML += `<th class="u-cell" style="color:var(--accent2)">${c.label} Obj</th>`;
+    thHTML += `<th class="u-cell" style="color:var(--accent2)">${c.label} Réa</th>`;
+    thHTML += `<th class="u-cell">R/O</th>`;
+  });
+  thHTML += '</tr>';
+  thead.innerHTML = thHTML;
+
+  // Totals
+  const totals = {
+    objFO:0,reaFO:0,objLTE:0,reaLTE:0,
+    objPS:0,reaPS:0,objPC:0,reaPC:0,
+    objOBA:0,reaOBA:0,agents:0
+  };
+
+  // Rows
+  let rows = '';
+  data.forEach(f => {
+    Object.keys(totals).forEach(k => { if(f[k]!==undefined) totals[k] += f[k]; });
+    rows += `<tr><td style="font-weight:600">${f.franchise}</td><td class="u-cell">${f.agents}</td>`;
+    cols.forEach(c => {
+      rows += `<td class="u-cell" style="font-family:var(--mono)">${f[c.obj]}</td>`;
+      rows += `<td class="u-cell" style="font-family:var(--mono)">${f[c.rea]}</td>`;
+      rows += roCell(f[c.obj], f[c.rea]);
+    });
+    rows += '</tr>';
+  });
+
+  // Total row
+  rows += `<tr style="border-top:2px solid var(--accent);font-weight:700">
+    <td style="font-weight:700;color:var(--accent)">TOTAL</td>
+    <td class="u-cell" style="font-weight:700">${totals.agents}</td>`;
+  cols.forEach(c => {
+    rows += `<td class="u-cell" style="font-family:var(--mono);font-weight:700">${totals[c.obj]}</td>`;
+    rows += `<td class="u-cell" style="font-family:var(--mono);font-weight:700">${totals[c.rea]}</td>`;
+    rows += roCell(totals[c.obj], totals[c.rea]);
+  });
+  rows += '</tr>';
+
+  tbody.innerHTML = rows;
+}
+
+// Hook into showSection to render franchise table
+const _origShowSection = showSection;
+window.showSection = function(id) {
+  _origShowSection(id);
+  if (id === 'franchises') renderFranchiseTable();
+};
+
 loadData();
 </script>
-
-
-<deepl-input-controller translate="no"></deepl-input-controller></body></html>
+</body>
+</html>
