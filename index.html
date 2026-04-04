@@ -334,24 +334,6 @@ EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
 <!-- SAUVEGARDE -->
 <div class="section" id="section-sauvegarde">
   <h2 style="font-size:16px;font-weight:600;margin-bottom:16px">💾 Sauvegarde &amp; Restauration</h2>
-
-  <!-- Firebase Config -->
-  <div class="backup-section" id="firebaseConfigSection">
-    <h3>🔥 Configuration Firebase (partage en temps réel)</h3>
-    <p style="font-size:11px;color:var(--muted);margin-bottom:13px">Entrez les informations de votre base Firebase pour activer le partage des données avec tous les collaborateurs.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px">
-      <div class="config-input-group"><label>API Key</label><input type="text" id="fb_apiKey" placeholder="AIzaSy…" value="AIzaSyALwYbnckE9JPNXifR0NTXW6hy7yOxTsrE"></div>
-      <div class="config-input-group"><label>Project ID</label><input type="text" id="fb_projectId" placeholder="mon-projet-12345" value="pilotage-equipe"></div>
-      <div class="config-input-group" style="grid-column:1/-1"><label>Database URL</label><input type="text" id="fb_dbUrl" placeholder="https://mon-projet-12345-default-rtdb.firebaseio.com" value="https://pilotage-equipe-default-rtdb.firebaseio.com"></div>
-    </div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap">
-      <button class="btn-primary" onclick="saveFirebaseConfig()">🔥 Connecter Firebase</button>
-      <button class="btn-secondary" onclick="testFirebaseConnection()">🧪 Tester la connexion</button>
-      <button class="btn-secondary" style="color:var(--red);border-color:var(--red)" onclick="clearFirebaseConfig()">🗑️ Déconnecter</button>
-    </div>
-    <div id="fbConfigStatus" style="margin-top:9px;font-size:11px;color:var(--muted)"></div>
-  </div>
-
   <div class="backup-section">
     <h3>📤 Exporter une sauvegarde locale</h3>
     <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
@@ -374,28 +356,6 @@ EO Bouaké,TOURE FRANCIS,0708548161,CC,10,0,7,0,12,0,9,0,8,0</pre>
 
 </main>
 
-<!-- FIREBASE CONFIG FIRST-TIME MODAL -->
-<div class="modal-overlay" id="fbSetupModal">
-  <div class="config-modal">
-    <h2>🔥 Configurer Firebase</h2>
-    <p>Pour partager les données avec vos collègues, configurez Firebase gratuitement en 5 minutes. Suivez ces étapes :</p>
-    <div class="config-step"><div class="step-num">1</div><div class="step-txt">Allez sur <a href="https://console.firebase.google.com/" target="_blank">console.firebase.google.com</a> et créez un projet (ex: <strong>pilotage-equipe</strong>)</div></div>
-    <div class="config-step"><div class="step-num">2</div><div class="step-txt">Dans le projet, activez <strong>Realtime Database</strong> → Créer une base → Mode <strong>test</strong></div></div>
-    <div class="config-step"><div class="step-num">3</div><div class="step-txt">Allez dans <strong>Paramètres du projet → Vos applications → Web</strong> et copiez les informations de configuration</div></div>
-    <div class="config-step"><div class="step-num">4</div><div class="step-txt">Collez les valeurs ci-dessous et cliquez <strong>Connecter</strong></div></div>
-    <div class="config-note">💡 La base de données en mode test est 
-gratuite et accessible à tous sans compte. Vos collègues n'ont rien à 
-configurer, ils voient les données automatiquement.</div>
-    <div class="config-input-group"><label>API Key</label><input type="text" id="fb_apiKey2" placeholder="AIzaSy…"></div>
-    <div class="config-input-group"><label>Project ID</label><input type="text" id="fb_projectId2" placeholder="mon-projet-12345"></div>
-    <div class="config-input-group"><label>Database URL</label><input type="text" id="fb_dbUrl2" placeholder="https://mon-projet-12345-default-rtdb.firebaseio.com"></div>
-    <div style="display:flex;gap:7px;margin-top:16px">
-      <button class="btn-primary" onclick="saveFirebaseConfigFromModal()">🔥 Connecter et partager</button>
-      <button class="btn-secondary" onclick="closeFbSetup()">Plus tard</button>
-    </div>
-    <div id="fbSetupStatus" style="margin-top:9px;font-size:11px;color:var(--muted)"></div>
-  </div>
-</div>
 
 <!-- CAUSE/ACTION MODAL -->
 <div class="modal-overlay" id="caModal">
@@ -522,24 +482,12 @@ function updateSyncUI(state) {
   }
 }
 
-// Auto-connect Firebase with hardcoded config
-const FIREBASE_CONFIG = {
+// Firebase hardcoded
+window._fbInit({
   apiKey: 'AIzaSyALwYbnckE9JPNXifR0NTXW6hy7yOxTsrE',
   projectId: 'pilotage-equipe',
-  dbUrl: 'https://pilotage-equipe-default-rtdb.firebaseio.com',
-};
-localStorage.setItem('pil_fb_config', JSON.stringify(FIREBASE_CONFIG));
-window._fbInit({
-  apiKey: FIREBASE_CONFIG.apiKey,
-  projectId: FIREBASE_CONFIG.projectId,
-  databaseURL: FIREBASE_CONFIG.dbUrl,
+  databaseURL: 'https://pilotage-equipe-default-rtdb.firebaseio.com',
 });
-setTimeout(() => {
-  ['apiKey','projectId','dbUrl'].forEach(k => {
-    const el = document.getElementById('fb_' + k);
-    if (el) el.value = FIREBASE_CONFIG[k] || '';
-  });
-}, 300);
 </script>
 
 <script>
@@ -689,8 +637,6 @@ function loadData(){
   document.getElementById('periodLabel').value=p;
   document.getElementById('periodDisplay').textContent=p?'📅 '+p:'';
   renderAll();
-
-  // Firebase auto-configured — no setup needed
 }
 
 async function savePeriod(){
@@ -704,83 +650,13 @@ async function savePeriod(){
 }
 
 // ─── Firebase Config ──────────────────────────────────────────────────────────
-function getConfigFromFields(suffix) {
-  const s = suffix || '';
-  return {
-    apiKey: document.getElementById('fb_apiKey'+s).value.trim(),
-    projectId: document.getElementById('fb_projectId'+s).value.trim(),
-    dbUrl: document.getElementById('fb_dbUrl'+s).value.trim(),
-  };
-}
 
-function saveFirebaseConfig() {
-  const cfg = getConfigFromFields('');
-  if (!cfg.apiKey || !cfg.projectId || !cfg.dbUrl) {
-    document.getElementById('fbConfigStatus').textContent = '⚠️ Tous les champs sont requis.';
-    return;
-  }
-  applyFirebaseConfig(cfg, 'fbConfigStatus');
-}
 
-function saveFirebaseConfigFromModal() {
-  const cfg = getConfigFromFields('2');
-  if (!cfg.apiKey || !cfg.projectId || !cfg.dbUrl) {
-    document.getElementById('fbSetupStatus').textContent = '⚠️ Tous les champs sont requis.';
-    return;
-  }
-  applyFirebaseConfig(cfg, 'fbSetupStatus', true);
-}
 
-function applyFirebaseConfig(cfg, statusId, fromModal) {
-  localStorage.setItem('pil_fb_config', JSON.stringify(cfg));
-  const fbConfig = {
-    apiKey: cfg.apiKey,
-    projectId: cfg.projectId,
-    databaseURL: cfg.dbUrl,
-  };
-  const ok = window._fbInit(fbConfig);
-  const el = document.getElementById(statusId);
-  if (ok) {
-    if (el) el.textContent = '✅ Firebase connecté avec succès ! Les données sont maintenant partagées.';
-    showToast('🔥 Firebase connecté ✅');
-    // Push current data to Firebase
-    setTimeout(async () => {
-      await window._fbSave(getFirebasePayload());
-    }, 800);
-    if (fromModal) setTimeout(closeFbSetup, 1500);
-    // Pre-fill the other form too
-    ['apiKey','projectId','dbUrl'].forEach(k => {
-      const el2 = document.getElementById('fb_' + k);
-      if (el2) el2.value = cfg[k] || '';
-    });
-  } else {
-    if (el) el.textContent = '❌ Erreur de connexion. Vérifiez vos informations.';
-  }
-}
 
-function testFirebaseConnection() {
-  const cfg = localStorage.getItem('pil_fb_config');
-  if (!cfg) { showToast('Configurez Firebase d\'abord', 'error'); return; }
-  showToast('🧪 Test en cours…');
-  setTimeout(() => {
-    if (window._fbSave) {
-      window._fbSave({ping: Date.now()}).then(ok => {
-        showToast(ok ? '✅ Connexion OK !' : '❌ Connexion échouée', ok ? '' : 'error');
-      });
-    }
-  }, 300);
-}
 
-function clearFirebaseConfig() {
-  localStorage.removeItem('pil_fb_config');
-  if (window._fbDisconnect) window._fbDisconnect();
-  showToast('Firebase déconnecté');
-  document.getElementById('fbConfigStatus').textContent = 'Firebase déconnecté.';
-}
 
-function closeFbSetup() {
-  document.getElementById('fbSetupModal').classList.remove('open');
-}
+
 
 // ─── Render ───────────────────────────────────────────────────────────────────
 function setUnivers(u,el){currentUnivers=u;document.querySelectorAll('.utab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderAll();}
@@ -1003,7 +879,7 @@ function showToast(msg,type=''){const t=document.getElementById('toast');t.textC
 
 document.getElementById('caModal').addEventListener('click',e=>{if(e.target===document.getElementById('caModal'))closeCA();});
 document.getElementById('confirmModal').addEventListener('click',e=>{if(e.target===document.getElementById('confirmModal'))closeConfirm();});
-document.getElementById('fbSetupModal').addEventListener('click',e=>{if(e.target===document.getElementById('fbSetupModal'))closeFbSetup();});
+
 
 loadData();
 </script>
