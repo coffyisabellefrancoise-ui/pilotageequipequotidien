@@ -1,0 +1,12 @@
+# Ignorer les fichiers de configuration contenant des mots de passe
+.env
+config/secrets.json
+
+# Ignorer les dossiers générés automatiquement (trop lourds)
+/node_modules/
+/build/
+/.dart_tool/
+
+# Ignorer les fichiers système inutiles
+.DS_Store
+Thumbs.db
