@@ -221,6 +221,64 @@ textarea:focus{border-color:var(--accent);background:#fff}
   .mapping-grid{grid-template-columns:1fr}
 }
 
+/* ── LOCK SCREEN ─────────────────────────────────────────────────────── */
+#lockScreen{
+  position:fixed;inset:0;
+  background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);
+  z-index:9000;display:flex;align-items:center;justify-content:center;
+  padding:24px;
+}
+#lockScreen.hidden{display:none}
+.lock-card{
+  background:#fff;border-radius:24px;
+  padding:40px 28px;width:100%;max-width:380px;
+  text-align:center;
+  box-shadow:0 32px 80px rgba(0,0,0,.4);
+  animation:lockIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes lockIn{from{transform:translateY(30px) scale(.95);opacity:0}to{transform:none;opacity:1}}
+.lock-logo{
+  width:72px;height:72px;border-radius:18px;
+  background:linear-gradient(135deg,#f97316,#ea580c);
+  margin:0 auto 20px;display:flex;align-items:center;justify-content:center;
+  font-size:32px;box-shadow:0 8px 24px rgba(249,115,22,.35);
+}
+.lock-title{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:4px;letter-spacing:-.3px}
+.lock-company{font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:28px}
+.lock-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;text-align:left}
+.lock-input{
+  width:100%;background:#f8fafc;
+  border:2px solid #e2e8f0;border-radius:14px;
+  padding:16px;font-size:22px;text-align:center;
+  outline:none;letter-spacing:8px;
+  font-family:'Space Mono',monospace;
+  transition:border-color .2s,box-shadow .2s;
+  margin-bottom:16px;color:#0f172a;
+}
+.lock-input:focus{border-color:#f97316;box-shadow:0 0 0 4px rgba(249,115,22,.1)}
+.lock-btn{
+  width:100%;
+  background:linear-gradient(135deg,#f97316,#ea580c);
+  color:#fff;border:none;border-radius:14px;
+  padding:16px;font-size:15px;font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(249,115,22,.35);
+  transition:transform .15s,opacity .15s;letter-spacing:.3px;
+}
+.lock-btn:hover{opacity:.92}
+.lock-btn:active{transform:scale(.97)}
+.lock-error{
+  color:#dc2626;font-size:12px;font-weight:600;
+  margin-top:10px;min-height:18px;
+}
+#authBadge{
+  display:none;align-items:center;gap:5px;
+  background:#dcfce7;border:1px solid #86efac;
+  border-radius:99px;padding:3px 10px;
+  font-size:10px;font-weight:700;color:#16a34a;
+  margin-left:8px;cursor:pointer;
+}
+
 /* ── PWA STYLES ────────────────────────────────────────────────────── */
 :root {
   --safe-top: env(safe-area-inset-top, 0px);
@@ -275,14 +333,8 @@ body {
   background: none; border: none; color: var(--muted2);
   font-size: 18px; cursor: pointer; padding: 2px 4px; flex-shrink: 0;
 }
-/* Indicateur offline */
-#offline-bar {
-  display: none; position: fixed; top: 0; left: 0; right: 0;
-  background: #64748b; color: #fff; text-align: center;
-  font-size: 11px; font-weight: 600; padding: 6px;
-  z-index: 9998;
-}
-#offline-bar.show { display: block; }
+/* Indicateur offline - désactivé */
+#offline-bar { display: none !important; }
 /* Splash overlay au démarrage */
 #pwa-splash {
   position: fixed; inset: 0; background: var(--accent);
@@ -328,6 +380,21 @@ body {
 <body>
 
 
+<!-- ── LOCK SCREEN ──────────────────────────────────────────────── -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-logo">📊</div>
+    <div class="lock-title">Pilotage Équipe</div>
+    <div class="lock-company">Tableau de bord commercial</div>
+    <div class="lock-label">Code d'accès</div>
+    <input class="lock-input" type="password" id="lockInput"
+      placeholder="••••••" maxlength="20" autocomplete="off"
+      onkeydown="if(event.key==='Enter')checkPassword()">
+    <button class="lock-btn" onclick="checkPassword()">Accéder →</button>
+    <div class="lock-error" id="lockError"></div>
+  </div>
+</div>
+
 <!-- ── PWA SPLASH SCREEN ─────────────────────────────────────────── -->
 <div id="pwa-splash">
   <img src="data:image/png;base64,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" alt="Pilotage">
@@ -355,7 +422,7 @@ body {
 </div>
 
 <header>
-  <div class="logo"><div class="logo-dot"></div>PILOTAGE ÉQUIPE</div>
+  <div class="logo"><div class="logo-dot"></div>PILOTAGE ÉQUIPE<span id="authBadge" onclick="lockApp()">🔓 Admin</span></div>
   <nav class="nav-tabs">
     <button class="nav-tab" onclick="showSection('dashboard')">📊 Dashboard</button>
     <button class="nav-tab" onclick="showSection('classement')">🏆 Classement</button>
@@ -369,9 +436,9 @@ body {
   <button id="headerInstallBtn" onclick="installPWA()" title="Installer app">
     ⬇️ Installer
   </button>
-  <div class="sync-status" id="syncStatus">
-    <div class="sync-dot online" id="syncDot"></div>
-    <span id="syncLabel">En ligne</span>
+  <div id="syncStatus" style="display:none">
+    <div id="syncDot"></div>
+    <span id="syncLabel"></span>
   </div>
 </header>
 
@@ -629,6 +696,24 @@ EO Dar Es,BENJAMIN YAO,0747268228,STAGIAIRE,10,0,7,0,12,0,9,0,8,0</pre>
       <button class="btn-secondary" style="display:flex;align-items:center;gap:6px" onclick="sendAlertAgentsWhatsApp()">⚠️ Envoyer aux agents en alerte seulement</button>
     </div>
   </div>
+
+  <!-- Rapport patron Mr Soro -->
+  <div class="notif-card" style="border:2px solid #f97316;background:linear-gradient(135deg,#fff7ed,#fff)">
+    <h3 style="color:#f97316">👔 Rapport pour Mr SORO</h3>
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:#fafbff;margin-bottom:12px">
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">Mr SORO</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted)">07 49 93 24 92</div>
+        <div style="font-size:11px;color:var(--muted)">Patron / Superviseur</div>
+      </div>
+      <button class="btn-action" onclick="previewPatronReport()" style="font-size:11px">👁️ Aperçu</button>
+      <a id="soroWaBtn" href="#" target="_blank" class="btn-wa" style="font-size:11px;padding:6px 12px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Envoyer rapport
+      </a>
+    </div>
+    <div style="font-size:11px;color:var(--muted)">📊 Contient : ventes globales, objectifs, R/O, reste à faire, top agents par franchise</div>
+  </div>
   <div class="notif-filters">
     <input type="text" id="searchNotif" placeholder="🔍 Rechercher un agent…" oninput="renderNotifList()" style="width:200px;font-size:12px">
     <select id="notifFilterFranchise" onchange="renderNotifList()" style="font-size:12px"><option value="">Toutes franchises</option></select>
@@ -732,6 +817,30 @@ EO Dar Es,BENJAMIN YAO,0747268228,STAGIAIRE,10,0,7,0,12,0,9,0,8,0</pre>
 
 <div class="section" id="section-sauvegarde">
   <div class="section-title">💾 Sauvegarde &amp; Restauration</div>
+  <!-- GESTION DES CODES -->
+  <div class="backup-section" style="border:1px solid var(--accent);background:#fff7ed">
+    <h3 style="color:var(--accent)">🔐 Gestion des codes d'accès</h3>
+    <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:12px;font-size:12px;line-height:1.8;color:var(--muted)">
+      <strong style="color:var(--text)">Code général</strong> → <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">pilotage2026</code><br>
+      Tout le monde entre ce code pour accéder<br><br>
+      <strong style="color:var(--text)">Code Admin</strong> → connu de toi seule<br>
+      Permet de modifier, ajouter, supprimer des données
+    </div>
+    <p style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:12px">⚠️ Connexion Admin requise pour changer les codes</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Nouveau code général</label>
+        <input type="password" id="newVisitorCode" placeholder="Min. 6 caractères" autocomplete="off"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:14px;padding:10px 12px;outline:none">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px">Nouveau code Admin</label>
+        <input type="password" id="newAdminCode" placeholder="Min. 8 caractères" autocomplete="off"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:14px;padding:10px 12px;outline:none">
+      </div>
+      <button onclick="saveCodes()" class="btn-primary" style="font-size:13px">💾 Enregistrer les codes</button>
+    </div>
+  </div>
   <div class="backup-section">
     <h3>📤 Exporter une sauvegarde</h3>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
@@ -795,26 +904,48 @@ EO Dar Es,BENJAMIN YAO,0747268228,STAGIAIRE,10,0,7,0,12,0,9,0,8,0</pre>
 <script>
 // ── Firebase (chargement dynamique, ne bloque pas si offline) ────────
 (function loadFirebase() {
-  var scripts = [
-    'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
-    'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js'
-  ];
-  var loaded = 0;
-  function onLoad() {
-    loaded++;
-    if (loaded === scripts.length) initFirebase();
+  var retry = 0;
+  var maxRetry = 5;
+
+  function tryLoad() {
+    var scripts = [
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js'
+    ];
+    var loaded = 0;
+    var failed = false;
+
+    function onLoad() {
+      loaded++;
+      if (loaded === scripts.length && !failed) initFirebase();
+    }
+
+    function onError() {
+      if (failed) return;
+      failed = true;
+      retry++;
+      if (retry <= maxRetry) {
+        setTimeout(tryLoad, retry * 2000); // retry progressif
+      }
+      // Pas de message d'erreur visible pour l'utilisateur
+    }
+
+    scripts.forEach(function(src) {
+      // Éviter de recharger si déjà présent
+      if (document.querySelector('script[src="' + src + '"]')) {
+        loaded++;
+        if (loaded === scripts.length) initFirebase();
+        return;
+      }
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = onLoad;
+      s.onerror = onError;
+      document.head.appendChild(s);
+    });
   }
-  function onError() {
-    /* Firebase offline - mode local */
-    updateSyncUI('offline');
-  }
-  scripts.forEach(function(src) {
-    var s = document.createElement('script');
-    s.src = src;
-    s.onload = onLoad;
-    s.onerror = onError;
-    document.head.appendChild(s);
-  });
+
+  tryLoad();
 })();
 
 function initFirebase() {
@@ -854,24 +985,16 @@ function initFirebase() {
 }
 
 function updateSyncUI(state) {
-  var dot = document.getElementById('syncDot');
-  var label = document.getElementById('syncLabel');
-  var pill = document.getElementById('mainStatusPill');
-  var pillText = document.getElementById('mainStatusText');
+  // Statut Firebase - silencieux pour l'utilisateur
+  var pill    = document.getElementById('mainStatusPill');
+  var pillTxt = document.getElementById('mainStatusText');
   var pillSub = document.getElementById('mainStatusSub');
-  if (!dot) return;
-  dot.className = 'sync-dot ' + state;
   if (state === 'online') {
-    label.textContent = 'En ligne';
-    if (pill) { pill.className = 'status-pill online'; pillText.textContent = 'Connecte a Firebase'; pillSub.textContent = 'Modifications partagees en temps reel.'; }
+    if (pill) { pill.className='status-pill online'; pillTxt.textContent='Connecté'; pillSub.textContent='Données synchronisées en temps réel.'; }
   } else if (state === 'syncing') {
-    label.textContent = 'Sync...';
-  } else if (state === 'error') {
-    label.textContent = 'Erreur';
-    if (pill) { pill.className = 'status-pill offline'; pillText.textContent = 'Erreur Firebase'; pillSub.textContent = 'Mode local actif.'; }
-  } else {
-    label.textContent = 'Hors ligne';
-    if (pill) { pill.className = 'status-pill offline'; pillText.textContent = 'Hors ligne'; pillSub.textContent = 'Donnees locales uniquement.'; }
+    if (pill) { pill.className='status-pill online'; pillTxt.textContent='Synchronisation...'; pillSub.textContent=''; }
+  } else if (state === 'error' || state === 'offline') {
+    if (pill) { pill.className='status-pill offline'; pillTxt.textContent='Mode local'; pillSub.textContent='Reconnexion automatique en cours...'; }
   }
 }
 </script>
@@ -947,6 +1070,9 @@ const FRANCHISE_CONTACTS = {
   'Eo Katiola':    {nom:'KATIOLA',      tel:'0707700808'},
   'EO Bouaké':     {nom:'EO BOUAKE',    tel:'0707074060'}
 };
+
+// Patron superviseur
+const PATRON = {nom:'Mr SORO', tel:'0749932492'};
 
 // ── TÉLÉPHONE ──────────────────────────────────────────────────────────────────
 // FORMAT WA CI VALIDE = 2250XXXXXXXXX = 13 chiffres
@@ -1076,7 +1202,7 @@ function ucell(obj, rea) {
 }
 
 function enriched() {
-  var sorted = agents.map(function(a){ return Object.assign({},a,{ratioGlobal:ratioFor(a,'global'),_r:ratioFor(a,currentUnivers)||0}); }).sort(function(a,b){return b._r-a._r;});
+  var sorted = agents.map(function(a){ var tv=(['FO','LTE','PS','PC','OBA'].reduce(function(s,U){return s+(a['rea'+U]||0);},0)); return Object.assign({},a,{ratioGlobal:ratioFor(a,'global'),_r:ratioFor(a,currentUnivers)||0,totalVentes:tv}); }).sort(function(a,b){return b._r-a._r;});
   for (var i=0;i<sorted.length;i++){
     if(i===0) sorted[i].rang=1;
     else if(sorted[i]._r===sorted[i-1]._r) sorted[i].rang=sorted[i-1].rang;
@@ -1257,8 +1383,8 @@ function renderTable() {
   var exAeq=function(a,l){return l.filter(function(x){return x.rang===a.rang;}).length>1?' ex æq.':'';};
   var rangStr=function(a){return a.rang+(a.rang===1?'er':'e');};
   if(currentUnivers==='global'){
-    thead.innerHTML='<tr><th onclick="sortBy(\'nom\')">Agent ↕</th><th onclick="sortBy(\'franchise\')">Franchise ↕</th><th>Poste</th><th class="u-cell" onclick="sortBy(\'reaFO\')" style="color:#3b82f6">🔵 FO</th><th class="u-cell" onclick="sortBy(\'reaLTE\')" style="color:#a855f7">📶 LTE</th><th class="u-cell" onclick="sortBy(\'reaPS\')" style="color:#f97316">📦 S</th><th class="u-cell" onclick="sortBy(\'reaPC\')" style="color:#14b8a6">💳 C</th><th class="u-cell" onclick="sortBy(\'reaOBA\')" style="color:#d97706">🎵 OBA</th><th onclick="sortBy(\'ratioGlobal\')">Moy R/O ↓</th><th onclick="sortBy(\'rang\')">Rang ↕</th><th>Actions</th></tr>';
-    tbody.innerHTML=list.length?list.map(function(a){return '<tr><td class="agent-name">'+(a.ratioGlobal===0?'<span class="alert-flag">⚠️</span>':'')+a.nom+'</td><td style="font-size:11px;color:var(--muted)">'+a.franchise+'</td><td><span class="badge-poste">'+a.poste+'</span></td>'+ucell(a.objFO,a.reaFO)+ucell(a.objLTE,a.reaLTE)+ucell(a.objPS,a.reaPS)+ucell(a.objPC,a.reaPC)+ucell(a.objOBA,a.reaOBA)+'<td>'+miniBar(a.ratioGlobal)+'</td><td style="font-family:var(--mono);color:var(--muted);font-size:11px;font-weight:600">'+rangStr(a)+exAeq(a,list)+'</td><td style="white-space:nowrap">'+actions(a.id)+'</td></tr>';}).join(''):'<tr class="empty-row"><td colspan="11">Aucun agent</td></tr>';
+    thead.innerHTML='<tr><th onclick="sortBy(\'nom\')">Agent ↕</th><th onclick="sortBy(\'franchise\')">Franchise ↕</th><th>Poste</th><th class="u-cell" onclick="sortBy(\'reaFO\')" style="color:#3b82f6">🔵 FO</th><th class="u-cell" onclick="sortBy(\'reaLTE\')" style="color:#a855f7">📶 LTE</th><th class="u-cell" onclick="sortBy(\'reaPS\')" style="color:#f97316">📦 S</th><th class="u-cell" onclick="sortBy(\'reaPC\')" style="color:#14b8a6">💳 C</th><th class="u-cell" onclick="sortBy(\'reaOBA\')" style="color:#d97706">🎵 OBA</th><th onclick="sortBy(\'totalVentes\')">📦 Total ventes ↓</th><th onclick="sortBy(\'ratioGlobal\')">Moy R/O ↓</th><th onclick="sortBy(\'rang\')">Rang ↕</th><th>Actions</th></tr>';
+    tbody.innerHTML=list.length?list.map(function(a){return '<tr><td class="agent-name">'+(a.ratioGlobal===0?'<span class="alert-flag">⚠️</span>':'')+a.nom+'</td><td style="font-size:11px;color:var(--muted)">'+a.franchise+'</td><td><span class="badge-poste">'+a.poste+'</span></td>'+ucell(a.objFO,a.reaFO)+ucell(a.objLTE,a.reaLTE)+ucell(a.objPS,a.reaPS)+ucell(a.objPC,a.reaPC)+ucell(a.objOBA,a.reaOBA)+'<td class="u-cell"><span style="font-family:var(--mono);font-weight:700;color:var(--accent2);font-size:13px">'+a.totalVentes+'</span></td><td>'+miniBar(a.ratioGlobal)+'</td><td style="font-family:var(--mono);color:var(--muted);font-size:11px;font-weight:600">'+rangStr(a)+exAeq(a,list)+'</td><td style="white-space:nowrap">'+actions(a.id)+'</td></tr>';}).join(''):'<tr class="empty-row"><td colspan="11">Aucun agent</td></tr>';
   } else {
     var ui=UINFO[currentUnivers], U=ui.U;
     thead.innerHTML='<tr><th onclick="sortBy(\'nom\')">Agent ↕</th><th onclick="sortBy(\'franchise\')">Franchise ↕</th><th>Poste</th><th onclick="sortBy(\'obj'+U+'\')">Objectif</th><th onclick="sortBy(\'rea'+U+'\')">Réalisé</th><th>R/O ↓</th><th>Reste</th><th onclick="sortBy(\'rang\')">Rang ↕</th><th>Actions</th></tr>';
@@ -1592,6 +1718,89 @@ function buildWaMessage(agent) {
   lines.push('');
   lines.push('_Franchise : '+agent.franchise+' | Poste : '+agent.poste+'_');
   lines.push('_Pilotage Équipe — '+new Date().toLocaleDateString('fr-FR')+'_');
+  return lines.join('\n');
+}
+
+function buildPatronReport(period) {
+  var lines = [];
+  var date = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  var totalObj={FO:0,LTE:0,PS:0,PC:0,OBA:0};
+  var totalRea={FO:0,LTE:0,PS:0,PC:0,OBA:0};
+
+  lines.push('📊 *RAPPORT GLOBAL — '+period+'*');
+  lines.push('_'+date+'_');
+  lines.push('');
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━━');
+  lines.push('*RÉSUMÉ PAR FRANCHISE*');
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━━');
+
+  var franchises = [];
+  var seen = {};
+  agents.forEach(function(a){ if(!seen[a.franchise]){seen[a.franchise]=true;franchises.push(a.franchise);} });
+  franchises.sort();
+
+  franchises.forEach(function(f){
+    var fa = agents.filter(function(a){ return a.franchise===f; });
+    var avg = fa.length ? Math.round(fa.reduce(function(s,a){return s+ratioFor(a,'global');},0)/fa.length) : 0;
+    var foR=fa.reduce(function(s,a){return s+(a.reaFO||0);},0);
+    var foO=fa.reduce(function(s,a){return s+(a.objFO||0);},0);
+    var lteR=fa.reduce(function(s,a){return s+(a.reaLTE||0);},0);
+    var lteO=fa.reduce(function(s,a){return s+(a.objLTE||0);},0);
+    var psR=fa.reduce(function(s,a){return s+(a.reaPS||0);},0);
+    var psO=fa.reduce(function(s,a){return s+(a.objPS||0);},0);
+    var pcR=fa.reduce(function(s,a){return s+(a.reaPC||0);},0);
+    var pcO=fa.reduce(function(s,a){return s+(a.objPC||0);},0);
+    var obaR=fa.reduce(function(s,a){return s+(a.reaOBA||0);},0);
+    var obaO=fa.reduce(function(s,a){return s+(a.objOBA||0);},0);
+    var totalR=foR+lteR+psR+pcR+obaR;
+    var totalO=foO+lteO+psO+pcO+obaO;
+    var icon = avg>=100?'🏆':avg>=50?'⚠️':'❌';
+    lines.push('');
+    lines.push(icon+' *'+f+'* ('+fa.length+' agents) — Score: *'+avg+'%*');
+    if(foO>0) lines.push('   🔵 FO: '+foR+'/'+foO+' ('+Math.round(foR/foO*100)+'%)');
+    if(lteO>0) lines.push('   📶 LTE: '+lteR+'/'+lteO+' ('+Math.round(lteR/lteO*100)+'%)');
+    if(psO>0) lines.push('   📦 Pack S: '+psR+'/'+psO+' ('+Math.round(psR/psO*100)+'%)');
+    if(pcO>0) lines.push('   💳 Pack C: '+pcR+'/'+pcO+' ('+Math.round(pcR/pcO*100)+'%)');
+    if(obaO>0) lines.push('   🎵 TIK TAK: '+obaR+'/'+obaO+' ('+Math.round(obaR/obaO*100)+'%)');
+    lines.push('   📦 *Total ventes: '+totalR+' / Obj: '+totalO+'*');
+    ['FO','LTE','PS','PC','OBA'].forEach(function(U){
+      var rMap={FO:foR,LTE:lteR,PS:psR,PC:pcR,OBA:obaR};
+      var oMap={FO:foO,LTE:lteO,PS:psO,PC:pcO,OBA:obaO};
+      totalObj[U]+=oMap[U]; totalRea[U]+=rMap[U];
+    });
+  });
+
+  lines.push('');
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━━');
+  lines.push('*TOTAL ÉQUIPE ('+agents.length+' agents)*');
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━━');
+  var grandTotalO=Object.values(totalObj).reduce(function(s,v){return s+v;},0);
+  var grandTotalR=Object.values(totalRea).reduce(function(s,v){return s+v;},0);
+  var grandRAF=grandTotalO-grandTotalR;
+  var grandAvg=agents.length?Math.round(agents.reduce(function(s,a){return s+ratioFor(a,'global');},0)/agents.length):0;
+  if(totalObj.FO>0) lines.push('🔵 FO: *'+totalRea.FO+'/'+totalObj.FO+'* ('+Math.round(totalRea.FO/totalObj.FO*100)+'%)');
+  if(totalObj.LTE>0) lines.push('📶 LTE: *'+totalRea.LTE+'/'+totalObj.LTE+'* ('+Math.round(totalRea.LTE/totalObj.LTE*100)+'%)');
+  if(totalObj.PS>0) lines.push('📦 Pack S: *'+totalRea.PS+'/'+totalObj.PS+'* ('+Math.round(totalRea.PS/totalObj.PS*100)+'%)');
+  if(totalObj.PC>0) lines.push('💳 Pack C: *'+totalRea.PC+'/'+totalObj.PC+'* ('+Math.round(totalRea.PC/totalObj.PC*100)+'%)');
+  if(totalObj.OBA>0) lines.push('🎵 TIK TAK: *'+totalRea.OBA+'/'+totalObj.OBA+'* ('+Math.round(totalRea.OBA/totalObj.OBA*100)+'%)');
+  lines.push('');
+  lines.push('📦 *Ventes totales: '+grandTotalR+' / Obj: '+grandTotalO+'*');
+  lines.push('📉 *Reste a faire: '+grandRAF+'*');
+  lines.push('📈 *Score global: '+grandAvg+'%*');
+  lines.push('');
+
+  // Top 3 agents
+  var top3 = agents.slice().sort(function(a,b){return ratioFor(b,'global')-ratioFor(a,'global');}).slice(0,3);
+  lines.push('🏆 *TOP 3 AGENTS*');
+  top3.forEach(function(a,i){
+    var medals=['🥇','🥈','🥉'];
+    var tv=['FO','LTE','PS','PC','OBA'].reduce(function(s,U){return s+(a['rea'+U]||0);},0);
+    lines.push(medals[i]+' '+a.nom+' ('+a.franchise+') — '+ratioFor(a,'global')+'% — '+tv+' ventes');
+  });
+
+  lines.push('');
+  lines.push('_Rapport genere automatiquement_');
+  lines.push('_Pilotage Equipe_');
   return lines.join('\n');
 }
 
@@ -2162,23 +2371,13 @@ window.addEventListener('load', function() {
 
 // ── Offline / Online detection ────────────────────────────────────
 function updateOnlineStatus() {
-  var bar = document.getElementById('offline-bar');
-  var dot = document.getElementById('syncDot');
-  var label = document.getElementById('syncLabel');
-  if (!navigator.onLine) {
-    if (bar) bar.classList.add('show');
-    if (dot) { dot.className = 'sync-dot error'; }
-    if (label) label.textContent = 'Hors ligne';
-    document.body.style.paddingTop = 'calc(var(--safe-top) + 30px)';
-  } else {
-    if (bar) bar.classList.remove('show');
-    document.body.style.paddingTop = 'var(--safe-top)';
-    if (dot) { dot.className = 'sync-dot online'; }
-    if (label) label.textContent = 'En ligne';
+  // Reconnexion silencieuse quand réseau revient
+  if (navigator.onLine && typeof initFirebase === 'function') {
+    if (typeof firebase !== 'undefined') initFirebase();
   }
 }
 window.addEventListener('online',  updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
+window.addEventListener('offline', function(){});
 
 // ── Raccourci URL hash ────────────────────────────────────────────
 (function handleHashNav() {
@@ -2191,6 +2390,163 @@ window.addEventListener('offline', updateOnlineStatus);
     });
   }
 })();
+
+// ── RAPPORT PATRON ────────────────────────────────────────────────
+function previewPatronReport() {
+  var period = localStorage.getItem('pil_period') || 'Avril 2026';
+  var msg = buildPatronReport(period);
+  var tel = fmtTel(PATRON.tel);
+  var url = 'https://wa.me/' + tel + '?text=' + encodeURIComponent(msg);
+  // Mettre à jour le lien du bouton
+  var btn = document.getElementById('soroWaBtn');
+  if (btn) btn.href = url;
+  // Afficher aperçu dans le modal WA
+  var prev = document.getElementById('waMsgPreview');
+  if (prev) prev.textContent = msg;
+  var link = document.getElementById('waOpenLink');
+  if (link) link.href = url;
+  document.getElementById('waPreviewModal').classList.add('open');
+}
+
+function updateSoroLink() {
+  var period = localStorage.getItem('pil_period') || 'Avril 2026';
+  var msg = buildPatronReport(period);
+  var tel = fmtTel(PATRON.tel);
+  var url = 'https://wa.me/' + tel + '?text=' + encodeURIComponent(msg);
+  var btn = document.getElementById('soroWaBtn');
+  if (btn) btn.href = url;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// AUTHENTIFICATION — UN SEUL CODE POUR TOUT LE MONDE
+// Seule la superviseure (toi) connaît le code admin pour modifier
+// ══════════════════════════════════════════════════════════════════
+
+// ── CODES D'ACCÈS ────────────────────────────────────────────────
+// Code général  : pilotage2026  → tout le monde (lecture seule si visiteur)
+// Code admin    : SUPERVISOR#2026 → superviseure uniquement (modifications)
+// Pour changer : onglet Sauvegarde → Gestion des codes
+var CODE_ACCES = localStorage.getItem('code_acces') || 'pilotage2026';
+var CODE_ADMIN = localStorage.getItem('code_admin') || 'SUPERVISOR#2026';
+var isAdmin  = false;
+var isLogged = false;
+
+function checkPassword() {
+  var input = document.getElementById('lockInput').value.trim();
+  var errEl = document.getElementById('lockError');
+
+  if (input === CODE_ADMIN) {
+    // ADMIN - toi seule
+    isAdmin  = true;
+    isLogged = true;
+    _unlockScreen();
+    var badge = document.getElementById('authBadge');
+    if (badge) {
+      badge.style.display    = 'inline-flex';
+      badge.textContent      = '🔓 Admin';
+      badge.style.background = '#dcfce7';
+      badge.style.color      = '#16a34a';
+    }
+    showToast('Bienvenue ! Accès Administrateur', 'success');
+    setTimeout(updateSoroLink, 300);
+
+  } else if (input === CODE_ACCES) {
+    // VISITEUR - agents, patron, franchises
+    isAdmin  = false;
+    isLogged = true;
+    _unlockScreen();
+    var badge = document.getElementById('authBadge');
+    if (badge) {
+      badge.style.display    = 'inline-flex';
+      badge.textContent      = '👁 Lecture';
+      badge.style.background = '#fef3c7';
+      badge.style.color      = '#b45309';
+    }
+    setTimeout(_disableEditing, 150);
+    showToast('Bienvenue — Consultation uniquement');
+
+  } else {
+    errEl.textContent = '❌ Code incorrect — réessayez';
+    document.getElementById('lockInput').value = '';
+    document.getElementById('lockInput').classList.add('shake');
+    setTimeout(function(){ document.getElementById('lockInput').classList.remove('shake'); }, 400);
+  }
+}
+
+function _unlockScreen() {
+  document.getElementById('lockScreen').classList.add('hidden');
+  document.getElementById('lockError').textContent = '';
+  document.getElementById('lockInput').value = '';
+}
+
+function _disableEditing() {
+  // Masquer boutons modifier/supprimer
+  document.querySelectorAll('.btn-edit,.btn-del').forEach(function(b){ b.style.display='none'; });
+  // Masquer onglets Saisie + Import
+  var tabs = document.querySelectorAll('.nav-tab');
+  if (tabs[3]) tabs[3].style.display = 'none';
+  if (tabs[4]) tabs[4].style.display = 'none';
+  // Masquer boutons d'envoi groupé
+  document.querySelectorAll('.wa-group-btn').forEach(function(b){ b.style.display='none'; });
+}
+
+function lockApp() {
+  if (!confirm('Se déconnecter ?')) return;
+  isAdmin  = false;
+  isLogged = false;
+  var badge = document.getElementById('authBadge');
+  if (badge) badge.style.display = 'none';
+  // Réafficher tous les éléments
+  document.querySelectorAll('.btn-edit,.btn-del,.wa-group-btn').forEach(function(b){ b.style.display=''; });
+  var tabs = document.querySelectorAll('.nav-tab');
+  tabs.forEach(function(t){ t.style.display=''; });
+  document.getElementById('lockScreen').classList.remove('hidden');
+}
+
+// Protéger les actions de modification
+var _realSaveAgent = saveAgent;
+saveAgent = function() {
+  if (!isAdmin) {
+    showToast('Code Admin requis pour modifier', 'error');
+    return;
+  }
+  _realSaveAgent.apply(this, arguments);
+};
+
+var _realDelete = confirmDeleteAgent;
+confirmDeleteAgent = function() {
+  if (!isAdmin) {
+    showToast('Code Admin requis pour supprimer', 'error');
+    return;
+  }
+  _realDelete.apply(this, arguments);
+};
+
+// Animation shake
+var shakeStyle = document.createElement('style');
+shakeStyle.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}80%{transform:translateX(10px)}}.shake{animation:shake .35s ease}';
+document.head.appendChild(shakeStyle);
+
+
+function saveCodes() {
+  if (!isAdmin) {
+    showToast('Code Admin requis pour changer les codes', 'error');
+    return;
+  }
+  var vc = document.getElementById('newVisitorCode').value.trim();
+  var ac = document.getElementById('newAdminCode').value.trim();
+  if (vc && vc.length >= 4) {
+    CODE_VISITEUR = vc;
+    localStorage.setItem('code_visiteur', vc);
+  }
+  if (ac && ac.length >= 4) {
+    CODE_ADMIN = ac;
+    localStorage.setItem('code_admin', ac);
+  }
+  document.getElementById('newVisitorCode').value = '';
+  document.getElementById('newAdminCode').value = '';
+  showToast('Codes mis à jour !', 'success');
+}
 
 loadData();
 </script>
