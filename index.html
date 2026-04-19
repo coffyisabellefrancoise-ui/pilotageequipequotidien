@@ -1379,16 +1379,23 @@ function renderTable() {
   list.sort(function(a,b){var va=a[sortKey]||0,vb=b[sortKey]||0;if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}return va<vb?-sortDir:va>vb?sortDir:0;});
   var thead=document.getElementById('mainThead'), tbody=document.getElementById('mainTbody');
   if(!thead||!tbody) return;
-  var actions=function(id){return '<button class="btn-edit" onclick="editAgent(\''+id+'\')">✏️</button>'+'<button class="btn-action" onclick="openCA(\''+id+'\')">📋</button>'+'<button class="btn-action" style="border-color:#25d366;color:#25d366" onclick="openWaPreview(\''+id+'\')">📲</button>'+'<button class="btn-del" onclick="askDelete(\''+id+'\')">🗑️</button>';};
+  var actions=function(id){
+  if (!isAdmin) return ''; // mode lecture : pas d'actions
+  return '<button class="btn-edit" onclick="editAgent(\''+id+'\')">✏️</button>'
+    +'<button class="btn-action" onclick="openCA(\''+id+'\')">📋</button>'
+    +'<button class="btn-action" style="border-color:#25d366;color:#25d366" onclick="openWaPreview(\''+id+'\')">📲</button>'
+    +'<button class="btn-del" onclick="askDelete(\''+id+'\')">🗑️</button>';
+};
   var exAeq=function(a,l){return l.filter(function(x){return x.rang===a.rang;}).length>1?' ex æq.':'';};
   var rangStr=function(a){return a.rang+(a.rang===1?'er':'e');};
   if(currentUnivers==='global'){
-    thead.innerHTML='<tr><th onclick="sortBy(\'nom\')">Agent ↕</th><th onclick="sortBy(\'franchise\')">Franchise ↕</th><th>Poste</th><th class="u-cell" onclick="sortBy(\'reaFO\')" style="color:#3b82f6">🔵 FO</th><th class="u-cell" onclick="sortBy(\'reaLTE\')" style="color:#a855f7">📶 LTE</th><th class="u-cell" onclick="sortBy(\'reaPS\')" style="color:#f97316">📦 S</th><th class="u-cell" onclick="sortBy(\'reaPC\')" style="color:#14b8a6">💳 C</th><th class="u-cell" onclick="sortBy(\'reaOBA\')" style="color:#d97706">🎵 OBA</th><th onclick="sortBy(\'totalVentes\')">📦 Total ventes ↓</th><th onclick="sortBy(\'ratioGlobal\')">Moy R/O ↓</th><th onclick="sortBy(\'rang\')">Rang ↕</th><th>Actions</th></tr>';
-    tbody.innerHTML=list.length?list.map(function(a){return '<tr><td class="agent-name">'+(a.ratioGlobal===0?'<span class="alert-flag">⚠️</span>':'')+a.nom+'</td><td style="font-size:11px;color:var(--muted)">'+a.franchise+'</td><td><span class="badge-poste">'+a.poste+'</span></td>'+ucell(a.objFO,a.reaFO)+ucell(a.objLTE,a.reaLTE)+ucell(a.objPS,a.reaPS)+ucell(a.objPC,a.reaPC)+ucell(a.objOBA,a.reaOBA)+'<td class="u-cell"><span style="font-family:var(--mono);font-weight:700;color:var(--accent2);font-size:13px">'+a.totalVentes+'</span></td><td>'+miniBar(a.ratioGlobal)+'</td><td style="font-family:var(--mono);color:var(--muted);font-size:11px;font-weight:600">'+rangStr(a)+exAeq(a,list)+'</td><td style="white-space:nowrap">'+actions(a.id)+'</td></tr>';}).join(''):'<tr class="empty-row"><td colspan="11">Aucun agent</td></tr>';
+    var actionsHeader = isAdmin ? '<th>Actions</th>' : '';
+  thead.innerHTML='<tr><th onclick="sortBy(\'nom\')">Agent ↕</th><th onclick="sortBy(\'franchise\')">Franchise ↕</th><th>Poste</th><th class="u-cell" onclick="sortBy(\'reaFO\')" style="color:#3b82f6">🔵 FO</th><th class="u-cell" onclick="sortBy(\'reaLTE\')" style="color:#a855f7">📶 LTE</th><th class="u-cell" onclick="sortBy(\'reaPS\')" style="color:#f97316">📦 S</th><th class="u-cell" onclick="sortBy(\'reaPC\')" style="color:#14b8a6">💳 C</th><th class="u-cell" onclick="sortBy(\'reaOBA\')" style="color:#d97706">🎵 OBA</th><th onclick="sortBy(\'totalVentes\')">📦 Total ventes ↓</th><th onclick="sortBy(\'ratioGlobal\')">Moy R/O ↓</th><th onclick="sortBy(\'rang\')">Rang ↕</th>'+actionsHeader+'</tr>';
+    tbody.innerHTML=list.length?list.map(function(a){return '<tr><td class="agent-name">'+(a.ratioGlobal===0?'<span class="alert-flag">⚠️</span>':'')+a.nom+'</td><td style="font-size:11px;color:var(--muted)">'+a.franchise+'</td><td><span class="badge-poste">'+a.poste+'</span></td>'+ucell(a.objFO,a.reaFO)+ucell(a.objLTE,a.reaLTE)+ucell(a.objPS,a.reaPS)+ucell(a.objPC,a.reaPC)+ucell(a.objOBA,a.reaOBA)+'<td class="u-cell"><span style="font-family:var(--mono);font-weight:700;color:var(--accent2);font-size:13px">'+a.totalVentes+'</span></td><td>'+miniBar(a.ratioGlobal)+'</td><td style="font-family:var(--mono);color:var(--muted);font-size:11px;font-weight:600">'+rangStr(a)+exAeq(a,list)+'</td><td style="white-space:nowrap">'+(isAdmin?'<td style="white-space:nowrap">'+actions(a.id)+'</td>':'')+'</tr>';}).join(''):'<tr class="empty-row"><td colspan="11">Aucun agent</td></tr>';
   } else {
     var ui=UINFO[currentUnivers], U=ui.U;
     thead.innerHTML='<tr><th onclick="sortBy(\'nom\')">Agent ↕</th><th onclick="sortBy(\'franchise\')">Franchise ↕</th><th>Poste</th><th onclick="sortBy(\'obj'+U+'\')">Objectif</th><th onclick="sortBy(\'rea'+U+'\')">Réalisé</th><th>R/O ↓</th><th>Reste</th><th onclick="sortBy(\'rang\')">Rang ↕</th><th>Actions</th></tr>';
-    tbody.innerHTML=list.length?list.map(function(a){var obj=a['obj'+U],rea=a['rea'+U],r=ratioFor(a,currentUnivers),reste=rea-obj;return '<tr><td class="agent-name">'+(obj>0&&(r||0)===0?'<span class="alert-flag">⚠️</span>':'')+a.nom+'</td><td style="font-size:11px;color:var(--muted)">'+a.franchise+'</td><td><span class="badge-poste">'+a.poste+'</span></td><td style="font-family:var(--mono);color:var(--text);font-weight:600">'+(obj||'—')+'</td><td style="font-family:var(--mono);color:var(--text);font-weight:700">'+rea+'</td><td>'+miniBar(r)+'</td><td style="font-family:var(--mono);color:'+(reste>=0?'var(--green)':'var(--red)')+'">'+( obj>0?(reste>=0?'+':'')+reste:'—')+'</td><td style="font-family:var(--mono);color:var(--muted);font-size:11px;font-weight:600">'+rangStr(a)+exAeq(a,list)+'</td><td style="white-space:nowrap">'+actions(a.id)+'</td></tr>';}).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
+    tbody.innerHTML=list.length?list.map(function(a){var obj=a['obj'+U],rea=a['rea'+U],r=ratioFor(a,currentUnivers),reste=rea-obj;return '<tr><td class="agent-name">'+(obj>0&&(r||0)===0?'<span class="alert-flag">⚠️</span>':'')+a.nom+'</td><td style="font-size:11px;color:var(--muted)">'+a.franchise+'</td><td><span class="badge-poste">'+a.poste+'</span></td><td style="font-family:var(--mono);color:var(--text);font-weight:600">'+(obj||'—')+'</td><td style="font-family:var(--mono);color:var(--text);font-weight:700">'+rea+'</td><td>'+miniBar(r)+'</td><td style="font-family:var(--mono);color:'+(reste>=0?'var(--green)':'var(--red)')+'">'+( obj>0?(reste>=0?'+':'')+reste:'—')+'</td><td style="font-family:var(--mono);color:var(--muted);font-size:11px;font-weight:600">'+rangStr(a)+exAeq(a,list)+'</td><td style="white-space:nowrap">'+(isAdmin?'<td style="white-space:nowrap">'+actions(a.id)+'</td>':'')+'</tr>';}).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
   }
 }
 
@@ -1417,7 +1424,7 @@ function renderSaisieList() {
   if(search) list=list.filter(function(a){return a.nom.toLowerCase().includes(search)||a.franchise.toLowerCase().includes(search);});
   var tb=document.getElementById('saisieTbody'); if(!tb) return;
   var rc=function(obj,rea){var r=obj>0?Math.round(rea/obj*100):null;return '<td class="u-cell" style="color:'+colorR(r)+';font-family:var(--mono)">'+(r!==null?r+'%':'—')+'</td>';};
-  tb.innerHTML=list.length?list.map(function(a){return '<tr><td style="font-size:11px;color:var(--muted)">'+a.franchise+'</td><td style="font-weight:600">'+a.nom+'</td><td><span class="badge-poste">'+a.poste+'</span></td>'+rc(a.objFO,a.reaFO)+rc(a.objLTE,a.reaLTE)+rc(a.objPS,a.reaPS)+rc(a.objPC,a.reaPC)+rc(a.objOBA,a.reaOBA)+'<td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent(\''+a.id+'\')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete(\''+a.id+'\')">🗑️</button></td></tr>';}).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
+  tb.innerHTML=list.length?list.map(function(a){return '<tr><td style="font-size:11px;color:var(--muted)">'+a.franchise+'</td><td style="font-weight:600">'+a.nom+'</td><td><span class="badge-poste">'+a.poste+'</span></td>'+rc(a.objFO,a.reaFO)+rc(a.objLTE,a.reaLTE)+rc(a.objPS,a.reaPS)+rc(a.objPC,a.reaPC)+rc(a.objOBA,a.reaOBA)+(isAdmin?'<td style="white-space:nowrap"><button class="btn-edit" onclick="editAgent(\''+a.id+'\')">✏️ Modifier</button> <button class="btn-del" onclick="askDelete(\''+a.id+'\')">🗑️</button></td>':'<td></td>')+'</tr>';}).join(''):'<tr class="empty-row"><td colspan="9">Aucun agent</td></tr>';
 }
 
 async function saveAgent() {
@@ -2480,13 +2487,27 @@ function _unlockScreen() {
 }
 
 function _disableEditing() {
-  // Masquer boutons modifier/supprimer
-  document.querySelectorAll('.btn-edit,.btn-del').forEach(function(b){ b.style.display='none'; });
-  // Masquer onglets Saisie + Import
+  // Mode lecture : Dashboard(0), Classement(1), Franchises(2) visibles
+  // Saisie(3), Import(4), Notifications(5), Vocal(6), Sauvegarde(7) → masqués
   var tabs = document.querySelectorAll('.nav-tab');
-  if (tabs[3]) tabs[3].style.display = 'none';
-  if (tabs[4]) tabs[4].style.display = 'none';
-  // Masquer boutons d'envoi groupé
+  var adminOnly = [3, 4, 5, 6, 7]; // saisie, import, notifications, vocal, sauvegarde
+  adminOnly.forEach(function(i){ if(tabs[i]) tabs[i].style.display='none'; });
+
+  // Si on est sur un onglet admin → rediriger vers dashboard
+  var current = document.querySelector('.section.active');
+  var adminSections = ['section-saisie','section-import','section-notifications','section-vocal','section-sauvegarde'];
+  if (current && adminSections.indexOf(current.id) !== -1) {
+    showSection('dashboard');
+    if(tabs[0]) tabs[0].classList.add('active');
+  }
+
+  // Masquer boutons modifier/supprimer dans le tableau
+  document.querySelectorAll('.btn-edit,.btn-del').forEach(function(b){ b.style.display='none'; });
+
+  // Masquer la colonne Actions dans le tableau principal
+  document.querySelectorAll('#mainThead th:last-child, #mainTbody td:last-child').forEach(function(el){ el.style.display='none'; });
+
+  // Masquer boutons envoi groupé WhatsApp
   document.querySelectorAll('.wa-group-btn').forEach(function(b){ b.style.display='none'; });
 }
 
