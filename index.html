@@ -375,6 +375,32 @@ body {
   box-shadow: 0 2px 6px rgba(249,115,22,.3);
 }
 
+/* ── Notation Franchises ───────────────────────────────────────── */
+.rating-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:24px}
+.rating-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);transition:box-shadow .15s}
+.rating-card:hover{box-shadow:var(--shadow-md)}
+.rating-card-name{font-weight:700;font-size:13px;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:6px}
+.rating-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px}
+.rating-row-label{color:var(--muted);font-weight:500}
+.rating-stars-display{display:flex;gap:2px;font-size:15px}
+.rating-avg{font-family:var(--mono);font-size:13px;font-weight:700;margin-left:6px}
+.rating-count{font-size:10px;color:var(--muted);text-align:right;margin-top:6px}
+.stars-widget{display:flex;gap:4px;cursor:pointer}
+.stars-widget span{font-size:22px;transition:transform .1s;user-select:none;line-height:1}
+.stars-widget span:hover{transform:scale(1.2)}
+.form-card-notation{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:24px;box-shadow:var(--shadow)}
+.form-card-notation h3{font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text)}
+.notation-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;align-items:end}
+.notation-field{display:flex;flex-direction:column;gap:6px}
+.notation-field label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.notation-field input,.notation-field select,.notation-field textarea{background:#fff;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;padding:8px 12px;outline:none;transition:border .2s;box-shadow:var(--shadow)}
+.notation-field input:focus,.notation-field select:focus,.notation-field textarea:focus{border-color:var(--accent)}
+.notation-field textarea{resize:vertical;min-height:60px}
+.btn-save-rating{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 2px 8px rgba(249,115,22,.3);transition:opacity .15s;align-self:end;height:38px}
+.btn-save-rating:hover{opacity:.88}
+.notation-history h3{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:8px}
+.stars-ok{color:#16a34a}.stars-mid{color:#d97706}.stars-bad{color:#dc2626}
+
 </style>
 </head>
 <body>
@@ -427,6 +453,7 @@ body {
     <button class="nav-tab" onclick="showSection('dashboard')">📊 Dashboard</button>
     <button class="nav-tab" onclick="showSection('classement')">🏆 Classement</button>
     <button class="nav-tab" onclick="showSection('franchises')">🏪 Franchises</button>
+    <button class="nav-tab" onclick="showSection('notation')">⭐ Notation</button>
     <button class="nav-tab" onclick="showSection('saisie')">✏️ Saisie <span class="badge" id="badgeAlerts" style="display:none">0</span></button>
     <button class="nav-tab" onclick="showSection('import')">📥 Import</button>
     <button class="nav-tab active" onclick="showSection('notifications')">📲 Notifications</button>
@@ -536,6 +563,89 @@ body {
   </div>
   <div class="table-wrap">
     <table><thead id="franchiseThead"></thead><tbody id="franchiseTbody"></tbody></table>
+  </div>
+</div>
+
+<!-- ═══ NOTATION FRANCHISES ═══════════════════════════════════════════════ -->
+<div class="section" id="section-notation">
+  <div class="section-title">⭐ Notation des Franchises</div>
+
+  <!-- Résumé par franchise -->
+  <div class="rating-grid" id="ratingCards"></div>
+
+  <!-- Formulaire d'ajout -->
+  <div class="form-card-notation">
+    <h3>➕ Nouvelle évaluation</h3>
+    <div class="notation-form-grid">
+      <div class="notation-field">
+        <label>Franchise *</label>
+        <select id="rFranchise">
+          <option value="">-- Choisir --</option>
+          <option>EO Dar Es</option>
+          <option>EO Belle Ville</option>
+          <option>Ps Dabakala</option>
+          <option>Eo Katiola</option>
+          <option>EO Bouaké</option>
+        </select>
+      </div>
+      <div class="notation-field">
+        <label>Date</label>
+        <input type="date" id="rDate">
+      </div>
+      <div class="notation-field">
+        <label>Qualité de service</label>
+        <div class="stars-widget" id="starsQS" data-field="qs" onclick="setRatingStar('qs', this)">
+          <span data-v="1">☆</span><span data-v="2">☆</span><span data-v="3">☆</span><span data-v="4">☆</span><span data-v="5">☆</span>
+        </div>
+        <input type="hidden" id="rQS" value="0">
+      </div>
+      <div class="notation-field">
+        <label>Présence</label>
+        <div class="stars-widget" id="starsPresence" data-field="presence" onclick="setRatingStar('presence', this)">
+          <span data-v="1">☆</span><span data-v="2">☆</span><span data-v="3">☆</span><span data-v="4">☆</span><span data-v="5">☆</span>
+        </div>
+        <input type="hidden" id="rPresence" value="0">
+      </div>
+      <div class="notation-field" style="grid-column:1/-1">
+        <label>Commentaire (optionnel)</label>
+        <textarea id="rComment" placeholder="Observations, points forts, axes d'amélioration..."></textarea>
+      </div>
+      <div style="grid-column:1/-1">
+        <button class="btn-save-rating" onclick="saveRating()">💾 Enregistrer l'évaluation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historique -->
+  <div class="notation-history">
+    <h3>📋 Historique des évaluations <span id="ratingCountBadge" style="background:var(--accent);color:#fff;border-radius:99px;padding:2px 9px;font-size:11px;font-family:var(--mono);font-weight:700"></span></h3>
+    <div class="filters" style="margin-bottom:12px">
+      <span class="filter-label">Filtrer :</span>
+      <select id="rFilterFranchise" onchange="renderNotation()">
+        <option value="">Toutes les franchises</option>
+        <option>EO Dar Es</option>
+        <option>EO Belle Ville</option>
+        <option>Ps Dabakala</option>
+        <option>Eo Katiola</option>
+        <option>EO Bouaké</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Franchise</th>
+            <th>Qualité de service</th>
+            <th>Présence</th>
+            <th>Moyenne</th>
+            <th>Commentaire</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="ratingTbody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -1992,9 +2102,10 @@ function showSection(id) {
   document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
   document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
   document.getElementById('section-'+id).classList.add('active');
-  ['dashboard','classement','franchises','saisie','import','notifications','vocal','sauvegarde'].forEach(function(s,i){if(s===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');});
+  ['dashboard','classement','franchises','notation','saisie','import','notifications','vocal','sauvegarde'].forEach(function(s,i){if(s===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');});
   if(id==='franchises') renderFranchiseTable();
   if(id==='classement') renderRanking();
+  if(id==='notation') renderNotation();
   if(id==='notifications'){
     var p=localStorage.getItem('pil_period')||'Avril 2026';
     var np=document.getElementById('notifPeriod');if(np)np.value=p;
@@ -2490,7 +2601,7 @@ function _disableEditing() {
   // Mode lecture : Dashboard(0), Classement(1), Franchises(2) visibles
   // Saisie(3), Import(4), Notifications(5), Vocal(6), Sauvegarde(7) → masqués
   var tabs = document.querySelectorAll('.nav-tab');
-  var adminOnly = [3, 4, 5, 6, 7]; // saisie, import, notifications, vocal, sauvegarde
+  var adminOnly = [4, 5, 6, 7, 8]; // saisie, import, notifications, vocal, sauvegarde
   adminOnly.forEach(function(i){ if(tabs[i]) tabs[i].style.display='none'; });
 
   // Si on est sur un onglet admin → rediriger vers dashboard
@@ -2567,6 +2678,170 @@ function saveCodes() {
   document.getElementById('newVisitorCode').value = '';
   document.getElementById('newAdminCode').value = '';
   showToast('Codes mis à jour !', 'success');
+}
+
+// ── Notation des Franchises ────────────────────────────────────────────────
+var ratings = JSON.parse(localStorage.getItem('pil_ratings') || '[]');
+
+function saveRatingsLS() {
+  localStorage.setItem('pil_ratings', JSON.stringify(ratings));
+}
+
+function uid_r() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function setRatingStar(field, widgetOrEvent) {
+  var widget = (widgetOrEvent instanceof Event) ? widgetOrEvent.currentTarget : widgetOrEvent;
+  if (!widget) return;
+  var clicked = (widgetOrEvent instanceof Event) ? widgetOrEvent.target : null;
+  if (!clicked || !clicked.dataset.v) {
+    // fallback: get from event target on the widget click
+    var ev = window.event;
+    if (ev && ev.target && ev.target.dataset.v) clicked = ev.target;
+    else return;
+  }
+  var val = parseInt(clicked.dataset.v, 10);
+  var inputId = field === 'qs' ? 'rQS' : 'rPresence';
+  document.getElementById(inputId).value = val;
+  var stars = widget.querySelectorAll('span');
+  stars.forEach(function(s) {
+    s.textContent = parseInt(s.dataset.v, 10) <= val ? '★' : '☆';
+  });
+}
+
+// Attach star widget listeners after DOM ready
+(function() {
+  function attachStars() {
+    var qs = document.getElementById('starsQS');
+    var pr = document.getElementById('starsPresence');
+    if (qs) qs.onclick = function(e) {
+      if (e.target.dataset.v) {
+        var val = parseInt(e.target.dataset.v, 10);
+        document.getElementById('rQS').value = val;
+        qs.querySelectorAll('span').forEach(function(s){ s.textContent = parseInt(s.dataset.v,10)<=val?'★':'☆'; });
+      }
+    };
+    if (pr) pr.onclick = function(e) {
+      if (e.target.dataset.v) {
+        var val = parseInt(e.target.dataset.v, 10);
+        document.getElementById('rPresence').value = val;
+        pr.querySelectorAll('span').forEach(function(s){ s.textContent = parseInt(s.dataset.v,10)<=val?'★':'☆'; });
+      }
+    };
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachStars);
+  } else {
+    attachStars();
+  }
+})();
+
+function saveRating() {
+  var franchise = document.getElementById('rFranchise').value.trim();
+  var date = document.getElementById('rDate').value;
+  var qs = parseInt(document.getElementById('rQS').value, 10);
+  var presence = parseInt(document.getElementById('rPresence').value, 10);
+  var comment = document.getElementById('rComment').value.trim();
+
+  if (!franchise) { showToast('Sélectionnez une franchise', 'error'); return; }
+  if (!date) { showToast('Choisissez une date', 'error'); return; }
+  if (!qs || qs < 1) { showToast('Notez la qualité de service', 'error'); return; }
+  if (!presence || presence < 1) { showToast('Notez la présence', 'error'); return; }
+
+  ratings.unshift({ id: uid_r(), franchise: franchise, date: date, qs: qs, presence: presence, comment: comment });
+  saveRatingsLS();
+  // Reset form
+  document.getElementById('rFranchise').value = '';
+  document.getElementById('rDate').value = '';
+  document.getElementById('rQS').value = '0';
+  document.getElementById('rPresence').value = '0';
+  document.getElementById('rComment').value = '';
+  ['starsQS','starsPresence'].forEach(function(id){
+    var w = document.getElementById(id);
+    if (w) w.querySelectorAll('span').forEach(function(s){ s.textContent = '☆'; });
+  });
+  showToast('Évaluation enregistrée !', 'success');
+  renderNotation();
+}
+
+function deleteRating(id) {
+  if (!confirm('Supprimer cette évaluation ?')) return;
+  ratings = ratings.filter(function(r){ return r.id !== id; });
+  saveRatingsLS();
+  renderNotation();
+}
+
+function starsHtml(val) {
+  var cls = val >= 4 ? 'stars-ok' : val >= 3 ? 'stars-mid' : 'stars-bad';
+  var s = '';
+  for (var i = 1; i <= 5; i++) s += i <= val ? '★' : '☆';
+  return '<span class="rating-stars-display ' + cls + '">' + s + '</span>';
+}
+
+function avgLabel(val) {
+  if (!val) return '<span style="color:var(--muted)">—</span>';
+  var cls = val >= 4 ? 'stars-ok' : val >= 3 ? 'stars-mid' : 'stars-bad';
+  return '<span class="rating-avg ' + cls + '">' + val.toFixed(1) + '/5</span>';
+}
+
+var FRANCHISE_LIST = ['EO Dar Es','EO Belle Ville','Ps Dabakala','Eo Katiola','EO Bouaké'];
+
+function renderNotation() {
+  // Initialise date par défaut
+  var dateInput = document.getElementById('rDate');
+  if (dateInput && !dateInput.value) {
+    var today = new Date();
+    dateInput.value = today.toISOString().slice(0, 10);
+  }
+
+  var filter = (document.getElementById('rFilterFranchise') || {}).value || '';
+  var filtered = filter ? ratings.filter(function(r){ return r.franchise === filter; }) : ratings;
+
+  // ── Badge count
+  var badge = document.getElementById('ratingCountBadge');
+  if (badge) badge.textContent = filtered.length;
+
+  // ── Summary cards
+  var cardsEl = document.getElementById('ratingCards');
+  if (cardsEl) {
+    cardsEl.innerHTML = FRANCHISE_LIST.map(function(f) {
+      var fr = ratings.filter(function(r){ return r.franchise === f; });
+      var count = fr.length;
+      var avgQS = count ? (fr.reduce(function(a,r){ return a + r.qs; }, 0) / count) : 0;
+      var avgPr = count ? (fr.reduce(function(a,r){ return a + r.presence; }, 0) / count) : 0;
+      var avgGlobal = count ? ((avgQS + avgPr) / 2) : 0;
+      var dotColor = !count ? '#94a3b8' : avgGlobal >= 4 ? '#16a34a' : avgGlobal >= 3 ? '#d97706' : '#dc2626';
+      return '<div class="rating-card">'
+        + '<div class="rating-card-name"><span style="width:8px;height:8px;border-radius:50%;background:' + dotColor + ';display:inline-block;flex-shrink:0"></span>' + f + '</div>'
+        + '<div class="rating-row"><span class="rating-row-label">Qualité de service</span>' + (count ? starsHtml(Math.round(avgQS)) + avgLabel(avgQS) : '<span style="color:var(--muted);font-size:12px">Non noté</span>') + '</div>'
+        + '<div class="rating-row"><span class="rating-row-label">Présence</span>' + (count ? starsHtml(Math.round(avgPr)) + avgLabel(avgPr) : '<span style="color:var(--muted);font-size:12px">Non noté</span>') + '</div>'
+        + '<div class="rating-count">' + (count ? count + ' évaluation' + (count > 1 ? 's' : '') : 'Aucune évaluation') + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  // ── History table
+  var tbody = document.getElementById('ratingTbody');
+  if (!tbody) return;
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Aucune évaluation enregistrée</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(function(r) {
+    var avg = ((r.qs + r.presence) / 2);
+    var avgCls = avg >= 4 ? 'stars-ok' : avg >= 3 ? 'stars-mid' : 'stars-bad';
+    var dateStr = r.date ? new Date(r.date + 'T12:00:00').toLocaleDateString('fr-FR', {day:'2-digit',month:'short',year:'numeric'}) : '—';
+    return '<tr>'
+      + '<td style="white-space:nowrap;font-family:var(--mono);font-size:11px">' + dateStr + '</td>'
+      + '<td style="font-weight:600">' + r.franchise + '</td>'
+      + '<td>' + starsHtml(r.qs) + ' <span style="font-family:var(--mono);font-size:11px;margin-left:4px">' + r.qs + '/5</span></td>'
+      + '<td>' + starsHtml(r.presence) + ' <span style="font-family:var(--mono);font-size:11px;margin-left:4px">' + r.presence + '/5</span></td>'
+      + '<td><span class="rating-avg ' + avgCls + '">' + avg.toFixed(1) + '</span></td>'
+      + '<td style="max-width:200px;font-size:11px;color:var(--muted)">' + (r.comment || '—') + '</td>'
+      + '<td><button class="btn-del" onclick="deleteRating(\'' + r.id + '\')">✕</button></td>'
+      + '</tr>';
+  }).join('');
 }
 
 loadData();
