@@ -432,6 +432,7 @@ body {
     <button class="nav-tab active" onclick="showSection('notifications')">📲 Notifications</button>
     <button class="nav-tab" onclick="showSection('vocal')">🎙️ Vocal IA</button>
     <button class="nav-tab" onclick="showSection('sauvegarde')">💾 Sauvegarde</button>
+    <button class="nav-tab" onclick="showSection('visites')">🏁 Visites</button>
   </nav>
   <button id="headerInstallBtn" onclick="installPWA()" title="Installer app">
     ⬇️ Installer
@@ -861,6 +862,200 @@ EO Dar Es,BENJAMIN YAO,0747268228,STAGIAIRE,10,0,7,0,12,0,9,0,8,0</pre>
     <div id="mainStatusPill" class="status-pill online"><span class="dot"></span><span id="mainStatusText">Connecté à Firebase</span></div>
     <p style="font-size:11px;color:var(--muted);margin-top:8px" id="mainStatusSub">Modifications partagées en temps réel.</p>
   </div>
+</div>
+
+
+<!-- ═══ VISITES FRANCHISES ══════════════════════════════════════════════════ -->
+<div class="section" id="section-visites">
+  <div class="section-title">🏁 Retours de Visites Franchises</div>
+
+  <div class="univers-tabs" id="visiteFranchiseTabs">
+    <button class="utab active" onclick="filterVisitesFranchise('all',this)">🌍 Toutes</button>
+    <button class="utab" onclick="filterVisitesFranchise('Daressalam',this)">Daressalam</button>
+    <button class="utab" onclick="filterVisitesFranchise('Belle Ville',this)">Belle Ville</button>
+    <button class="utab" onclick="filterVisitesFranchise('EO Bouaké',this)">EO Bouaké</button>
+    <button class="utab" onclick="filterVisitesFranchise('Katiola',this)">Katiola</button>
+    <button class="utab" onclick="filterVisitesFranchise('Dabakala',this)">Dabakala</button>
+  </div>
+
+  <div class="kpi-grid" id="visitesKpis"></div>
+
+  <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+    <button class="btn-primary" onclick="toggleVisiteForm()">➕ Nouvelle visite</button>
+  </div>
+
+  <div id="visiteFormCard" style="display:none" class="form-card">
+    <div class="form-title">📝 Enregistrer une visite</div>
+    <input type="hidden" id="v_editId">
+
+    <div class="section-sep"><span>📋 Informations générales</span></div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Franchise *</label>
+        <select class="form-sel" id="v_franchise">
+          <option value="">-- Choisir --</option>
+          <option>Daressalam</option>
+          <option>Belle Ville</option>
+          <option>EO Bouaké</option>
+          <option>Katiola</option>
+          <option>Dabakala</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date de visite *</label>
+        <input type="date" class="form-inp" id="v_date">
+      </div>
+      <div class="form-group">
+        <label>Nom du visiteur *</label>
+        <input type="text" class="form-inp" id="v_visiteur" placeholder="Votre nom">
+      </div>
+    </div>
+
+    <div class="section-sep"><span>⭐ Qualité de Service</span></div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Accueil client</label>
+        <select class="form-sel" id="v_qs_accueil">
+          <option value="">-- Note --</option>
+          <option value="1">1 - Insuffisant</option><option value="2">2 - Passable</option>
+          <option value="3">3 - Moyen</option><option value="4">4 - Bien</option><option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Traitement réclamations</label>
+        <select class="form-sel" id="v_qs_reclamations">
+          <option value="">-- Note --</option>
+          <option value="1">1 - Insuffisant</option><option value="2">2 - Passable</option>
+          <option value="3">3 - Moyen</option><option value="4">4 - Bien</option><option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Délai de traitement</label>
+        <select class="form-sel" id="v_qs_delai">
+          <option value="">-- Note --</option>
+          <option value="1">1 - Insuffisant</option><option value="2">2 - Passable</option>
+          <option value="3">3 - Moyen</option><option value="4">4 - Bien</option><option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Qualité du conseil</label>
+        <select class="form-sel" id="v_qs_conseil">
+          <option value="">-- Note --</option>
+          <option value="1">1 - Insuffisant</option><option value="2">2 - Passable</option>
+          <option value="3">3 - Moyen</option><option value="4">4 - Bien</option><option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Observations Qualité de Service</label>
+        <textarea class="form-inp" id="v_qs_obs" rows="2" style="width:100%;resize:vertical" placeholder="Points notables sur la qualité de service..."></textarea>
+      </div>
+    </div>
+
+    <div class="section-sep"><span>👥 Présences</span></div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Effectif attendu</label>
+        <input type="number" class="form-inp" id="v_pres_attendu" min="0" placeholder="0" oninput="calcTauxPresence()">
+      </div>
+      <div class="form-group">
+        <label>Agents présents</label>
+        <input type="number" class="form-inp" id="v_pres_presents" min="0" placeholder="0" oninput="calcTauxPresence()">
+      </div>
+      <div class="form-group">
+        <label>Taux de présence</label>
+        <input type="text" class="form-inp" id="v_pres_taux" placeholder="Auto" readonly style="background:var(--surface2);font-weight:700">
+      </div>
+      <div class="form-group">
+        <label>Motif(s) d'absence</label>
+        <input type="text" class="form-inp" id="v_pres_motif" placeholder="Maladie, congé...">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Noms des absents</label>
+        <textarea class="form-inp" id="v_pres_absents" rows="2" style="width:100%;resize:vertical" placeholder="Liste des agents absents..."></textarea>
+      </div>
+    </div>
+
+    <div class="section-sep"><span>🏪 Environnement</span></div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Propreté des locaux</label>
+        <select class="form-sel" id="v_env_proprete">
+          <option value="">-- Note --</option>
+          <option value="1">1 - Insuffisant</option><option value="2">2 - Passable</option>
+          <option value="3">3 - Moyen</option><option value="4">4 - Bien</option><option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Affichage commercial</label>
+        <select class="form-sel" id="v_env_affichage">
+          <option value="">-- Note --</option>
+          <option value="1">1 - Insuffisant</option><option value="2">2 - Passable</option>
+          <option value="3">3 - Moyen</option><option value="4">4 - Bien</option><option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>État des équipements</label>
+        <select class="form-sel" id="v_env_equipements">
+          <option value="">-- Note --</option>
+          <option value="1">1 - Insuffisant</option><option value="2">2 - Passable</option>
+          <option value="3">3 - Moyen</option><option value="4">4 - Bien</option><option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Confort client</label>
+        <select class="form-sel" id="v_env_confort">
+          <option value="">-- Note --</option>
+          <option value="1">1 - Insuffisant</option><option value="2">2 - Passable</option>
+          <option value="3">3 - Moyen</option><option value="4">4 - Bien</option><option value="5">5 - Excellent</option>
+        </select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Équipements opérationnels</label>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:6px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400;cursor:pointer"><input type="checkbox" id="v_eq_clim"> ❄️ Climatisation</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400;cursor:pointer"><input type="checkbox" id="v_eq_internet"> 🌐 Internet</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400;cursor:pointer"><input type="checkbox" id="v_eq_imprimante"> 🖨️ Imprimante</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400;cursor:pointer"><input type="checkbox" id="v_eq_tel"> 📞 Téléphone</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400;cursor:pointer"><input type="checkbox" id="v_eq_caisse"> 💰 Caisse</label>
+        </div>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Observations Environnement</label>
+        <textarea class="form-inp" id="v_env_obs" rows="2" style="width:100%;resize:vertical" placeholder="Points notables sur l'environnement..."></textarea>
+      </div>
+    </div>
+
+    <div class="section-sep"><span>📌 Actions &amp; Recommandations</span></div>
+    <div class="form-grid">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Points forts</label>
+        <textarea class="form-inp" id="v_points_forts" rows="2" style="width:100%;resize:vertical" placeholder="Ce qui fonctionne bien dans cette franchise..."></textarea>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Actions correctives</label>
+        <textarea class="form-inp" id="v_actions" rows="2" style="width:100%;resize:vertical" placeholder="Ce qui doit être corrigé en priorité..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Délai de résolution</label>
+        <input type="text" class="form-inp" id="v_delai" placeholder="ex : 1 semaine">
+      </div>
+      <div class="form-group">
+        <label>Priorité</label>
+        <select class="form-sel" id="v_priorite">
+          <option value="Normal">Normal</option>
+          <option value="Urgent">🔴 Urgent</option>
+          <option value="Faible">🟢 Faible</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-primary" onclick="saveVisite()">💾 Enregistrer la visite</button>
+      <button class="btn-secondary" onclick="resetVisiteForm();document.getElementById('visiteFormCard').style.display='none'">↺ Annuler</button>
+    </div>
+  </div>
+
+  <div id="visitesHistory"></div>
 </div>
 
 </main>
@@ -1992,9 +2187,10 @@ function showSection(id) {
   document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
   document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
   document.getElementById('section-'+id).classList.add('active');
-  ['dashboard','classement','franchises','saisie','import','notifications','vocal','sauvegarde'].forEach(function(s,i){if(s===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');});
+  ['dashboard','classement','franchises','saisie','import','notifications','vocal','sauvegarde','visites'].forEach(function(s,i){if(s===id)document.querySelectorAll('.nav-tab')[i].classList.add('active');});
   if(id==='franchises') renderFranchiseTable();
   if(id==='classement') renderRanking();
+  if(id==='visites') renderVisitesSection();
   if(id==='notifications'){
     var p=localStorage.getItem('pil_period')||'Avril 2026';
     var np=document.getElementById('notifPeriod');if(np)np.value=p;
@@ -2567,6 +2763,305 @@ function saveCodes() {
   document.getElementById('newVisitorCode').value = '';
   document.getElementById('newAdminCode').value = '';
   showToast('Codes mis à jour !', 'success');
+}
+
+
+// ── MODULE VISITES FRANCHISES ────────────────────────────────────────────────
+var visitesFilter = 'all';
+
+function toggleVisiteForm() {
+  var card = document.getElementById('visiteFormCard');
+  if (card.style.display === 'none') {
+    card.style.display = 'block';
+    var d = document.getElementById('v_date');
+    if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    card.style.display = 'none';
+    resetVisiteForm();
+  }
+}
+
+function calcTauxPresence() {
+  var att = parseInt(document.getElementById('v_pres_attendu').value) || 0;
+  var pres = parseInt(document.getElementById('v_pres_presents').value) || 0;
+  var txEl = document.getElementById('v_pres_taux');
+  if (att > 0) {
+    var tx = Math.round((pres / att) * 100);
+    txEl.value = tx + '%';
+    txEl.style.color = tx >= 80 ? 'var(--green)' : tx >= 60 ? 'var(--yellow)' : 'var(--red)';
+  } else {
+    txEl.value = '';
+    txEl.style.color = '';
+  }
+}
+
+function getVisitesData() {
+  try { return JSON.parse(localStorage.getItem('pil_visites') || '[]'); } catch(e) { return []; }
+}
+
+function saveVisitesData(arr) {
+  localStorage.setItem('pil_visites', JSON.stringify(arr));
+}
+
+function saveVisite() {
+  var franchise = document.getElementById('v_franchise').value.trim();
+  var date = document.getElementById('v_date').value;
+  var visiteur = document.getElementById('v_visiteur').value.trim();
+  if (!franchise || !date || !visiteur) {
+    showToast('Franchise, date et visiteur sont obligatoires', 'error');
+    return;
+  }
+  var att = parseInt(document.getElementById('v_pres_attendu').value) || 0;
+  var pres = parseInt(document.getElementById('v_pres_presents').value) || 0;
+  var visite = {
+    id: Date.now(),
+    franchise: franchise,
+    date: date,
+    visiteur: visiteur,
+    qs: {
+      accueil: document.getElementById('v_qs_accueil').value,
+      reclamations: document.getElementById('v_qs_reclamations').value,
+      delai: document.getElementById('v_qs_delai').value,
+      conseil: document.getElementById('v_qs_conseil').value,
+      obs: document.getElementById('v_qs_obs').value.trim()
+    },
+    presences: {
+      attendu: att,
+      presents: pres,
+      taux: att > 0 ? Math.round((pres / att) * 100) : null,
+      motif: document.getElementById('v_pres_motif').value.trim(),
+      absents: document.getElementById('v_pres_absents').value.trim()
+    },
+    env: {
+      proprete: document.getElementById('v_env_proprete').value,
+      affichage: document.getElementById('v_env_affichage').value,
+      equipements: document.getElementById('v_env_equipements').value,
+      confort: document.getElementById('v_env_confort').value,
+      eq_clim: document.getElementById('v_eq_clim').checked,
+      eq_internet: document.getElementById('v_eq_internet').checked,
+      eq_imprimante: document.getElementById('v_eq_imprimante').checked,
+      eq_tel: document.getElementById('v_eq_tel').checked,
+      eq_caisse: document.getElementById('v_eq_caisse').checked,
+      obs: document.getElementById('v_env_obs').value.trim()
+    },
+    actions: {
+      points_forts: document.getElementById('v_points_forts').value.trim(),
+      correctives: document.getElementById('v_actions').value.trim(),
+      delai: document.getElementById('v_delai').value.trim(),
+      priorite: document.getElementById('v_priorite').value
+    }
+  };
+  var editId = document.getElementById('v_editId').value;
+  var arr = getVisitesData();
+  if (editId) {
+    var idx = arr.findIndex(function(v){ return String(v.id) === String(editId); });
+    if (idx !== -1) { visite.id = parseInt(editId); arr[idx] = visite; }
+    else arr.push(visite);
+  } else {
+    arr.push(visite);
+  }
+  saveVisitesData(arr);
+  resetVisiteForm();
+  document.getElementById('visiteFormCard').style.display = 'none';
+  renderVisitesSection();
+  showToast('Visite enregistrée !', 'success');
+}
+
+function resetVisiteForm() {
+  document.getElementById('v_editId').value = '';
+  document.getElementById('v_franchise').value = '';
+  document.getElementById('v_date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('v_visiteur').value = '';
+  ['v_qs_accueil','v_qs_reclamations','v_qs_delai','v_qs_conseil'].forEach(function(id){ document.getElementById(id).value = ''; });
+  document.getElementById('v_qs_obs').value = '';
+  document.getElementById('v_pres_attendu').value = '';
+  document.getElementById('v_pres_presents').value = '';
+  document.getElementById('v_pres_taux').value = '';
+  document.getElementById('v_pres_motif').value = '';
+  document.getElementById('v_pres_absents').value = '';
+  ['v_env_proprete','v_env_affichage','v_env_equipements','v_env_confort'].forEach(function(id){ document.getElementById(id).value = ''; });
+  ['v_eq_clim','v_eq_internet','v_eq_imprimante','v_eq_tel','v_eq_caisse'].forEach(function(id){ document.getElementById(id).checked = false; });
+  document.getElementById('v_env_obs').value = '';
+  document.getElementById('v_points_forts').value = '';
+  document.getElementById('v_actions').value = '';
+  document.getElementById('v_delai').value = '';
+  document.getElementById('v_priorite').value = 'Normal';
+}
+
+function deleteVisite(id) {
+  if (!confirm('Supprimer cette visite ?')) return;
+  var arr = getVisitesData().filter(function(v){ return v.id !== id; });
+  saveVisitesData(arr);
+  renderVisitesSection();
+  showToast('Visite supprimée', 'success');
+}
+
+function filterVisitesFranchise(f, btn) {
+  visitesFilter = f;
+  document.querySelectorAll('#visiteFranchiseTabs .utab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderVisitesSection();
+}
+
+function vNoteLabel(v) {
+  if (!v) return '<span style="color:var(--muted2)">–</span>';
+  var n = parseInt(v);
+  var stars = '';
+  for (var i = 1; i <= 5; i++) stars += i <= n ? '★' : '☆';
+  var c = n >= 4 ? 'var(--green)' : n >= 3 ? 'var(--yellow)' : 'var(--red)';
+  return '<span style="color:' + c + '">' + stars + '</span> <span style="font-size:11px;color:var(--muted)">' + n + '/5</span>';
+}
+
+function vNoteMoy(notes) {
+  var vals = notes.filter(function(n){ return n && n !== ''; }).map(Number);
+  if (!vals.length) return null;
+  return (vals.reduce(function(a,b){ return a+b; }, 0) / vals.length).toFixed(1);
+}
+
+function vFormatDate(ds) {
+  if (!ds) return '';
+  var d = new Date(ds + 'T12:00:00');
+  var m = ['jan.','fév.','mar.','avr.','mai','juin','juil.','août','sep.','oct.','nov.','déc.'];
+  return d.getDate() + ' ' + m[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function renderVisitesSection() {
+  var arr = getVisitesData();
+  var filtered = visitesFilter === 'all' ? arr.slice() : arr.filter(function(v){ return v.franchise === visitesFilter; });
+  filtered.sort(function(a,b){ return b.date.localeCompare(a.date); });
+
+  var kpiDiv = document.getElementById('visitesKpis');
+  if (kpiDiv) {
+    var total = arr.length;
+    var qsNums = [], envNums = [], presRates = [];
+    arr.forEach(function(v){
+      var qm = vNoteMoy([v.qs.accueil, v.qs.reclamations, v.qs.delai, v.qs.conseil]);
+      var em = vNoteMoy([v.env.proprete, v.env.affichage, v.env.equipements, v.env.confort]);
+      if (qm) qsNums.push(parseFloat(qm));
+      if (em) envNums.push(parseFloat(em));
+      if (v.presences.taux !== null) presRates.push(v.presences.taux);
+    });
+    var avgQs = qsNums.length ? (qsNums.reduce(function(a,b){return a+b;},0)/qsNums.length).toFixed(1) : null;
+    var avgEnv = envNums.length ? (envNums.reduce(function(a,b){return a+b;},0)/envNums.length).toFixed(1) : null;
+    var avgPres = presRates.length ? Math.round(presRates.reduce(function(a,b){return a+b;},0)/presRates.length) : null;
+    var qsCl = avgQs ? (parseFloat(avgQs)>=4?'ok':parseFloat(avgQs)>=3?'warn':'danger') : '';
+    var envCl = avgEnv ? (parseFloat(avgEnv)>=4?'ok':parseFloat(avgEnv)>=3?'warn':'danger') : '';
+    var presCl = avgPres!==null ? (avgPres>=80?'ok':avgPres>=60?'warn':'danger') : '';
+    kpiDiv.innerHTML =
+      '<div class="kpi"><div class="kpi-label">Total visites</div><div class="kpi-val" style="color:var(--accent2)">' + total + '</div><div class="kpi-sub">toutes franchises</div></div>' +
+      '<div class="kpi ' + qsCl + '"><div class="kpi-label">Qualité service moy.</div><div class="kpi-val">' + (avgQs||'–') + '</div><div class="kpi-sub">/ 5</div></div>' +
+      '<div class="kpi ' + envCl + '"><div class="kpi-label">Environnement moy.</div><div class="kpi-val">' + (avgEnv||'–') + '</div><div class="kpi-sub">/ 5</div></div>' +
+      '<div class="kpi ' + presCl + '"><div class="kpi-label">Taux présence moy.</div><div class="kpi-val">' + (avgPres!==null?avgPres+'%':'–') + '</div><div class="kpi-sub">toutes visites</div></div>';
+  }
+
+  var hist = document.getElementById('visitesHistory');
+  if (!hist) return;
+  if (!filtered.length) {
+    hist.innerHTML = '<div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:13px">Aucune visite enregistrée' + (visitesFilter !== 'all' ? ' pour <strong>' + visitesFilter + '</strong>' : '') + '<br><span style="font-size:12px;color:var(--muted2)">Cliquez sur « ➕ Nouvelle visite » pour commencer</span></div>';
+    return;
+  }
+
+  hist.innerHTML = filtered.map(function(v) {
+    var qsMoy = vNoteMoy([v.qs.accueil, v.qs.reclamations, v.qs.delai, v.qs.conseil]);
+    var envMoy = vNoteMoy([v.env.proprete, v.env.affichage, v.env.equipements, v.env.confort]);
+    var qsCl = qsMoy ? (parseFloat(qsMoy)>=4?'#16a34a':parseFloat(qsMoy)>=3?'#b45309':'#dc2626') : '#94a3b8';
+    var envCl = envMoy ? (parseFloat(envMoy)>=4?'#16a34a':parseFloat(envMoy)>=3?'#b45309':'#dc2626') : '#94a3b8';
+    var presCl = v.presences.taux!==null ? (v.presences.taux>=80?'#16a34a':v.presences.taux>=60?'#b45309':'#dc2626') : '#94a3b8';
+    var prioCl = v.actions.priorite==='Urgent'?'#dc2626':v.actions.priorite==='Faible'?'#16a34a':'#3b82f6';
+    var eqList = [];
+    if (v.env.eq_clim) eqList.push('❄️ Clim');
+    if (v.env.eq_internet) eqList.push('🌐 Internet');
+    if (v.env.eq_imprimante) eqList.push('🖨️ Imprim.');
+    if (v.env.eq_tel) eqList.push('📞 Tél.');
+    if (v.env.eq_caisse) eqList.push('💰 Caisse');
+
+    return '<div class="form-card" style="margin-bottom:14px;border-left:4px solid ' + qsCl + '">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:14px">' +
+        '<div><div style="font-size:16px;font-weight:700;color:var(--text)">' + v.franchise + '</div>' +
+        '<div style="font-size:11px;color:var(--muted);margin-top:3px">📅 ' + vFormatDate(v.date) + ' &nbsp;·&nbsp; 👤 ' + v.visiteur + ' &nbsp;·&nbsp; <span style="color:' + prioCl + ';font-weight:600">' + v.actions.priorite + '</span></div></div>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button onclick="editVisite(' + v.id + ')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:11px;cursor:pointer;color:var(--text);font-family:var(--font)">✏️ Modifier</button>' +
+          '<button onclick="deleteVisite(' + v.id + ')" style="background:#fee2e2;border:1px solid #fecaca;border-radius:8px;padding:5px 12px;font-size:11px;cursor:pointer;color:var(--red);font-family:var(--font)">🗑️ Supprimer</button>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:12px">' +
+        '<div style="background:var(--surface2);border-radius:10px;padding:12px">' +
+          '<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⭐ Qualité de service</div>' +
+          '<div style="font-size:11px;line-height:2">' +
+            '<div>Accueil : ' + vNoteLabel(v.qs.accueil) + '</div>' +
+            '<div>Réclamations : ' + vNoteLabel(v.qs.reclamations) + '</div>' +
+            '<div>Délai : ' + vNoteLabel(v.qs.delai) + '</div>' +
+            '<div>Conseil : ' + vNoteLabel(v.qs.conseil) + '</div>' +
+          '</div>' +
+          '<div style="margin-top:8px;font-family:var(--mono);font-size:14px;font-weight:700;color:' + qsCl + '">Moy. ' + (qsMoy||'–') + '/5</div>' +
+          (v.qs.obs ? '<div style="margin-top:6px;font-size:11px;color:var(--muted);font-style:italic;border-top:1px solid var(--border);padding-top:6px">' + v.qs.obs + '</div>' : '') +
+        '</div>' +
+        '<div style="background:var(--surface2);border-radius:10px;padding:12px">' +
+          '<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">👥 Présences</div>' +
+          '<div style="font-size:28px;font-family:var(--mono);font-weight:700;color:' + presCl + '">' + (v.presences.taux!==null?v.presences.taux+'%':'–') + '</div>' +
+          '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + (v.presences.presents||0) + ' / ' + (v.presences.attendu||0) + ' agents</div>' +
+          (v.presences.absents ? '<div style="margin-top:8px;font-size:11px;color:var(--text);border-top:1px solid var(--border);padding-top:6px"><strong>Absents :</strong> ' + v.presences.absents + '</div>' : '') +
+          (v.presences.motif ? '<div style="font-size:11px;color:var(--muted)">Motif : ' + v.presences.motif + '</div>' : '') +
+        '</div>' +
+        '<div style="background:var(--surface2);border-radius:10px;padding:12px">' +
+          '<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🏪 Environnement</div>' +
+          '<div style="font-size:11px;line-height:2">' +
+            '<div>Propreté : ' + vNoteLabel(v.env.proprete) + '</div>' +
+            '<div>Affichage : ' + vNoteLabel(v.env.affichage) + '</div>' +
+            '<div>Équipements : ' + vNoteLabel(v.env.equipements) + '</div>' +
+            '<div>Confort : ' + vNoteLabel(v.env.confort) + '</div>' +
+          '</div>' +
+          '<div style="margin-top:8px;font-family:var(--mono);font-size:14px;font-weight:700;color:' + envCl + '">Moy. ' + (envMoy||'–') + '/5</div>' +
+          (eqList.length ? '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">' + eqList.map(function(e){ return '<span style="background:#fff;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:10px">' + e + '</span>'; }).join('') + '</div>' : '') +
+          (v.env.obs ? '<div style="margin-top:6px;font-size:11px;color:var(--muted);font-style:italic;border-top:1px solid var(--border);padding-top:6px">' + v.env.obs + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      ((v.actions.correctives || v.actions.points_forts) ?
+        '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;font-size:11px;line-height:1.9">' +
+          (v.actions.points_forts ? '<div><strong style="color:var(--green)">✅ Points forts :</strong> ' + v.actions.points_forts + '</div>' : '') +
+          (v.actions.correctives ? '<div><strong style="color:var(--red)">🔧 Actions correctives :</strong> ' + v.actions.correctives + '</div>' : '') +
+          (v.actions.delai ? '<div><strong style="color:var(--muted)">⏱️ Délai :</strong> ' + v.actions.delai + '</div>' : '') +
+        '</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function editVisite(id) {
+  var arr = getVisitesData();
+  var v = arr.find(function(x){ return x.id === id; });
+  if (!v) return;
+  var card = document.getElementById('visiteFormCard');
+  card.style.display = 'block';
+  document.getElementById('v_editId').value = v.id;
+  document.getElementById('v_franchise').value = v.franchise;
+  document.getElementById('v_date').value = v.date;
+  document.getElementById('v_visiteur').value = v.visiteur;
+  document.getElementById('v_qs_accueil').value = v.qs.accueil || '';
+  document.getElementById('v_qs_reclamations').value = v.qs.reclamations || '';
+  document.getElementById('v_qs_delai').value = v.qs.delai || '';
+  document.getElementById('v_qs_conseil').value = v.qs.conseil || '';
+  document.getElementById('v_qs_obs').value = v.qs.obs || '';
+  document.getElementById('v_pres_attendu').value = v.presences.attendu || '';
+  document.getElementById('v_pres_presents').value = v.presences.presents || '';
+  document.getElementById('v_pres_motif').value = v.presences.motif || '';
+  document.getElementById('v_pres_absents').value = v.presences.absents || '';
+  document.getElementById('v_env_proprete').value = v.env.proprete || '';
+  document.getElementById('v_env_affichage').value = v.env.affichage || '';
+  document.getElementById('v_env_equipements').value = v.env.equipements || '';
+  document.getElementById('v_env_confort').value = v.env.confort || '';
+  document.getElementById('v_eq_clim').checked = !!v.env.eq_clim;
+  document.getElementById('v_eq_internet').checked = !!v.env.eq_internet;
+  document.getElementById('v_eq_imprimante').checked = !!v.env.eq_imprimante;
+  document.getElementById('v_eq_tel').checked = !!v.env.eq_tel;
+  document.getElementById('v_eq_caisse').checked = !!v.env.eq_caisse;
+  document.getElementById('v_env_obs').value = v.env.obs || '';
+  document.getElementById('v_points_forts').value = v.actions.points_forts || '';
+  document.getElementById('v_actions').value = v.actions.correctives || '';
+  document.getElementById('v_delai').value = v.actions.delai || '';
+  document.getElementById('v_priorite').value = v.actions.priorite || 'Normal';
+  calcTauxPresence();
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 loadData();
